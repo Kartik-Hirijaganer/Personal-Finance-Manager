@@ -48,6 +48,6 @@ export class IncomeService {
   updateIncomeEntry(): void { }
 
   getIncomeList(): Income[] {
-    return this.income_list.splice(this.income_list.length);
+    return this.income_list.splice(0);
   }
 }
