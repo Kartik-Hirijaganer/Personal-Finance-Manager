@@ -8,6 +8,7 @@ import { ExpenseComponent } from './expense/expense.component';
 import { IncomeComponent } from './income/income.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LiabilityComponent } from './liability/liability.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { LiabilityComponent } from './liability/liability.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

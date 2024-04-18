@@ -1,0 +1,27 @@
+<div class="container-fluid">
+  <form [formGroup]="incomeForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="mb-3">
+          <label for="received_from" class="form-label">Received From:</label>
+          <input type="text" class="form-control" id="received_from" formControlName="from" placeholder="Enter source of income">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label for="amount" class="form-label">Amount:</label>
+          <input type="number" class="form-control" formControlName="amount" id="amount">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label for="received_date" class="form-label">Received Date:</label>
+          <input type="text" class="form-control" id="received_date" formControlName="date" placeholder="TODO">
+        </div>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-success" [disabled]="!incomeForm.valid">Save</button>
+  </form>
+</div>
