@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
+import { Subject } from "rxjs";
 
 import { Income } from "./income.model";
 
 @Injectable({ providedIn: 'root' })
 export class IncomeService {
-  private _count: number = 0;
   public monthly_income: number = 0;
-  private income_list: Income[] = [
+  private _income_list: Income[] = [
     {
       payment_id: 1,
       from: 'Alex',
@@ -29,18 +29,20 @@ export class IncomeService {
       description: 'Delivery'
     }
   ];
+  public incomeListEvent: Subject<Income[]> = new Subject<Income[]>();
 
   constructor() { }
 
   addIncomeEntry(from: string, date: string, amount: number, description: string): void {
     const new_income_entry: Income = {
-      payment_id: ++this._count,
+      payment_id: this._income_list[this._income_list.length - 1]?.payment_id + 1,
       from, 
       date, 
       amount,
       description
     }
-    this.income_list.push(new_income_entry);
+    this._income_list.push(new_income_entry);
+    this.incomeListEvent.next(this._income_list.slice(0));
   }
 
   removeIncomeEntry(): void { }
@@ -48,6 +50,6 @@ export class IncomeService {
   updateIncomeEntry(): void { }
 
   getIncomeList(): Income[] {
-    return this.income_list.splice(0);
+    return this._income_list.slice(0);
   }
 }

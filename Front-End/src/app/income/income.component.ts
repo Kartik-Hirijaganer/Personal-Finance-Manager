@@ -4,6 +4,7 @@ import { ColDef } from "ag-grid-community";
 
 import { IncomeService } from './income.service';
 import { Income } from './income.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-income',
@@ -30,17 +31,21 @@ export class IncomeComponent implements OnInit {
     autoHeight: true
   }
   hideIncomeForm: boolean = true;
+  incomeListSubscription: Subscription = new Subscription;
 
-  constructor(private incomeService: IncomeService) {}
+  constructor(private incomeService: IncomeService) { }
 
   ngOnInit() {
     this.incomeForm = new FormGroup({
       'from': new FormControl('', Validators.required),
       'date': new FormControl('', Validators.required),
-      'amount': new FormControl(null, Validators.required)
+      'amount': new FormControl(null, Validators.required),
+      'description': new FormControl('', Validators.required)
     });
-
     this.incomeRowData = this.incomeService.getIncomeList();
+    this.incomeListSubscription = this.incomeService.incomeListEvent.subscribe((updatedIncomeList: Income[]) => {
+      this.incomeRowData = updatedIncomeList;
+    })
   }
 
   toggleIncomeForm() {
@@ -48,7 +53,8 @@ export class IncomeComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.incomeForm.getRawValue());
-    
+    const { from, date, amount, description } = this.incomeForm.getRawValue();
+    this.incomeService.addIncomeEntry(from, date, amount, description);
+    this.toggleIncomeForm();
   }
 }
