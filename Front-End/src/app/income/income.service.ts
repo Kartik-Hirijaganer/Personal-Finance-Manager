@@ -42,10 +42,16 @@ export class IncomeService {
       description
     }
     this._income_list.push(new_income_entry);
+    this.monthly_income += amount;
     this.incomeListEvent.next(this._income_list.slice(0));
   }
 
-  removeIncomeEntry(): void { }
+  deleteIncomeEntry(payment_id: number, data: Income): void { 
+    const idx: number = this._income_list.findIndex( entry => entry.payment_id === payment_id);
+    this.monthly_income -= this._income_list[idx]?.amount || 0;
+    this._income_list.splice(idx, 1);
+    this.incomeListEvent.next(this._income_list.slice(0));
+  }
 
   updateIncomeEntry(): void { }
 
