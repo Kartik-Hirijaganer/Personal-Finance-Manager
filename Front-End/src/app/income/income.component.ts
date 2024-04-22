@@ -51,6 +51,7 @@ export class IncomeComponent implements OnInit, OnDestroy {
       'description': new FormControl('', Validators.required)
     });
     this.incomeRowData = this.incomeService.getIncomeList();
+    this.incomeService.monthly_income = this.incomeService.calculateMonthlyIncome(this.incomeRowData);
     this.incomeListSubscription = this.incomeService.incomeListEvent.subscribe((updatedIncomeList: Income[]) => {
       this.incomeRowData = updatedIncomeList;
     })
