@@ -1,14 +1,13 @@
 .header{
-  background-color: #333948!important;
+  background-color: #333948;
 }
 .navbar-link-style{
   color: #FFFF!important;
   margin-right: 30px;
-  background-color: #333948;
 }
 .navbar-user-logo{
-  max-height: 25px;
-  max-width: 25px;
+  max-height: 20px;
+  max-width: 20px;
   margin-left: 5px;
 }
 .active-link{

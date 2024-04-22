@@ -1,51 +1,33 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light header">
+<nav class="navbar navbar-default">
   <div class="container-fluid header">
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link navbar-link-style" aria-current="page" routerLink="/dashboard" routerLinkActive="active-link" style="background-color: #333948;">
-            <span class="navbar-link-logo"><img src="../../assets/imgs/transactions.svg"
-                class="navbar-link-logo"></span>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active">
+          <a href="#" class="navbar-link-style active-link">
+            <span><img class="navbar-link-logo" src="../../assets/imgs/transactions.svg"></span>
             Transactions
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link navbar-link-style" routerLink="/incomes" routerLinkActive="active-link">
-            <span><img src="../../assets/imgs/income.svg" class="navbar-link-logo"></span>
-            Incomes
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link navbar-link-style" routerLink="/expenses" routerLinkActive="active-link">
-            <span><img src="../../assets/imgs/expense.svg" class="navbar-link-logo"></span>
-            Expenses
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link navbar-link-style" routerLink="/liabilities" routerLinkActive="active-link">
-            <span><img src="../../assets/imgs/price-tag.svg" class="navbar-link-logo"></span>
-            Liabilities
-          </a>
-        </li>
+        <li><a href="#" class="navbar-link-style">
+          <span><img class="navbar-link-logo" src="../../assets/imgs/income.svg"></span>
+          Incomes</a></li>
+        <li><a href="#" class="navbar-link-style">
+          <span><img class="navbar-link-logo" src="../../assets/imgs/expense.svg"></span>
+          Expenses</a></li>
+        <li><a href="#" class="navbar-link-style">
+          <span><img class="navbar-link-logo" src="../../assets/imgs/price-tag.svg"></span>
+          Liabilities</a></li>
       </ul>
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle navbar-link-style" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
-            Chris&nbsp;<span><img src="../../assets/imgs/person-white.png" class="navbar-user-logo"></span>
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" href="#">Separated link</a></li>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle navbar-link-style" data-toggle="dropdown" role="button" aria-haspopup="true"
+            aria-expanded="false">Chris&nbsp;<span><img class="navbar-user-logo" src="../../assets/imgs/person-white.png"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
           </ul>
         </li>
       </ul>
