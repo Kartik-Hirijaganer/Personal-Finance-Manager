@@ -1,15 +1,15 @@
 export class Income {
-  public id: number;
+  public payment_id: number;
   public from: string;
   public date: string;
   public amount: number;
-  public description: string;
+  public description: string
 
-  constructor(id: number, from: string, date: string, amount: number, description: string) {
-    this.id = id;
+  constructor(payment_id: number, from: string, date: string, amount: number, description: string) {
+    this.payment_id = payment_id;
     this.from = from;
     this.date = date;
     this.amount = amount;
-    this.description = description;
+    this.description = description
   }
 }

@@ -1,5 +1,7 @@
 import { NgModule } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
 import { RouterModule, Routes } from "@angular/router";
+
 import { DashboardComponent } from "./dashboard/dashboard.component";
 import { IncomeComponent } from "./income/income.component";
 import { ExpenseComponent } from "./expense/expense.component";
@@ -14,7 +16,10 @@ const appRoutes: Routes = [
 ]
 
 @NgModule({
-  imports: [RouterModule.forRoot(appRoutes)],
+  imports: [
+    BrowserModule,
+    RouterModule.forRoot(appRoutes)
+  ],
   exports: [RouterModule]
 })
 

@@ -1,0 +1,62 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-10">
+      <div class="p-3" style="text-align: center;">
+        <span><img class="dashboard-logo" src="../../assets/imgs/balance.svg"></span>
+        <br>
+        Current Balance<br>
+        $ {{incomeService.monthly_income}}
+      </div>
+    </div>
+    <div class="col-lg-2 text-end mt-auto">
+      <button *ngIf="hideIncomeForm" class="btn btn-primary mt-2 mb-2 end-0" (click)="toggleIncomeForm()">Add
+        Income</button>
+    </div>
+  </div>
+  <div class="row">
+    <form *ngIf="!hideIncomeForm" [formGroup]="incomeForm" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="mb-3">
+            <label for="received_from" class="form-label">Received From:</label>
+            <input type="text" class="form-control" id="received_from" formControlName="from"
+              placeholder="Enter source of income">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-3">
+          <div class="mb-3">
+            <label for="amount" class="form-label">Amount:</label>
+            <input type="number" class="form-control" formControlName="amount" id="amount">
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="mb-3">
+            <label for="received_date" class="form-label">Received Date:</label>
+            <input type="text" class="form-control" id="received_date" formControlName="date" placeholder="TODO">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="mb-3">
+            <label for="description" class="form-label">Description (Optional):</label>
+            <input type="text" class="form-control" id="description" formControlName="description">
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success" [disabled]="!incomeForm.valid">Save</button>
+    </form>
+  </div>
+  <ag-grid-angular 
+  class="ag-theme-quartz" 
+  style="height:400px; width: 100%;" 
+  [rowData]="incomeRowData" 
+  [columnDefs]="incomeColDefs"
+  [pagination]=true
+  [defaultColDef]="defaultColDef"
+  >
+  </ag-grid-angular>
+  
+</div>
