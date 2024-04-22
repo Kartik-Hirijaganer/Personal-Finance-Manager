@@ -15,7 +15,7 @@ export class DeleteEditButtonComponent implements ICellRendererAngularComp {
   constructor( private incomeService: IncomeService ) {}
 
   agInit(params: ICellRendererParams): void {
-    this.rowData = params;
+    this.rowData = params;    
   }
 
   refresh(params: ICellRendererParams<any, any, any>): boolean {
@@ -26,10 +26,6 @@ export class DeleteEditButtonComponent implements ICellRendererAngularComp {
     const { payment_id, ...entry } = this.rowData?.data;
     if (action === 'delete') {
       this.incomeService.deleteIncomeEntry(payment_id, entry);
-    }
-
-    if (action === 'edit') {
-
     }
   }
 

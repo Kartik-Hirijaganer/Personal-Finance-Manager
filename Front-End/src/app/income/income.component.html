@@ -49,13 +49,16 @@
       <button type="submit" class="btn btn-success" [disabled]="!incomeForm.valid">Save</button>
     </form>
   </div>
+  <p class="fw-light fst-italic">To edit an row just double click on it</p>
   <ag-grid-angular 
   class="ag-theme-quartz" 
-  style="height:400px; width: 100%;" 
+  style="height:300px; width: 100%;" 
   [rowData]="incomeRowData" 
   [columnDefs]="incomeColDefs"
   [pagination]=true
   [defaultColDef]="defaultColDef"
+  editType="fullRow"
+  (rowValueChanged)="onRowValueChanged($event)"
   >
   </ag-grid-angular>
   
