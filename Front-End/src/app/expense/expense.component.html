@@ -1,1 +1,58 @@
-<p>expense works!</p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-10">
+      <div class="p-3" style="text-align: center;">
+        <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-expense.svg"></span>
+        <br>
+        Monthly Expense<br>
+        $ {{expenseService.monthlyExpense}}
+      </div>
+    </div>
+    <div class="col-lg-2 text-end mt-auto">
+      <button *ngIf="hideExpenseForm" class="btn btn-primary mt-2 mb-2 end-0" (click)="addExpense()">Add
+        Expense</button>
+    </div>
+  </div>
+  <div class="row">
+    <form *ngIf="!hideExpenseForm" [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="mb-3">
+            <label for="given_to" class="form-label">Given To:</label>
+            <input type="text" class="form-control" id="given_to" formControlName="to"
+              placeholder="Enter source of expense">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-3">
+          <div class="mb-3">
+            <label for="amount" class="form-label">Amount:</label>
+            <input type="number" class="form-control" formControlName="amount" id="amount">
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="mb-3">
+            <label for="received_date" class="form-label">Received Date:</label>
+            <input type="text" class="form-control" id="received_date" formControlName="date" placeholder="TODO">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="mb-3">
+            <label for="description" class="form-label">Description (Optional):</label>
+            <input type="text" class="form-control" id="description" formControlName="description">
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success" [disabled]="!expenseForm.valid">Save</button>
+    </form>
+  </div>
+  <p class="fw-light fst-italic">To edit an row just double click on it</p>
+  <ag-grid-angular class="ag-theme-quartz" style="height:300px; width: 100%;" [rowData]="expenseRowData"
+    [columnDefs]="expenseColDef" [pagination]=true [defaultColDef]="defaultColDef" editType="fullRow"
+    (rowValueChanged)="onRowValueChanged($event)">
+  </ag-grid-angular>
+
+</div>
