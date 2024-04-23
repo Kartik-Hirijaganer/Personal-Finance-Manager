@@ -1,0 +1,9 @@
+.dashboard-logo{
+  max-height: 50px;
+  max-width: 50px;
+  margin-left: 5px;
+}
+
+.center-aligned-group-header .ag-header-group-cell-label {
+  justify-content: center;
+}

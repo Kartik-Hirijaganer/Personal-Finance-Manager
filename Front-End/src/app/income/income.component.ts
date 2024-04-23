@@ -10,23 +10,19 @@ import { DeleteEditButtonComponent } from '../shared/delete-edit-button.componen
 @Component({
   selector: 'app-income',
   templateUrl: './income.component.html',
-  styleUrl: './income.component.css'
+  styleUrls: ['./income.component.css', '../shared/custom.styles.css']
 })
 export class IncomeComponent implements OnInit, OnDestroy {
-  incomeForm: FormGroup = new FormGroup({
-    from: new FormControl<string>(''),
-    date: new FormControl<string>(''),
-    amount: new FormControl<number>(0)
-  });
+  incomeForm: FormGroup = new FormGroup({});
   incomeColDefs: ColDef[] = [
-    { field: "payment_id", 
+    { field: "id", 
       headerName: "Payment Id"
     },
     { field: "from", headerName: "Received From" },
     { field: "amount", headerName: "Amount ($)" },
     { field: "date" },
     { field: "description" },
-    { field: "", 
+    { field: "Action", 
       editable: false,
       cellRenderer: DeleteEditButtonComponent
      }
@@ -36,7 +32,8 @@ export class IncomeComponent implements OnInit, OnDestroy {
     flex: 1,
     minWidth: 100,
     autoHeight: true,
-    editable: true
+    editable: true,
+    headerClass: "ag-center-aligned-header"
   }
   hideIncomeForm: boolean = true;
   incomeListSubscription: Subscription = new Subscription;

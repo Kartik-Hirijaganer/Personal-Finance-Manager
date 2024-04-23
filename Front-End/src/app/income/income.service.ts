@@ -8,21 +8,21 @@ export class IncomeService {
   public monthly_income: number = 0;
   private _income_list: Income[] = [
     {
-      payment_id: 1,
+      id: 1,
       from: 'Alex',
       date: "4-14-2024",
       amount: 10000,
       description: 'Food'
     },
     {
-      payment_id: 2,
+      id: 2,
       from: 'Carl',
       date: "4-16-2024",
       amount: 10000,
       description: 'Oil'
     },
     {
-      payment_id: 3,
+      id: 3,
       from: 'Rute',
       date: "5-14-2024",
       amount: 10000,
@@ -35,7 +35,7 @@ export class IncomeService {
 
   addIncomeEntry(from: string, date: string, amount: number, description: string): void {
     const new_income_entry: Income = {
-      payment_id: this._income_list[this._income_list.length - 1]?.payment_id + 1,
+      id: this._income_list[this._income_list.length - 1]?.id + 1,
       from,
       date,
       amount,
@@ -46,15 +46,15 @@ export class IncomeService {
     this.incomeListEvent.next(this._income_list.slice(0));
   }
 
-  deleteIncomeEntry(payment_id: number, data: Income): void {
-    const idx: number = this._income_list.findIndex(entry => entry.payment_id === payment_id);
+  deleteIncomeEntry(id: number, data: Income): void {
+    const idx: number = this._income_list.findIndex(entry => entry.id === id);
     this.monthly_income -= this._income_list[idx]?.amount || 0;
     this._income_list.splice(idx, 1);
     this.incomeListEvent.next(this._income_list.slice(0));
   }
 
   updateIncomeEntry(payload: any): void {
-    const idx: number = this._income_list.findIndex(entry => entry?.payment_id === payload?.payment_id);
+    const idx: number = this._income_list.findIndex(entry => entry?.id === payload?.id);
     this._income_list.splice(idx, 1, payload);
     this.incomeListEvent.next(this._income_list.slice(0));
     this.monthly_income = this.calculateMonthlyIncome(this._income_list);
