@@ -3,15 +3,15 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ICellRendererParams } from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
 
-import { IncomeService } from '../income/income.service';
-import { ExpenseService } from '../expense/expense.service';
+import { IncomeService } from '../../income/income.service';
+import { ExpenseService } from '../../expense/expense.service';
 
 @Component({
-  selector: 'delete-edit-btn',
-  templateUrl: './delete-edit-button.component.html',
-  styleUrl: './delete-edit-button.component.css'
+  selector: 'action',
+  templateUrl: './action.component.html',
+  styleUrl: './action.component.css'
 })
-export class DeleteEditButtonComponent implements ICellRendererAngularComp {
+export class ActionComponent implements ICellRendererAngularComp {
   private rowData: any;
   private path: string = '';
 

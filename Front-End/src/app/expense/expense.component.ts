@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ColDef, RowValueChangedEvent } from 'ag-grid-community';
+import { ColDef, RowValueChangedEvent, GridOptions } from 'ag-grid-community';
 import { Subscription } from 'rxjs';
-import { BsDatepickerConfig, BsDatepickerDirective } from 'ngx-bootstrap/datepicker';
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
 import { ExpenseService } from './expense.service';
 import { UtilService } from '../shared/util.service';
 import { Expense } from './expense.model';
-import { DeleteEditButtonComponent } from '../shared/delete-edit-button.component';
+import { ActionComponent } from '../shared/action/action.component';
 
 @Component({
   selector: 'app-expense',
@@ -19,17 +19,19 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   public hideExpenseForm: boolean = true;
   expenseColDef: ColDef[] = [
     { field: 'id', headerName: 'Expense Id' },
-    { field: 'to', headerName: 'Given To'},
-    { field: 'amount', 
+    { field: 'to', headerName: 'Given To' },
+    {
+      field: 'amount',
       headerName: 'Amount',
       valueFormatter: params => this.currencyFormatter(params.data.amount, '$')
     },
     { field: 'date', headerName: 'Date' },
     { field: 'description', headerName: 'Description (Optional)' },
-    { field: 'action', 
-      headerName: 'Action', 
+    {
+      field: 'action',
+      headerName: 'Action',
       editable: false,
-      cellRenderer: DeleteEditButtonComponent
+      cellRenderer: ActionComponent
     }
   ]
   defaultColDef = {
@@ -40,8 +42,16 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   expenseRowData: Expense[] = [];
   expenseSubscription: Subscription = new Subscription;
   bsConfig?: Partial<BsDatepickerConfig>;
+  agGridOptions: GridOptions = {
+    domLayout: 'autoHeight',
+    defaultColDef: {
+      flex: 1,
+      minWidth: 100,
+      autoHeight: true
+    }
+  }
 
-  constructor( 
+  constructor(
     public expenseService: ExpenseService,
     public util: UtilService
   ) {
@@ -54,7 +64,7 @@ export class ExpenseComponent implements OnInit, OnDestroy {
     })
   }
 
-  
+
 
   ngOnInit(): void {
     this.expenseService.monthlyExpense = this.expenseService.calculateMonthlyExpense();

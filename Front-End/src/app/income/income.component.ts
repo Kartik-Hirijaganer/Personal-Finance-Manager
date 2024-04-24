@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { ColDef, RowValueChangedEvent } from "ag-grid-community";
+import { ColDef, RowValueChangedEvent, GridOptions } from "ag-grid-community";
 import { Subscription } from 'rxjs';
 
 import { IncomeService } from './income.service';
 import { Income } from './income.model';
-import { DeleteEditButtonComponent } from '../shared/delete-edit-button.component';
+import { ActionComponent } from '../shared/action/action.component';
 
 @Component({
   selector: 'app-income',
@@ -24,16 +24,17 @@ export class IncomeComponent implements OnInit, OnDestroy {
     { field: "description" },
     { field: "Action", 
       editable: false,
-      cellRenderer: DeleteEditButtonComponent
+      cellRenderer: ActionComponent
      }
   ];
   incomeRowData: Income[] = [];
-  defaultColDef = {
-    flex: 1,
-    minWidth: 100,
-    autoHeight: true,
-    editable: true,
-    headerClass: "ag-center-aligned-header"
+  agGridOptions: GridOptions = {
+    domLayout: 'autoHeight',
+    defaultColDef: {
+      flex: 1,
+      minWidth: 100,
+      autoHeight: true
+    }
   }
   hideIncomeForm: boolean = true;
   incomeListSubscription: Subscription = new Subscription;
