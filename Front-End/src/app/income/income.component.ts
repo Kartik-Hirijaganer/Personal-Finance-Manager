@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { IncomeService } from './income.service';
 import { Income } from './income.model';
 import { ActionComponent } from '../shared/action/action.component';
+import { UtilService } from '../shared/util.service'
 
 @Component({
   selector: 'app-income',
@@ -16,10 +17,13 @@ export class IncomeComponent implements OnInit, OnDestroy {
   incomeForm: FormGroup = new FormGroup({});
   incomeColDefs: ColDef[] = [
     { field: "id", 
-      headerName: "Payment Id"
+      headerName: "Payment ID"
     },
     { field: "from", headerName: "Received From" },
-    { field: "amount", headerName: "Amount ($)" },
+    { field: "amount", 
+      headerName: "Amount",
+      valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$')
+    },
     { field: "date" },
     { field: "description" },
     { field: "Action", 
@@ -39,7 +43,10 @@ export class IncomeComponent implements OnInit, OnDestroy {
   hideIncomeForm: boolean = true;
   incomeListSubscription: Subscription = new Subscription;
 
-  constructor(public incomeService: IncomeService) { }
+  constructor(
+    public incomeService: IncomeService,
+    private util: UtilService
+  ) { }
 
   ngOnInit() {
     this.incomeForm = new FormGroup({
@@ -49,7 +56,7 @@ export class IncomeComponent implements OnInit, OnDestroy {
       'description': new FormControl('', Validators.required)
     });
     this.incomeRowData = this.incomeService.getIncomeList();
-    this.incomeService.monthly_income = this.incomeService.calculateMonthlyIncome(this.incomeRowData);
+    this.incomeService.monthly_income = this.util.calculateMonthlyTotal(this.incomeRowData);
     this.incomeListSubscription = this.incomeService.incomeListEvent.subscribe((updatedIncomeList: Income[]) => {
       this.incomeRowData = updatedIncomeList;
     })

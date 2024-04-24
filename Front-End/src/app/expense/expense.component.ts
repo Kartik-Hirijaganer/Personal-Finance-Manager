@@ -23,7 +23,7 @@ export class ExpenseComponent implements OnInit, OnDestroy {
     {
       field: 'amount',
       headerName: 'Amount',
-      valueFormatter: params => this.currencyFormatter(params.data.amount, '$')
+      valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$')
     },
     { field: 'date', headerName: 'Date' },
     { field: 'description', headerName: 'Description (Optional)' },
@@ -34,11 +34,6 @@ export class ExpenseComponent implements OnInit, OnDestroy {
       cellRenderer: ActionComponent
     }
   ]
-  defaultColDef = {
-    flex: 1,
-    minWidth: 100,
-    autoHeight: true
-  }
   expenseRowData: Expense[] = [];
   expenseSubscription: Subscription = new Subscription;
   bsConfig?: Partial<BsDatepickerConfig>;
@@ -67,7 +62,6 @@ export class ExpenseComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.expenseService.monthlyExpense = this.expenseService.calculateMonthlyExpense();
     this.expenseForm = new FormGroup({
       id: new FormControl<number | null>(null),
       to: new FormControl<string>('', Validators.required),
@@ -76,6 +70,7 @@ export class ExpenseComponent implements OnInit, OnDestroy {
       description: new FormControl<string>('')
     });
     this.expenseRowData = this.expenseService.expenses;
+    this.expenseService.monthlyExpense = this.util.calculateMonthlyTotal(this.expenseRowData);
     this.expenseSubscription = this.expenseService.expenseEvent.subscribe((updatedExpense: Expense[]) => {
       this.expenseRowData = updatedExpense;
     })
@@ -87,12 +82,6 @@ export class ExpenseComponent implements OnInit, OnDestroy {
 
   addExpense() {
     this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
-  }
-
-  currencyFormatter(currency: number, sign: string) {
-    var sansDec = currency.toFixed(0);
-    var formatted = sansDec.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return sign + `${formatted}`;
   }
 
   onSubmit(): void {
