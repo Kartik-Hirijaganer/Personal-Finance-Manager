@@ -2,9 +2,9 @@
   <div class="row">
     <div class="col-lg-10">
       <div class="p-3" style="text-align: center;">
-        <span><img class="dashboard-logo" src="../../assets/imgs/balance.svg"></span>
+        <span><img class="dashboard-logo" src="../../assets/imgs/dashboard_income.svg"></span>
         <br>
-        Current Balance<br>
+        Monthly Income<br>
         $ {{incomeService.monthly_income}}
       </div>
     </div>
@@ -52,11 +52,11 @@
   <p class="fw-light fst-italic">To edit an row just double click on it</p>
   <ag-grid-angular 
   class="ag-theme-quartz" 
-  style="height:300px; width: 100%;" 
+  style="height:100%; width: 100%;" 
   [rowData]="incomeRowData" 
   [columnDefs]="incomeColDefs"
   [pagination]=true
-  [defaultColDef]="defaultColDef"
+  [gridOptions]="agGridOptions"
   editType="fullRow"
   (rowValueChanged)="onRowValueChanged($event)"
   >

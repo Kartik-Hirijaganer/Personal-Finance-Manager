@@ -1,47 +1,52 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { ColDef, RowValueChangedEvent } from "ag-grid-community";
+import { ColDef, RowValueChangedEvent, GridOptions } from "ag-grid-community";
 import { Subscription } from 'rxjs';
 
 import { IncomeService } from './income.service';
 import { Income } from './income.model';
-import { DeleteEditButtonComponent } from '../shared/delete-edit-button.component';
+import { ActionComponent } from '../shared/action/action.component';
+import { UtilService } from '../shared/util.service'
 
 @Component({
   selector: 'app-income',
   templateUrl: './income.component.html',
-  styleUrl: './income.component.css'
+  styleUrls: ['./income.component.css', '../shared/custom.styles.css']
 })
 export class IncomeComponent implements OnInit, OnDestroy {
-  incomeForm: FormGroup = new FormGroup({
-    from: new FormControl<string>(''),
-    date: new FormControl<string>(''),
-    amount: new FormControl<number>(0)
-  });
+  incomeForm: FormGroup = new FormGroup({});
   incomeColDefs: ColDef[] = [
-    { field: "payment_id", 
-      headerName: "Payment Id"
+    { field: "id", 
+      headerName: "Payment ID"
     },
     { field: "from", headerName: "Received From" },
-    { field: "amount", headerName: "Amount ($)" },
+    { field: "amount", 
+      headerName: "Amount",
+      valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$')
+    },
     { field: "date" },
     { field: "description" },
-    { field: "", 
+    { field: "Action", 
       editable: false,
-      cellRenderer: DeleteEditButtonComponent
+      cellRenderer: ActionComponent
      }
   ];
   incomeRowData: Income[] = [];
-  defaultColDef = {
-    flex: 1,
-    minWidth: 100,
-    autoHeight: true,
-    editable: true
+  agGridOptions: GridOptions = {
+    domLayout: 'autoHeight',
+    defaultColDef: {
+      flex: 1,
+      minWidth: 100,
+      autoHeight: true
+    }
   }
   hideIncomeForm: boolean = true;
   incomeListSubscription: Subscription = new Subscription;
 
-  constructor(public incomeService: IncomeService) { }
+  constructor(
+    public incomeService: IncomeService,
+    private util: UtilService
+  ) { }
 
   ngOnInit() {
     this.incomeForm = new FormGroup({
@@ -51,6 +56,7 @@ export class IncomeComponent implements OnInit, OnDestroy {
       'description': new FormControl('', Validators.required)
     });
     this.incomeRowData = this.incomeService.getIncomeList();
+    this.incomeService.monthly_income = this.util.calculateMonthlyTotal(this.incomeRowData);
     this.incomeListSubscription = this.incomeService.incomeListEvent.subscribe((updatedIncomeList: Income[]) => {
       this.incomeRowData = updatedIncomeList;
     })
