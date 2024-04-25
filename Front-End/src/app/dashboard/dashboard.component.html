@@ -1,10 +1,10 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col mb-2 d-flex flex-row-reverse mt-3">
-      <button type="button" class="btn btn-info">PDF</button>
+      <button type="button" class="btn btn-info btn-sm" style="text-align: center; width: 50px;">PDF</button>
     </div>
   </div>
-  <div class="row">
+  <div class="row mb-2">
     <div class="col border col-lg-3 bg-white me-2 p-3" style="text-align: center; max-width: 300px;">
         <span><img class="dashboard-logo" src="../../assets/imgs/balance.svg"></span>
         <br>
@@ -27,19 +27,14 @@
         $ 5,000.00
     </div>
   </div>
-  <div class="row">
-    <div class="col me-2 p-3">
-      <div>Balance and Liabilities</div>
-    </div>
-  </div>
-  <div class="row">
+  <div class="row pb-3">
     <div class="col col-lg-9 border bg-white me-2" style="max-width: 916px;">
       <ag-charts-angular [options]="chartOptions"></ag-charts-angular>
     </div>
-    <div class="col col-lg-3 border bg-white p-3" style="text-align: center; max-width: 300px;">
-      <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-liabilities.svg"></span>
-      <br>Liabilities<br>
-      $ 5,000.00
+    <div class="col col-lg-3 border bg-white p-3" style="text-align: center; max-width: 300px; max-height: 270px;">
+        <span><img class="dashboard-logo" src="../../assets/imgs/account.svg"></span>
+        <br>Accounts<br>
+        TODO
     </div>
   </div>
 </div>
