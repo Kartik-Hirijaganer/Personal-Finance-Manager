@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AgGridModule } from 'ag-grid-angular';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { AgChartsAngular } from 'ag-charts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -28,7 +29,8 @@ import { LiabilityComponent } from './liability/liability.component';
     AppRoutingModule,
     ReactiveFormsModule,
     AgGridModule,
-    BsDatepickerModule.forRoot()
+    BsDatepickerModule.forRoot(),
+    AgChartsAngular
   ],
   providers: [],
   bootstrap: [AppComponent]
