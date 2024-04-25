@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { Expense } from './expense.model';
+import { UtilService } from '../shared/util.service';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +41,8 @@ export class ExpenseService {
   public monthlyExpense: number = 0;
   public expenseEvent: Subject<Expense[]> = new Subject<Expense[]>();
 
+  constructor ( private util: UtilService ) {}
+
   addExpense(expense: Expense): void {
     const id: number = (this.expenseList[this.expenseList.length - 1]?.id || 0) + 1;
     expense.id = id;
@@ -60,17 +63,7 @@ export class ExpenseService {
     const idx: number = this.expenseList.findIndex(expense => expense?.id === id);
     this.expenseList = this.expenseList.splice(idx, 0, newExpense);
     this.expenseEvent.next(this.expenseList.slice(0));
-    this.monthlyExpense = this.calculateMonthlyExpense();
-  }
-
-  calculateMonthlyExpense(): number {
-    let total_expense: number = 0;
-    for (const expense of this.expenseList) {
-      if (expense?.amount) {
-        total_expense += expense.amount;
-      }
-    }
-    return total_expense;
+    this.monthlyExpense = this.util.calculateMonthlyTotal(this.expenseList);
   }
 
   get expenses(): Expense[] {

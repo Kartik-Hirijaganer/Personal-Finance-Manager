@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
 
 import { Income } from "./income.model";
+import { UtilService } from "../shared/util.service";
 
 @Injectable({ providedIn: 'root' })
 export class IncomeService {
@@ -31,7 +32,7 @@ export class IncomeService {
   ];
   public incomeListEvent: Subject<Income[]> = new Subject<Income[]>();
 
-  constructor() { }
+  constructor( private util: UtilService ) { }
 
   addIncomeEntry(from: string, date: string, amount: number, description: string): void {
     const new_income_entry: Income = {
@@ -57,18 +58,10 @@ export class IncomeService {
     const idx: number = this._income_list.findIndex(entry => entry?.id === payload?.id);
     this._income_list.splice(idx, 1, payload);
     this.incomeListEvent.next(this._income_list.slice(0));
-    this.monthly_income = this.calculateMonthlyIncome(this._income_list);
+    this.monthly_income = this.util.calculateMonthlyTotal(this._income_list);
   }
 
   getIncomeList(): Income[] {
     return this._income_list.slice(0);
-  }
-
-  calculateMonthlyIncome(incomeList: Income[]): number {
-    let monthlyIncome: number = 0;
-    for (const income of incomeList) {
-      monthlyIncome += income && income?.amount;
-    }
-    return monthlyIncome;
   }
 }
