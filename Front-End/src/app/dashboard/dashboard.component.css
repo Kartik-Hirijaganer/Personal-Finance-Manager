@@ -3,3 +3,7 @@
   max-width: 50px;
   margin-left: 5px;
 }
+.dashboard-hover:hover {
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  cursor: pointer;
+}

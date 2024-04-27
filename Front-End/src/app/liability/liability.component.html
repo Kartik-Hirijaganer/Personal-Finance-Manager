@@ -21,6 +21,9 @@
             <label for="name" class="form-label">Liability:</label>
             <input type="text" class="form-control" id="name" formControlName="name"
               placeholder="Enter source of liability">
+            <span class="help-block text-danger"
+              *ngIf="!liabilityForm.get('name')?.valid && (liabilityForm.get('name')?.touched || liabilityForm.get('name')?.dirty)">Please
+              enter a valid name</span>
           </div>
         </div>
       </div>
@@ -29,6 +32,9 @@
           <div class="mb-3">
             <label for="amount" class="form-label">Amount:</label>
             <input type="number" class="form-control" formControlName="amount" id="amount">
+            <span class="help-block text-danger"
+              *ngIf="!liabilityForm.get('amount')?.valid && (liabilityForm.get('amount')?.touched || liabilityForm.get('amount')?.dirty)">Please
+              enter a valid amount</span>
           </div>
         </div>
         <div class="col-lg-3">
@@ -36,6 +42,9 @@
           <div class="input-group">
             <input type="text" placeholder="mm-dd-yyyy" class="form-control" bsDatepicker [bsConfig]="bsConfig"
               id="due_date" formControlName="due_date">
+            <span class="help-block text-danger"
+            *ngIf="!liabilityForm.get('due_date')?.valid && (liabilityForm.get('due_date')?.touched || liabilityForm.get('due_date')?.dirty)"
+            >Please enter a valid date</span>
           </div>
         </div>
       </div>

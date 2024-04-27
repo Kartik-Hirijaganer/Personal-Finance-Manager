@@ -21,6 +21,8 @@
             <label for="received_from" class="form-label">Received From:</label>
             <input type="text" class="form-control" id="received_from" formControlName="from"
               placeholder="Enter source of income">
+            <span class="help-block text-danger"
+            *ngIf="!incomeForm.get('from')?.valid && (incomeForm.get('from')?.touched || incomeForm.get('from')?.dirty)">Please enter a valid input</span>
           </div>
         </div>
       </div>
@@ -29,12 +31,18 @@
           <div class="mb-3">
             <label for="amount" class="form-label">Amount:</label>
             <input type="number" class="form-control" formControlName="amount" id="amount">
+            <span class="help-block text-danger"
+              *ngIf="!incomeForm.get('amount')?.valid && (incomeForm.get('amount')?.touched || incomeForm.get('amount')?.dirty)">Please
+              enter a valid amount</span>
           </div>
         </div>
         <div class="col-lg-3">
           <div class="mb-3">
             <label for="received_date" class="form-label">Received Date:</label>
-            <input type="text" class="form-control" id="received_date" formControlName="date" placeholder="TODO">
+            <input type="text" class="form-control" id="received_date" formControlName="date" placeholder="dd/mm/yyyy">
+            <span class="help-block text-danger"
+              *ngIf="!incomeForm.get('date')?.valid && (incomeForm.get('date')?.touched || incomeForm.get('date')?.dirty)">Please
+              enter a valid date</span>
           </div>
         </div>
       </div>
