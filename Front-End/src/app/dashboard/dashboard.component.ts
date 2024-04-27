@@ -10,6 +10,7 @@ import { AgChartOptions, PixelSize, AgChartTheme } from "ag-charts-community";
 export class DashboardComponent {
 
   public chartOptions: AgChartOptions;
+  public showShadow: boolean = false;
 
   constructor() {
     this.chartOptions = {

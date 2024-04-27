@@ -50,10 +50,10 @@ export class IncomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.incomeForm = new FormGroup({
-      'from': new FormControl('', Validators.required),
-      'date': new FormControl('', Validators.required),
-      'amount': new FormControl(null, Validators.required),
-      'description': new FormControl('', Validators.required)
+      'from': new FormControl<string>('', Validators.required),
+      'date': new FormControl<string>('', Validators.required),
+      'amount': new FormControl<number>(0, Validators.required),
+      'description': new FormControl<string | null>('')
     });
     this.incomeRowData = this.incomeService.getIncomeList();
     this.incomeService.monthly_income = this.util.calculateMonthlyTotal(this.incomeRowData);

@@ -63,17 +63,16 @@ export class ExpenseComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.expenseForm = new FormGroup({
-      id: new FormControl<number | null>(null),
       to: new FormControl<string>('', Validators.required),
       date: new FormControl<Date>(new Date(), Validators.required),
-      amount: new FormControl<number>(0, Validators.required),
-      description: new FormControl<string>('')
+      amount: new FormControl<number>(0, [ Validators.required ]),
+      description: new FormControl<string | null>('')
     });
     this.expenseRowData = this.expenseService.expenses;
     this.expenseService.monthlyExpense = this.util.calculateMonthlyTotal(this.expenseRowData);
     this.expenseSubscription = this.expenseService.expenseEvent.subscribe((updatedExpense: Expense[]) => {
       this.expenseRowData = updatedExpense;
-    })
+    })    
   }
 
   onRowValueChanged(event: RowValueChangedEvent) {
