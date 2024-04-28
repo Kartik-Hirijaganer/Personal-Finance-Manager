@@ -1,14 +1,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ObjectId = mongoose.Schema.ObjectId;
 
-const ExpenseSchema = new Schema({
+const IncomeSchema = new Schema({
   id: {
     type: String,
     required: true,
     unique: true
   },
-  to: {
+  from: {
     type: String,
     required: true
   },
@@ -18,14 +17,13 @@ const ExpenseSchema = new Schema({
   },
   amount: {
     type: Number,
-    required: true,
-    min: [0, 'not a positive number']
+    required: true
   },
   description: {
     type: String,
-    required: false
+    required: true
   }
 });
 
-const Expense = mongoose.model('expense', ExpenseSchema);
-module.exports = Expense;
+const Income = mongoose.model('income', IncomeSchema)
+module.exports = Income;
