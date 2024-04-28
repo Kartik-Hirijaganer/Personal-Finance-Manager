@@ -7,21 +7,23 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const util = require('../shared/util');
-const expenseController = require('./expense.service');
+const expenseService = require('./expense.service');
 
 /** Middlewares */
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
+
 util.connectDB();
 
 /** APIs */
-app.get('/expense/:id', expenseController.getExpense);
+app.get('/expense/:id', expenseService.getExpense);
 
-app.post('/expense/add', expenseController.addNewExpense);
+app.post('/expense/add', expenseService.addNewExpense);
 
-app.put('/expense/update/:id', expenseController.updateExpense);
+app.put('/expense/update/:id', expenseService.updateExpense);
 
-app.delete('/expense/delete/:id', expenseController.deleteExpense);
+app.delete('/expense/delete/:id', expenseService.deleteExpense);
 
 app.listen(process.env.EXPENSE_PORT, () => {
   console.log('Expense running');

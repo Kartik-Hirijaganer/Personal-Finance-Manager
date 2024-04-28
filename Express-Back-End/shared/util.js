@@ -16,7 +16,7 @@ const connectDB = async () => {
   console.log('connected to DB');
 }
 
-const generateID = (input) => {
+const generateID = () => {
   return uuidv4();
 }
 
