@@ -45,7 +45,7 @@ const updateIncome = async (req, res) => {
     }
     await Income.findOneAndUpdate(query, updatedIncome);
   } catch (err) {
-    const errorMessage = 'Failed to update data';
+    const errorMessage = 'Failed to update income data';
     if (err instanceof RecordNotFoundError) {
       return res.status(200).send({ errorMessage, err });
     }

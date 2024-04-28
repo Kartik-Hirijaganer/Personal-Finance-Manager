@@ -45,7 +45,7 @@ const updateExpense = async (req, res) => {
     }
     await Expense.findOneAndUpdate(query, updatedExpense);
   } catch (err) {
-    const errorMessage = 'Failed to update data';
+    const errorMessage = 'Failed to update expense data';
     if (err instanceof RecordNotFoundError) {
       return res.status(200).send({ errorMessage, err });
     }
@@ -62,7 +62,7 @@ const deleteExpense = async (req, res) => {
     await Expense.findOneAndDelete(query);
   } catch (err) {
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage: 'Failed to delete income data', error });
+    return res.status(200).send({ errorMessage: 'Failed to delete expense data', error });
   }
   return res.status(200).send({ expenseId: id });
 }
