@@ -26,5 +26,5 @@ app.put('/expense/update/:id', expenseService.updateExpense);
 app.delete('/expense/delete/:id', expenseService.deleteExpense);
 
 app.listen(process.env.EXPENSE_PORT, () => {
-  console.log('Expense running');
+  console.log('Expense running on port', process.env.EXPENSE_PORT);
 })
