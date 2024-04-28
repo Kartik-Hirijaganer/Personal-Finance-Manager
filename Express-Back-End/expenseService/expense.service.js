@@ -15,7 +15,7 @@ const getExpense = async (req, res) => {
     }
   } catch (err) {
     const error =  new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage: 'Failed to get data', error });
+    return res.status(200).send({ errorMessage: 'Failed to get expense data', error });
   }
   return res.status(200).send({ expenses });
 }
@@ -28,7 +28,7 @@ const addNewExpense = async (req, res) => {
     await new_expense.save();
   } catch (err) {
     const error = new DatabaseError(err.message);
-    return res.status(400).send({ errorMessage: 'Failed to save data', error });
+    return res.status(400).send({ errorMessage: 'Failed to save expense data', error });
   }
   return res.status(200).send({ expenseId: expenseId.toString() });
 }
@@ -41,7 +41,7 @@ const updateExpense = async (req, res) => {
   try {
     const expense = await Expense.findOne(query);
     if (!expense) {
-      throw new RecordNotFoundError(`Expense record with id: ${id} not found`)
+      throw new RecordNotFoundError(`Expense record with id: ${id} not found`);
     }
     await Expense.findOneAndUpdate(query, updatedExpense);
   } catch (err) {
@@ -62,7 +62,7 @@ const deleteExpense = async (req, res) => {
     await Expense.findOneAndDelete(query);
   } catch (err) {
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage: 'Failed to delete data', error });
+    return res.status(200).send({ errorMessage: 'Failed to delete income data', error });
   }
   return res.status(200).send({ expenseId: id });
 }
