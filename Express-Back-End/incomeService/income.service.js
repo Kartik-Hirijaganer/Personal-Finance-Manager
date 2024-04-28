@@ -2,6 +2,7 @@
 
 const util = require('../shared/util');
 const Income = require('./income.model');
+const { DatabaseError, RecordNotFoundError } = require('../shared/errors');
 
 const getIncome = async (req, res) => {
   let incomes = [];
@@ -12,11 +13,11 @@ const getIncome = async (req, res) => {
     } else {
       incomes = await Income.find();
     }
-  } catch (error) {
-    console.log(error);
-    res.status(400).send('Failed to get data');
+  } catch (err) {
+    const error = new DatabaseError(err.message);
+    return res.status(200).send({ errorMessage: 'Failed to get income data', error });
   }
-  res.status(200).send({ incomes });
+  return res.status(200).send({ incomes });
 }
 
 const addNewIncome = async (req, res) => {
@@ -25,11 +26,11 @@ const addNewIncome = async (req, res) => {
   const new_income = new Income({ id: incomeId, from, date, amount: parseInt(amount), description });
   try {
     await new_income.save();
-  } catch (error) {
-    console.log(error);
-    res.status(400).send('Failed to save data');
+  } catch (err) {
+    const error = new DatabaseError(err.message);
+    return res.status(400).send({ errorMessage: 'Failed to save income data', error });
   }
-  res.status(200).send({ incomeId: incomeId.toString() });
+  return res.status(200).send({ incomeId: incomeId.toString() });
 }
 
 const updateIncome = async (req, res) => {
@@ -38,12 +39,20 @@ const updateIncome = async (req, res) => {
   const { from, date, amount, description } = req.body;
   const updatedIncome = { id, from, date, amount: parseInt(amount), description };
   try {
+    const income = Income.findOne(query);
+    if (!income) {
+      throw new RecordNotFoundError(`Income record with id: ${id} not found`);
+    }
     await Income.findOneAndUpdate(query, updatedIncome);
-  } catch (error) {
-    console.log(error);
-    res.status(400).send('Failed to update data');
+  } catch (err) {
+    const errorMessage = 'Failed to update income data';
+    if (err instanceof RecordNotFoundError) {
+      return res.status(200).send({ errorMessage, err });
+    }
+    const error = new DatabaseError(err.message);
+    return res.status(200).send({ errorMessage, error });
   }
-  res.status(200).send({ incomeId: id });
+  return res.status(200).send({ incomeId: id });
 }
 
 const deleteIncome = async (req, res) => {
@@ -51,11 +60,11 @@ const deleteIncome = async (req, res) => {
   const query = { id };
   try {
     await Income.findOneAndDelete(query);
-  } catch (error) {
-    console.log(error);
-    res.status(400).send('Failed to delete data');
+  } catch (err) {
+    const error = new DatabaseError(err.message);
+    return res.status(200).send({ errorMessage: 'Failed to delete income data', error });
   }
-  res.status(200).send({ incomeId: id });
+  return res.status(200).send({ incomeId: id });
 }
 
 module.exports = {
