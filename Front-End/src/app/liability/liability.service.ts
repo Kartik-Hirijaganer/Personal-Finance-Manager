@@ -54,7 +54,7 @@ export class LiabilityService {
 
   deleteLiability(id: number): void {
     const idx: number = this.liabilityList.findIndex(liability => liability?.id === id);
-    this.monthlyLiability -= this.liabilityList[idx]?.amount;
+    this.monthlyLiability -= this.liabilityList[idx]?.amount || 0;
     this.liabilityList.splice(idx, 1);
     this.liabilityEvent.next(this.liabilityList.slice(0));
   }

@@ -41,10 +41,10 @@ export class ActionComponent implements ICellRendererAngularComp {
     if (action === 'delete') {
       if (this.path === 'expenses') {
         this.expenseService.deleteExpense(id);
-      } else if (this.path === 'expenses') {
-        this.incomeService.deleteIncome(id, entry);
+      } else if (this.path === 'incomes') {
+        this.incomeService.deleteIncome(id);
       } else {
-        
+        this.liabilityService.deleteLiability(id);
       }
     }
 

@@ -54,7 +54,7 @@ export class ExpenseService {
 
   deleteExpense(id: number): void {
     const idx: number = this.expenseList.findIndex(expense => expense?.id === id);
-    this.monthlyExpense -= this.expenseList[idx]?.amount;
+    this.monthlyExpense -= this.expenseList[idx]?.amount || 0;
     this.expenseList.splice(idx, 1);
     this.expenseEvent.next(this.expenseList.slice(0));
   }

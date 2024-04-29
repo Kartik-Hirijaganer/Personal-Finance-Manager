@@ -7,7 +7,7 @@ import { UtilService } from "../shared/util.service";
 @Injectable({ providedIn: 'root' })
 export class IncomeService {
   public monthly_income: number = 0;
-  private _income_list: Income[] = [
+  private incomeList: Income[] = [
     {
       id: 1,
       from: 'Alex',
@@ -37,32 +37,32 @@ export class IncomeService {
 
   addIncome(from: string, date: string, amount: number, description: string): void {
     const new_income_entry: Income = {
-      id: this._income_list[this._income_list.length - 1]?.id + 1,
+      id: this.incomeList[this.incomeList.length - 1]?.id + 1,
       from,
       date,
       amount,
       description
     }
-    this._income_list.push(new_income_entry);
+    this.incomeList.push(new_income_entry);
     this.monthly_income += amount;
-    this.incomeListEvent.next(this._income_list.slice(0));
+    this.incomeListEvent.next(this.incomeList.slice(0));
   }
 
-  deleteIncome(id: number, data: Income): void {
-    const idx: number = this._income_list.findIndex(entry => entry.id === id);
-    this.monthly_income -= this._income_list[idx]?.amount || 0;
-    this._income_list.splice(idx, 1);
-    this.incomeListEvent.next(this._income_list.slice(0));
+  deleteIncome(id: number): void {
+    const idx: number = this.incomeList.findIndex(income => income?.id === id);
+    this.monthly_income -= this.incomeList[idx]?.amount || 0;
+    this.incomeList.splice(idx, 1);
+    this.incomeListEvent.next(this.incomeList.slice(0));
   }
 
   updateIncome(income: Income): void {
-    const idx: number = this._income_list.findIndex(entry => entry?.id === income?.id);
-    this._income_list.splice(idx, 1, income);
-    this.incomeListEvent.next(this._income_list.slice(0));
-    this.monthly_income = this.util.calculateMonthlyTotal(this._income_list);
+    const idx: number = this.incomeList.findIndex(entry => entry?.id === income?.id);
+    this.incomeList.splice(idx, 1, income);
+    this.incomeListEvent.next(this.incomeList.slice(0));
+    this.monthly_income = this.util.calculateMonthlyTotal(this.incomeList);
   }
 
   getIncomeList(): Income[] {
-    return this._income_list.slice(0);
+    return this.incomeList.slice(0);
   }
 }
