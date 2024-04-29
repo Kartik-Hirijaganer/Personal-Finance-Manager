@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ColDef, RowValueChangedEvent, GridOptions } from 'ag-grid-community';
+import { ColDef, GridOptions, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { Subscription } from 'rxjs';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
@@ -17,16 +17,18 @@ import { ActionComponent } from '../shared/action/action.component';
 export class ExpenseComponent implements OnInit, OnDestroy {
   public expenseForm: FormGroup = new FormGroup({})
   public hideExpenseForm: boolean = true;
+  private gridApi!: GridApi;
   expenseColDef: ColDef[] = [
-    { field: 'id', headerName: 'Expense Id' },
-    { field: 'to', headerName: 'Given To' },
+    { field: 'id', headerName: 'Expense Id', editable: false },
+    { field: 'to', headerName: 'Given To', colId: 'to', editable: true },
     {
       field: 'amount',
       headerName: 'Amount',
-      valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$')
+      valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$'),
+      editable: true
     },
-    { field: 'date', headerName: 'Date' },
-    { field: 'description', headerName: 'Description (Optional)' },
+    { field: 'date', headerName: 'Date', editable: true },
+    { field: 'description', headerName: 'Description (Optional)', editable: true },
     {
       field: 'action',
       headerName: 'Action',
@@ -35,7 +37,8 @@ export class ExpenseComponent implements OnInit, OnDestroy {
     }
   ]
   expenseRowData: Expense[] = [];
-  expenseSubscription: Subscription = new Subscription;
+  private expenseSubscription: Subscription = new Subscription;
+  private expenseRowSubscription: Subscription = new Subscription;
   bsConfig?: Partial<BsDatepickerConfig>;
   agGridOptions: GridOptions = {
     domLayout: 'autoHeight',
@@ -59,28 +62,38 @@ export class ExpenseComponent implements OnInit, OnDestroy {
     })
   }
 
-
-
   ngOnInit(): void {
     this.expenseForm = new FormGroup({
       to: new FormControl<string>('', Validators.required),
       date: new FormControl<Date>(new Date(), Validators.required),
-      amount: new FormControl<number>(0, [ Validators.required ]),
+      amount: new FormControl<number>(0, [Validators.required]),
       description: new FormControl<string | null>('')
     });
     this.expenseRowData = this.expenseService.expenses;
     this.expenseService.monthlyExpense = this.util.calculateMonthlyTotal(this.expenseRowData);
     this.expenseSubscription = this.expenseService.expenseEvent.subscribe((updatedExpense: Expense[]) => {
       this.expenseRowData = updatedExpense;
-    })    
-  }
-
-  onRowValueChanged(event: RowValueChangedEvent) {
-    this.expenseService.updateExpense(event?.data);
+    })
+    this.expenseRowSubscription = this.expenseService.expenseEditEvent.subscribe(({action, idx, payload}) => {
+      if (action === 'edit') {
+        this.gridApi.setFocusedCell(idx, "to");
+        this.gridApi.startEditingCell({
+          rowIndex: idx,
+          colKey: "to",
+        });
+      } else {
+        this.gridApi.stopEditing();
+        this.expenseService.updateExpense(payload as Expense);
+      }
+    })
   }
 
   addExpense() {
     this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
+  }
+
+  onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
   }
 
   onSubmit(): void {
@@ -92,5 +105,6 @@ export class ExpenseComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.expenseSubscription.unsubscribe();
+    this.expenseRowSubscription.unsubscribe();
   }
 }

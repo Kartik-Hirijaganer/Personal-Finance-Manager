@@ -31,10 +31,11 @@ export class IncomeService {
     }
   ];
   public incomeListEvent: Subject<Income[]> = new Subject<Income[]>();
+  public incomeEditEvent: Subject<{ action: string, idx: number, payload?: Income }> = new Subject<{ action: string, idx: number, payload?: Income }>();
 
   constructor( private util: UtilService ) { }
 
-  addIncomeEntry(from: string, date: string, amount: number, description: string): void {
+  addIncome(from: string, date: string, amount: number, description: string): void {
     const new_income_entry: Income = {
       id: this._income_list[this._income_list.length - 1]?.id + 1,
       from,
@@ -47,16 +48,16 @@ export class IncomeService {
     this.incomeListEvent.next(this._income_list.slice(0));
   }
 
-  deleteIncomeEntry(id: number, data: Income): void {
+  deleteIncome(id: number, data: Income): void {
     const idx: number = this._income_list.findIndex(entry => entry.id === id);
     this.monthly_income -= this._income_list[idx]?.amount || 0;
     this._income_list.splice(idx, 1);
     this.incomeListEvent.next(this._income_list.slice(0));
   }
 
-  updateIncomeEntry(payload: any): void {
-    const idx: number = this._income_list.findIndex(entry => entry?.id === payload?.id);
-    this._income_list.splice(idx, 1, payload);
+  updateIncome(income: Income): void {
+    const idx: number = this._income_list.findIndex(entry => entry?.id === income?.id);
+    this._income_list.splice(idx, 1, income);
     this.incomeListEvent.next(this._income_list.slice(0));
     this.monthly_income = this.util.calculateMonthlyTotal(this._income_list);
   }

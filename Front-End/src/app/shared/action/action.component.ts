@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { IncomeService } from '../../income/income.service';
 import { ExpenseService } from '../../expense/expense.service';
+import { LiabilityService } from '../../liability/liability.service';
 
 @Component({
   selector: 'action',
@@ -14,10 +15,12 @@ import { ExpenseService } from '../../expense/expense.service';
 export class ActionComponent implements ICellRendererAngularComp {
   private rowData: any;
   private path: string = '';
+  public showEdit: boolean = true;
 
   constructor( 
     private incomeService: IncomeService,
     private expenseService: ExpenseService,
+    private liabilityService: LiabilityService,
     private route: ActivatedRoute
   ) {}
 
@@ -38,8 +41,22 @@ export class ActionComponent implements ICellRendererAngularComp {
     if (action === 'delete') {
       if (this.path === 'expenses') {
         this.expenseService.deleteExpense(id);
+      } else if (this.path === 'expenses') {
+        this.incomeService.deleteIncome(id, entry);
+      } else {
+        
       }
-      this.incomeService.deleteIncomeEntry(id, entry);
+    }
+
+    if (action === 'edit' || action === 'save') {
+      this.showEdit = !this.showEdit;
+      if (this.path === 'expenses') {
+        this.expenseService.expenseEditEvent.next({ action, idx: this.rowData?.rowIndex, payload: this.rowData?.data });
+      } else if (this.path === 'incomes') {
+        this.incomeService.incomeEditEvent.next({ action, idx: this.rowData?.rowIndex, payload: this.rowData?.data });
+      } else {
+        this.liabilityService.liabilityEditEvent.next({ action, idx: this.rowData?.rowIndex, payload: this.rowData?.data });
+      }
     }
   }
 

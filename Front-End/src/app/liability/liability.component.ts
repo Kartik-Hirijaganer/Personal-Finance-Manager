@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ColDef, RowValueChangedEvent, GridOptions } from 'ag-grid-community';
+import { ColDef, GridReadyEvent, GridOptions, GridApi } from 'ag-grid-community';
 import { Subscription } from 'rxjs';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
@@ -18,15 +18,16 @@ export class LiabilityComponent implements OnInit, OnDestroy {
   public liabilityForm: FormGroup = new FormGroup({})
   public hideLiabilityForm: boolean = true;
   liabilityColDef: ColDef[] = [
-    { field: 'id', headerName: 'Liability ID' },
-    { field: 'name', headerName: 'Liability' },
+    { field: 'id', headerName: 'Liability ID', editable: false },
+    { field: 'name', headerName: 'Liability', editable: true },
     {
       field: 'amount',
       headerName: 'Amount',
-      valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$')
+      valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$'),
+      editable: true
     },
-    { field: 'due_date', headerName: 'Due Date' },
-    { field: 'description', headerName: 'Description (Optional)' },
+    { field: 'due_date', headerName: 'Due Date', editable: true },
+    { field: 'description', headerName: 'Description (Optional)', editable: true },
     {
       field: 'action',
       headerName: 'Action',
@@ -35,7 +36,9 @@ export class LiabilityComponent implements OnInit, OnDestroy {
     }
   ]
   liabilityRowData: Liability[] = [];
-  liabilitySubscription: Subscription = new Subscription;
+  private liabilitySubscription: Subscription = new Subscription;
+  private liabilityRowSubscription: Subscription = new Subscription;
+  private gridApi!: GridApi;
   bsConfig?: Partial<BsDatepickerConfig>;
   agGridOptions: GridOptions = {
     domLayout: 'autoHeight',
@@ -59,8 +62,6 @@ export class LiabilityComponent implements OnInit, OnDestroy {
     })
   }
 
-
-
   ngOnInit(): void {
     this.liabilityForm = new FormGroup({
       id: new FormControl<number | null>(null),
@@ -70,20 +71,31 @@ export class LiabilityComponent implements OnInit, OnDestroy {
       description: new FormControl<string>('')
     });
     this.liabilityRowData = this.liabilityService.liabilities;
-    console.log(this.liabilityRowData);
     
     this.liabilityService.monthlyLiability = this.util.calculateMonthlyTotal(this.liabilityRowData);
     this.liabilitySubscription = this.liabilityService.liabilityEvent.subscribe((updatedLiability: Liability[]) => {
       this.liabilityRowData = updatedLiability;
     })
-  }
-
-  onRowValueChanged(event: RowValueChangedEvent) {
-    this.liabilityService.updateLiability(event?.data);
+    this.liabilityRowSubscription = this.liabilityService.liabilityEditEvent.subscribe(({ action, idx, payload }) => {
+      if (action === 'edit') {
+        this.gridApi.setFocusedCell(idx, "name");
+        this.gridApi.startEditingCell({
+          rowIndex: idx,
+          colKey: "name",
+        });
+      } else {
+        this.gridApi.stopEditing();
+        this.liabilityService.updateLiability(payload as Liability);
+      }
+    })
   }
 
   addLiability() {
     this.hideLiabilityForm = this.util.toggle(this.hideLiabilityForm);
+  }
+
+  onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
   }
 
   onSubmit(): void {
@@ -95,5 +107,6 @@ export class LiabilityComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.liabilitySubscription.unsubscribe();
+    this.liabilityRowSubscription.unsubscribe();
   }
 }

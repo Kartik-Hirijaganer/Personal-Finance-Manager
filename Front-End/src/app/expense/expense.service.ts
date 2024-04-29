@@ -40,6 +40,7 @@ export class ExpenseService {
   ]
   public monthlyExpense: number = 0;
   public expenseEvent: Subject<Expense[]> = new Subject<Expense[]>();
+  public expenseEditEvent: Subject<{ action: string, idx: number, payload?: Expense }> = new Subject<{ action: string, idx: number, payload?: Expense }>();
 
   constructor ( private util: UtilService ) {}
 
@@ -58,10 +59,10 @@ export class ExpenseService {
     this.expenseEvent.next(this.expenseList.slice(0));
   }
 
-  updateExpense(newExpense: Expense): void {
-    const id: number = newExpense.id;
+  updateExpense(expense: Expense): void {
+    const id: number = expense.id;
     const idx: number = this.expenseList.findIndex(expense => expense?.id === id);
-    this.expenseList = this.expenseList.splice(idx, 0, newExpense);
+    this.expenseList.splice(idx, 1, expense);
     this.expenseEvent.next(this.expenseList.slice(0));
     this.monthlyExpense = this.util.calculateMonthlyTotal(this.expenseList);
   }

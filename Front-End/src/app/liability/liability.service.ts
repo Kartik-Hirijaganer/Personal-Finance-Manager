@@ -40,6 +40,7 @@ export class LiabilityService {
   ]
   public monthlyLiability: number = 0;
   public liabilityEvent: Subject<Liability[]> = new Subject<Liability[]>();
+  public liabilityEditEvent: Subject<{ action: string, idx: number, payload?: Liability }> = new Subject<{ action: string, idx: number, payload?: Liability }>();
 
   constructor ( private util: UtilService ) {}
 
@@ -58,10 +59,10 @@ export class LiabilityService {
     this.liabilityEvent.next(this.liabilityList.slice(0));
   }
 
-  updateLiability(newLiability: Liability): void {
-    const id: number = newLiability.id;
+  updateLiability(liability: Liability): void {
+    const id: number = liability.id;
     const idx: number = this.liabilityList.findIndex(liability => liability?.id === id);
-    this.liabilityList = this.liabilityList.splice(idx, 0, newLiability);
+    this.liabilityList.splice(idx, 1, liability);
     this.liabilityEvent.next(this.liabilityList.slice(0));
     this.monthlyLiability = this.util.calculateMonthlyTotal(this.liabilityList);
   }
