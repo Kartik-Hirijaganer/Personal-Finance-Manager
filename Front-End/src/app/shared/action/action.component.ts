@@ -14,6 +14,7 @@ import { ExpenseService } from '../../expense/expense.service';
 export class ActionComponent implements ICellRendererAngularComp {
   private rowData: any;
   private path: string = '';
+  public showEdit: boolean = true;
 
   constructor( 
     private incomeService: IncomeService,
@@ -38,8 +39,23 @@ export class ActionComponent implements ICellRendererAngularComp {
     if (action === 'delete') {
       if (this.path === 'expenses') {
         this.expenseService.deleteExpense(id);
+      } else if (this.path === 'expenses') {
+        this.incomeService.deleteIncomeEntry(id, entry);
+      } else {
+        
       }
-      this.incomeService.deleteIncomeEntry(id, entry);
+    }
+
+    if (action === 'edit' || action === 'save') {
+      this.showEdit = !this.showEdit;
+      if (this.path === 'expenses') {
+        this.expenseService.expenseEditEvent.next({ action, idx: this.rowData?.rowIndex, payload: this.rowData?.data });
+      } else if (this.path === 'incomes') {
+
+      } else {
+
+      }
+      
     }
   }
 

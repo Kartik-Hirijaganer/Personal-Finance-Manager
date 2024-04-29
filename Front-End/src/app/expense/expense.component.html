@@ -70,7 +70,7 @@
   <p class="fw-light fst-italic">To edit an row just double click on it</p>
   <ag-grid-angular class="ag-theme-quartz" style="height:100%; width: 100%;" [rowData]="expenseRowData"
     [columnDefs]="expenseColDef" [pagination]=true [gridOptions]="agGridOptions" editType="fullRow"
-    (rowValueChanged)="onRowValueChanged($event)">
+    (gridReady)="onGridReady($event)">
   </ag-grid-angular>
 
 </div>

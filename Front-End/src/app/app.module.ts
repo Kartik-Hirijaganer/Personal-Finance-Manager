@@ -13,6 +13,7 @@ import { ExpenseComponent } from './expense/expense.component';
 import { IncomeComponent } from './income/income.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LiabilityComponent } from './liability/liability.component';
+import { ActionComponent } from './shared/action/action.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { LiabilityComponent } from './liability/liability.component';
     DashboardComponent,
     IncomeComponent,
     ExpenseComponent,
-    LiabilityComponent
+    LiabilityComponent,
+    ActionComponent
   ],
   imports: [
     BrowserModule,
