@@ -19,7 +19,7 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   public hideExpenseForm: boolean = true;
   private gridApi!: GridApi;
   expenseColDef: ColDef[] = [
-    { field: 'id', headerName: 'Expense Id', editable: false },
+    { field: 'id', headerName: 'Payment ID', editable: false },
     { field: 'to', headerName: 'Given To', colId: 'to', editable: true },
     {
       field: 'amount',
@@ -28,7 +28,7 @@ export class ExpenseComponent implements OnInit, OnDestroy {
       editable: true
     },
     { field: 'date', headerName: 'Date', editable: true },
-    { field: 'description', headerName: 'Description (Optional)', editable: true },
+    { field: 'description', headerName: 'Description', editable: true },
     {
       field: 'action',
       headerName: 'Action',

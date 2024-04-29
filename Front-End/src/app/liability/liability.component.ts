@@ -27,7 +27,7 @@ export class LiabilityComponent implements OnInit, OnDestroy {
       editable: true
     },
     { field: 'due_date', headerName: 'Due Date', editable: true },
-    { field: 'description', headerName: 'Description (Optional)', editable: true },
+    { field: 'description', headerName: 'Description', editable: true },
     {
       field: 'action',
       headerName: 'Action',

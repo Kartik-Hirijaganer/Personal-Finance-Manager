@@ -1,11 +1,11 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-lg-10">
-      <div class="p-3" style="text-align: center;">
+      <div class="p-3 font-monospace" style="text-align: center;">
         <span><img class="dashboard-logo" src="../../assets/imgs/dashboard_income.svg"></span>
         <br>
         Monthly Income<br>
-        $ {{incomeService.monthly_income}}
+        <span class="text-success">{{ incomeService.monthly_income | currency: 'USD' }}</span>
       </div>
     </div>
     <div class="col-lg-2 text-end mt-auto">

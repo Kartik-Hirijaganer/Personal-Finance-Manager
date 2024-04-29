@@ -1,11 +1,11 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-lg-10">
-      <div class="p-3" style="text-align: center;">
+      <div class="p-3 font-monospace" style="text-align: center;">
         <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-liabilities.svg"></span>
         <br>
         Monthly Liabilities<br>
-        $ {{liabilityService.monthlyLiability}}
+        <span class="text-danger">{{ liabilityService.monthlyLiability | currency: 'USD' }}</span>
       </div>
     </div>
     <div class="col-lg-2 text-end mt-auto">

@@ -17,7 +17,7 @@ export class IncomeComponent implements OnInit, OnDestroy {
   incomeForm: FormGroup = new FormGroup({});
   incomeColDefs: ColDef[] = [
     { field: "id", 
-      headerName: "Payment ID",
+      headerName: "Invoice ID",
       editable: false
     },
     { field: "from", headerName: "Received From", editable: true },
