@@ -59,7 +59,6 @@
       <button type="submit" class="btn btn-success" [disabled]="!liabilityForm.valid">Save</button>
     </form>
   </div>
-  <p class="fw-light fst-italic">To edit an row just double click on it</p>
   <ag-grid-angular class="ag-theme-quartz" style="height:100%; width: 100%;" [rowData]="liabilityRowData"
     [columnDefs]="liabilityColDef" [pagination]=true [gridOptions]="agGridOptions" editType="fullRow"
     (gridReady)="onGridReady($event)" [suppressClickEdit]="true">
