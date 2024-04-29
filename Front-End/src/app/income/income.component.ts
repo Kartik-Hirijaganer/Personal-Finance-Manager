@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { ColDef, RowValueChangedEvent, GridOptions } from "ag-grid-community";
+import { ColDef, GridReadyEvent, GridOptions, GridApi } from "ag-grid-community";
 import { Subscription } from 'rxjs';
 
 import { IncomeService } from './income.service';
@@ -17,15 +17,17 @@ export class IncomeComponent implements OnInit, OnDestroy {
   incomeForm: FormGroup = new FormGroup({});
   incomeColDefs: ColDef[] = [
     { field: "id", 
-      headerName: "Payment ID"
+      headerName: "Payment ID",
+      editable: false
     },
-    { field: "from", headerName: "Received From" },
+    { field: "from", headerName: "Received From", editable: true },
     { field: "amount", 
       headerName: "Amount",
-      valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$')
+      valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$'),
+      editable: true
     },
-    { field: "date" },
-    { field: "description" },
+    { field: "date", headerName: "Date", editable: true },
+    { field: "description", headerName: "Description", editable: true },
     { field: "Action", 
       editable: false,
       cellRenderer: ActionComponent
@@ -41,7 +43,9 @@ export class IncomeComponent implements OnInit, OnDestroy {
     }
   }
   hideIncomeForm: boolean = true;
+  private gridApi!: GridApi;
   incomeListSubscription: Subscription = new Subscription;
+  incomeRowSubscription: Subscription = new Subscription;
 
   constructor(
     public incomeService: IncomeService,
@@ -60,23 +64,36 @@ export class IncomeComponent implements OnInit, OnDestroy {
     this.incomeListSubscription = this.incomeService.incomeListEvent.subscribe((updatedIncomeList: Income[]) => {
       this.incomeRowData = updatedIncomeList;
     })
+    this.incomeRowSubscription = this.incomeService.incomeEditEvent.subscribe(({ action, idx, payload }) => {
+      if (action === 'edit') {
+        this.gridApi.setFocusedCell(idx, "from");
+        this.gridApi.startEditingCell({
+          rowIndex: idx,
+          colKey: "from",
+        });
+      } else {
+        this.gridApi.stopEditing();
+        this.incomeService.updateIncome(payload as Income);
+      }
+    })
   }
 
   toggleIncomeForm(): void {
     this.hideIncomeForm = !this.hideIncomeForm;
   }
 
-  onRowValueChanged(event: RowValueChangedEvent) {
-    this.incomeService.updateIncomeEntry(event?.data);
+  onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
   }
 
   onSubmit(): void {
     const { from, date, amount, description } = this.incomeForm.getRawValue();
-    this.incomeService.addIncomeEntry(from, date, amount, description);
+    this.incomeService.addIncome(from, date, amount, description);
     this.toggleIncomeForm();
   }
 
   ngOnDestroy(): void {
     this.incomeListSubscription.unsubscribe();
+    this.incomeRowSubscription.unsubscribe();
   }
 }

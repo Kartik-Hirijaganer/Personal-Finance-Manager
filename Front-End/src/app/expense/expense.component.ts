@@ -83,7 +83,7 @@ export class ExpenseComponent implements OnInit, OnDestroy {
         });
       } else {
         this.gridApi.stopEditing();
-        this.expenseService.updateExpense(payload as Expense)    
+        this.expenseService.updateExpense(payload as Expense);
       }
     })
   }
