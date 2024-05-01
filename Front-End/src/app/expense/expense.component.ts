@@ -40,6 +40,8 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   private expenseSubscription: Subscription = new Subscription;
   private expenseRowSubscription: Subscription = new Subscription;
   private getExpenseSubscription: Subscription = new Subscription;
+  private addExpenseSubscription: Subscription = new Subscription;
+
   bsConfig?: Partial<BsDatepickerConfig>;
   agGridOptions: GridOptions = {
     defaultColDef: {
@@ -119,7 +121,7 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     const payload = this.expenseForm.getRawValue();
     payload.date = payload.date.toLocaleDateString();
-    this.expenseService.addExpense(payload).subscribe((expenses: Expense[]) => {
+    this.addExpenseSubscription = this.expenseService.addExpense(payload).subscribe((expenses: Expense[]) => {
       this.expenseRowData = expenses;
     });
     this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
@@ -130,5 +132,6 @@ export class ExpenseComponent implements OnInit, OnDestroy {
     this.expenseSubscription.unsubscribe();
     this.expenseRowSubscription.unsubscribe();
     this.getExpenseSubscription.unsubscribe();
+    this.addExpenseSubscription.unsubscribe();
   }
 }

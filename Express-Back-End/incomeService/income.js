@@ -4,19 +4,27 @@ require('dotenv').config();
 
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const cors = require('cors');
 
 const util = require('../shared/util');
 const incomeService = require('./income.service');
+
+const corsOptions = {
+  origin: 'http://localhost:4200',
+  credentials: true,            //access-control-allow-credentials:true
+  optionSuccessStatus: 200
+}
 
 /** Middleware */
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
+app.use(cors(corsOptions));
 
 util.connectDB();
 
 /** APIs */
-app.get('/income/:id', incomeService.getIncome);
+app.get('/income', incomeService.getIncome);
 
 app.post('/income/add', incomeService.addNewIncome);
 

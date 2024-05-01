@@ -1,14 +1,16 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-lg-3">
-      <span (click)="onSubmit('delete')"><img style="max-width: 20px;max-height: 20px;" src="../../assets/imgs/delete-icon.svg" alt="delete"></span>
+      <span (click)="onSubmit('delete')"><img style="max-width: 20px;max-height: 20px;"
+          src="../../assets/imgs/delete-icon.svg" alt="delete"></span>
     </div>
     <div *ngIf="showEdit" class="col-lg-3">
       <span (click)="onSubmit('edit')"><img style="max-width: 20px;max-height: 20px;"
           src="../../assets/imgs/edit-icon.svg" alt="edit"></span>
     </div>
     <div *ngIf="!showEdit" class="col-lg-3">
-      <span (click)="onSubmit('save')"><img style="max-width: 20px;max-height: 20px;" src="../../assets/imgs/tick-icon.svg" alt="save"></span>
+      <span (click)="onSubmit('save')"><img style="max-width: 20px;max-height: 20px;"
+          src="../../assets/imgs/tick-icon.svg" alt="save"></span>
     </div>
   </div>
 </div>

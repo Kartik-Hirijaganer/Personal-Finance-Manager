@@ -10,18 +10,18 @@ const cors = require('cors');
 const util = require('../shared/util');
 const expenseService = require('./expense.service');
 
-/** Middlewares */
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(morgan('tiny'));
-
 const corsOptions = {
   origin: 'http://localhost:4200',
   credentials: true,            //access-control-allow-credentials:true
   optionSuccessStatus: 200
 }
 
+/** Middlewares */
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(morgan('tiny'));
 app.use(cors(corsOptions));
+
 util.connectDB();
 
 /** APIs */

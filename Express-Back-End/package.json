@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "expense": "nodemon ./expenseService/expense.js",
-    "income": "nodemon ./incomeService/income.js"
+    "income": "nodemon ./incomeService/income.js",
+    "liability": "nodemon ./liabilityService/liability.js"
   },
   "keywords": [],
   "author": "",

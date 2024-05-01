@@ -5,29 +5,31 @@
     </div>
   </div>
   <div class="row mb-2">
-    <div 
-    class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover"
-    style="text-align: center; max-width: 300px;">
-        <span><img class="dashboard-logo" src="../../assets/imgs/balance.svg"></span>
-        <br>
-        Current Balance
-        <br>
-        <span class="text-success">$ 80,000.00</span>
+    <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover"
+      style="text-align: center; max-width: 300px;">
+      <span><img class="dashboard-logo" src="../../assets/imgs/balance.svg"></span>
+      <br>
+      Current Balance
+      <br>
+      <span class="text-success">{{currentBalance | currency: 'USD'}}</span>
     </div>
-    <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/incomes" style="text-align: center; max-width: 300px;">
+    <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/incomes"
+      style="text-align: center; max-width: 300px;">
       <span><img class="dashboard-logo" src="../../assets/imgs/dashboard_income.svg"></span>
       <br>Month's Income<br>
-      <span class="text-success">$ 50,000.00</span>
+      <span class="text-success">{{ incomeService.monthlyIncome | currency: 'USD' }}</span>
     </div>
-    <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/expenses" style="text-align: center; max-width: 300px;">
+    <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/expenses"
+      style="text-align: center; max-width: 300px;">
       <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-expense.svg"></span>
       <br>Month's Expense<br>
       <span class="text-danger">{{ expenseService.monthlyExpense | currency: 'USD' }}</span>
     </div>
-    <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/liabilities" style="text-align: center; max-width: 300px;">
-        <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-liabilities.svg"></span>
-        <br>Liabilities<br>
-        <span class="text-danger">$ 5,000.00</span>
+    <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/liabilities"
+      style="text-align: center; max-width: 300px;">
+      <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-liabilities.svg"></span>
+      <br>Liabilities<br>
+      <span class="text-danger">{{ liabilityService.monthlyLiability | currency: 'USD' }}</span>
     </div>
   </div>
   <div class="row pb-3">
@@ -35,9 +37,9 @@
       <ag-charts-angular [options]="chartOptions"></ag-charts-angular>
     </div>
     <div class="col col-lg-3 border bg-white p-3" style="text-align: center; max-width: 300px; max-height: 270px;">
-        <span><img class="dashboard-logo" src="../../assets/imgs/account.svg"></span>
-        <br>Accounts<br>
-        TODO
+      <span><img class="dashboard-logo" src="../../assets/imgs/account.svg"></span>
+      <br>Accounts<br>
+      TODO
     </div>
   </div>
 </div>

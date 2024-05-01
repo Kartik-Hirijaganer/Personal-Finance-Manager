@@ -5,11 +5,11 @@
         <span><img class="dashboard-logo" src="../../assets/imgs/dashboard_income.svg"></span>
         <br>
         Monthly Income<br>
-        <span class="text-success">{{ incomeService.monthly_income | currency: 'USD' }}</span>
+        <span class="text-success">{{ incomeService.monthlyIncome | currency: 'USD' }}</span>
       </div>
     </div>
     <div class="col-lg-2 text-end mt-auto">
-      <button *ngIf="hideIncomeForm" class="btn btn-primary mt-2 mb-2 end-0" (click)="toggleIncomeForm()">Add
+      <button *ngIf="hideIncomeForm" class="btn btn-primary mt-2 mb-2 end-0" (click)="addIncome()">Add
         Income</button>
     </div>
   </div>
@@ -22,7 +22,8 @@
             <input type="text" class="form-control" id="received_from" formControlName="from"
               placeholder="Enter source of income">
             <span class="help-block text-danger"
-            *ngIf="!incomeForm.get('from')?.valid && (incomeForm.get('from')?.touched || incomeForm.get('from')?.dirty)">Please enter a valid input</span>
+              *ngIf="!incomeForm.get('from')?.valid && (incomeForm.get('from')?.touched || incomeForm.get('from')?.dirty)">Please
+              enter a valid input</span>
           </div>
         </div>
       </div>
@@ -39,7 +40,9 @@
         <div class="col-lg-3">
           <div class="mb-3">
             <label for="received_date" class="form-label">Received Date:</label>
-            <input type="text" class="form-control" id="received_date" formControlName="date" placeholder="dd/mm/yyyy">
+            <input type="text" placeholder="mm-dd-yyyy" class="form-control" bsDatepicker [bsConfig]="bsConfig"
+              id="date" formControlName="date">
+            <br>
             <span class="help-block text-danger"
               *ngIf="!incomeForm.get('date')?.valid && (incomeForm.get('date')?.touched || incomeForm.get('date')?.dirty)">Please
               enter a valid date</span>
@@ -57,17 +60,9 @@
       <button type="submit" class="btn btn-success" [disabled]="!incomeForm.valid">Save</button>
     </form>
   </div>
-  <ag-grid-angular 
-  class="ag-theme-quartz" 
-  style="height:100%; width: 100%;" 
-  [rowData]="incomeRowData" 
-  [columnDefs]="incomeColDefs"
-  [pagination]=true
-  [gridOptions]="agGridOptions"
-  editType="fullRow"
-  (gridReady)="onGridReady($event)"
-  [suppressClickEdit]="true"
-  >
+  <ag-grid-angular class="ag-theme-quartz" style="height: 300px; width: 100%;" [rowData]="incomeRowData"
+    [columnDefs]="incomeColDefs" [pagination]=true [gridOptions]="agGridOptions" editType="fullRow"
+    (gridReady)="onGridReady($event)" [suppressClickEdit]="true">
   </ag-grid-angular>
-  
+
 </div>
