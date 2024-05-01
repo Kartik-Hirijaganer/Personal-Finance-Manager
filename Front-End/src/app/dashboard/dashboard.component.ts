@@ -1,6 +1,10 @@
 import { Component } from "@angular/core";
 import { AgChartOptions, PixelSize, AgChartTheme } from "ag-charts-community";
 
+import { ExpenseService } from "../expense/expense.service";
+import { IncomeService } from "../income/income.service";
+import { LiabilityService } from "../liability/liability.service";
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -11,7 +15,11 @@ export class DashboardComponent {
   public chartOptions: AgChartOptions;
   public showShadow: boolean = false;
 
-  constructor() {
+  constructor(
+    public expenseService: ExpenseService,
+    public incomeService: IncomeService,
+    public liabilityServie: LiabilityService
+  ) {
     this.chartOptions = {
       theme: {
         baseTheme: "ag-default",

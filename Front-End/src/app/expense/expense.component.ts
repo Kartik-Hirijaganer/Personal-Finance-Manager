@@ -39,9 +39,9 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   expenseRowData: Expense[] = [];
   private expenseSubscription: Subscription = new Subscription;
   private expenseRowSubscription: Subscription = new Subscription;
+  private getExpenseSubscription: Subscription = new Subscription;
   bsConfig?: Partial<BsDatepickerConfig>;
   agGridOptions: GridOptions = {
-    domLayout: 'autoHeight',
     defaultColDef: {
       flex: 1,
       minWidth: 100,
@@ -63,45 +63,15 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.initialize();
+    this.initializeForm();
+    this.getExpenseSubscription = this.expenseService.getExpenses().subscribe((expenses: Expense[]) => {
+      this.expenseRowData = expenses;
+    });
     this.expenseSubscription = this.expenseService.expenseEvent.subscribe((updatedExpense: Expense[]) => {
       this.expenseRowData = updatedExpense;
-    })
-    this.expenseRowSubscription = this.expenseService.expenseEditEvent.subscribe(({ action, idx, payload }) => {
-      switch (action) {
-        case 'edit':
-          this.gridApi.setFocusedCell(idx, "to");
-          this.gridApi.startEditingCell({ rowIndex: idx, colKey: "to" });
-          break;
-        case 'save':
-          this.gridApi.stopEditing();
-          this.expenseService.updateExpense(payload as Expense).subscribe(res => {
-            const tableData = this.util.getAllRows(this.gridApi);
-            this.expenseService.monthlyExpense = this.util.calculateTotalAmount(tableData);
-          });
-          break;
-        case 'delete':
-          const { id } = payload as Expense;
-          this.expenseService.deleteExpense(id).subscribe(expenses => {
-            this.expenseRowData = expenses;
-          });
-          break;
-        default:
-          break;
-      }
-    })
-  }
-
-  initialize(): void {
-    this.expenseForm = new FormGroup({
-      to: new FormControl<string>('', Validators.required),
-      date: new FormControl<Date>(new Date(), Validators.required),
-      amount: new FormControl<number>(0, [Validators.required]),
-      description: new FormControl<string | null>('')
     });
-
-    this.expenseService.getExpenses().subscribe((expenses: Expense[]) => {
-      this.expenseRowData = expenses;
+    this.expenseRowSubscription = this.expenseService.expenseEditEvent.subscribe((event) => {
+      this.handleExpenseEvent(event.action, event.idx, event?.payload);
     });
   }
 
@@ -113,6 +83,39 @@ export class ExpenseComponent implements OnInit, OnDestroy {
     this.gridApi = params.api;
   }
 
+  initializeForm() {
+    this.expenseForm = new FormGroup({
+      to: new FormControl<string>('', Validators.required),
+      date: new FormControl<Date>(new Date(), Validators.required),
+      amount: new FormControl<number>(0, [Validators.required]),
+      description: new FormControl<string | null>('')
+    });
+  }
+
+  handleExpenseEvent(action: string, idx: number, payload?: Expense | null) {
+    switch (action) {
+      case 'edit':
+        this.gridApi.setFocusedCell(idx, "to");
+        this.gridApi.startEditingCell({ rowIndex: idx, colKey: "to" });
+        break;
+      case 'save':
+        this.gridApi.stopEditing();
+        this.expenseService.updateExpense(payload as Expense).subscribe(res => {
+          const tableData = this.util.getAllRows(this.gridApi);
+          this.expenseService.monthlyExpense = this.util.calculateTotalAmount(tableData);
+        });
+        break;
+      case 'delete':
+        const { id } = payload as Expense;
+        this.expenseService.deleteExpense(id).subscribe(expenses => {
+          this.expenseRowData = expenses;
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
   onSubmit(): void {
     const payload = this.expenseForm.getRawValue();
     payload.date = payload.date.toLocaleDateString();
@@ -120,10 +123,12 @@ export class ExpenseComponent implements OnInit, OnDestroy {
       this.expenseRowData = expenses;
     });
     this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
+    this.initializeForm();
   }
 
   ngOnDestroy(): void {
     this.expenseSubscription.unsubscribe();
     this.expenseRowSubscription.unsubscribe();
+    this.getExpenseSubscription.unsubscribe();
   }
 }
