@@ -20,6 +20,8 @@ export class UtilService {
   }
 
   calculateMonthlyTotal(list: Liability[] | Income[] | Expense[]): number {
+    console.log('list',list);
+    
     let total: number = 0;
     for (const entry of list) {
       if (entry?.amount) {

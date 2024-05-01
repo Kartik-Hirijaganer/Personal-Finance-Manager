@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AgGridModule } from 'ag-grid-angular';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { AgChartsAngular } from 'ag-charts-angular';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -32,7 +33,8 @@ import { ActionComponent } from './shared/action/action.component';
     ReactiveFormsModule,
     AgGridModule,
     BsDatepickerModule.forRoot(),
-    AgChartsAngular
+    AgChartsAngular,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

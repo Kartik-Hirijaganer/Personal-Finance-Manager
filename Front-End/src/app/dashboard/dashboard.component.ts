@@ -1,5 +1,4 @@
 import { Component } from "@angular/core";
-
 import { AgChartOptions, PixelSize, AgChartTheme } from "ag-charts-community";
 
 @Component({

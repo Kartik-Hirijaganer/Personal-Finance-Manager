@@ -16,8 +16,8 @@ const connectDB = async () => {
   console.log('connected to DB');
 }
 
-const generateID = () => {
-  return uuidv4();
+const generateID = (input) => {
+  return (input + uuidv4().substring(0, 4)).toUpperCase();
 }
 
 module.exports = {

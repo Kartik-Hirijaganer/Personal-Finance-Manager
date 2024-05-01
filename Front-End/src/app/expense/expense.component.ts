@@ -63,43 +63,62 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.initialize();
+    this.expenseSubscription = this.expenseService.expenseEvent.subscribe((updatedExpense: Expense[]) => {
+      this.expenseRowData = updatedExpense;
+    })
+    this.expenseRowSubscription = this.expenseService.expenseEditEvent.subscribe(({ action, idx, payload }) => {
+      switch (action) {
+        case 'edit':
+          this.gridApi.setFocusedCell(idx, "to");
+          this.gridApi.startEditingCell({ rowIndex: idx, colKey: "to" });
+          break;
+        case 'save':
+          this.gridApi.stopEditing();
+          this.expenseService.updateExpense(payload as Expense).subscribe(res => {
+            const tableData = this.util.getAllRows(this.gridApi);
+            this.expenseService.monthlyExpense = this.util.calculateTotalAmount(tableData);
+          });
+          break;
+        case 'delete':
+          const { id } = payload as Expense;
+          this.expenseService.deleteExpense(id).subscribe(expenses => {
+            this.expenseRowData = expenses;
+          });
+          break;
+        default:
+          break;
+      }
+    })
+  }
+
+  initialize(): void {
     this.expenseForm = new FormGroup({
       to: new FormControl<string>('', Validators.required),
       date: new FormControl<Date>(new Date(), Validators.required),
       amount: new FormControl<number>(0, [Validators.required]),
       description: new FormControl<string | null>('')
     });
-    this.expenseRowData = this.expenseService.expenses;
-    this.expenseService.monthlyExpense = this.util.calculateMonthlyTotal(this.expenseRowData);
-    this.expenseSubscription = this.expenseService.expenseEvent.subscribe((updatedExpense: Expense[]) => {
-      this.expenseRowData = updatedExpense;
-    })
-    this.expenseRowSubscription = this.expenseService.expenseEditEvent.subscribe(({action, idx, payload}) => {
-      if (action === 'edit') {
-        this.gridApi.setFocusedCell(idx, "to");
-        this.gridApi.startEditingCell({
-          rowIndex: idx,
-          colKey: "to",
-        });
-      } else {
-        this.gridApi.stopEditing();
-        this.expenseService.updateExpense(payload as Expense);
-      }
-    })
+
+    this.expenseService.getExpenses().subscribe((expenses: Expense[]) => {
+      this.expenseRowData = expenses;
+    });
   }
 
-  addExpense() {
+  addExpense(): void {
     this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
   }
 
-  onGridReady(params: GridReadyEvent) {
+  onGridReady(params: GridReadyEvent): void {
     this.gridApi = params.api;
   }
 
   onSubmit(): void {
     const payload = this.expenseForm.getRawValue();
     payload.date = payload.date.toLocaleDateString();
-    this.expenseService.addExpense(payload);
+    this.expenseService.addExpense(payload).subscribe((expenses: Expense[]) => {
+      this.expenseRowData = expenses;
+    });
     this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
   }
 
