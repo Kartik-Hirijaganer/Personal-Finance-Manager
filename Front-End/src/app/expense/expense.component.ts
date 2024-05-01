@@ -48,7 +48,6 @@ export class ExpenseComponent implements OnInit, OnDestroy {
       autoHeight: true
     }
   }
-  rowDataSet: boolean = true;
 
   constructor(
     public expenseService: ExpenseService,
@@ -106,11 +105,11 @@ export class ExpenseComponent implements OnInit, OnDestroy {
     });
   }
 
-  addExpense() {
+  addExpense(): void {
     this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
   }
 
-  onGridReady(params: GridReadyEvent) {
+  onGridReady(params: GridReadyEvent): void {
     this.gridApi = params.api;
   }
 

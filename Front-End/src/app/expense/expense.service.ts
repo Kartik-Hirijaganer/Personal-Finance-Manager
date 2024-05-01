@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, map, switchMap } from 'rxjs';
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 
 import { Expense } from './expense.model';
 import { UtilService } from '../shared/util.service';
@@ -10,36 +10,6 @@ import { environment } from '../../environments/environment.dev';
   providedIn: 'root'
 })
 export class ExpenseService {
-  private expenseList: Expense[] = [
-    {
-      id: '1',
-      to: 'John',
-      date: '20-4-2024',
-      amount: 10000,
-      description: 'Delivery'
-    },
-    {
-      id: '2',
-      to: 'Hie',
-      date: '6-4-2024',
-      amount: 10000,
-      description: 'Furniture'
-    },
-    {
-      id: '3',
-      to: 'Mayur',
-      date: '10-4-2024',
-      amount: 10000,
-      description: 'Laundry'
-    },
-    {
-      id: '4',
-      to: 'Alex',
-      date: '23-4-2024',
-      amount: 10000,
-      description: 'Food'
-    }
-  ]
   private headers: HttpHeaders = new HttpHeaders({
     'Content-Type': 'application/json'
   })
