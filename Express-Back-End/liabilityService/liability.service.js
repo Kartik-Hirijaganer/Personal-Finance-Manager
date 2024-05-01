@@ -6,7 +6,7 @@ const { DatabaseError, RecordNotFoundError } = require('../shared/errors');
 
 const getLiability = async (req, res) => {
   let liabilities = [];
-  const id = req?.params?.id;
+  const id = req?.query?.id;
   try {
     if (id) {
       liabilities = await Liability.findOne({ id });

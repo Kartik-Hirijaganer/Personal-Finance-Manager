@@ -6,7 +6,7 @@ const { DatabaseError, RecordNotFoundError } = require('../shared/errors');
 
 const getIncome = async (req, res) => {
   let incomes = [];
-  const id = req?.params?.id;
+  const id = req?.query?.id;
   try {
     if (id) {
       incomes = await Income.findOne({ id });
@@ -21,6 +21,7 @@ const getIncome = async (req, res) => {
 }
 
 const addNewIncome = async (req, res) => {
+  console.log(req.body)
   const { from, date, amount, description } = req.body;
   const incomeId = util.generateID(from);
   const new_income = new Income({ id: incomeId, from, date, amount: parseInt(amount), description });

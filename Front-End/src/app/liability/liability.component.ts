@@ -38,10 +38,12 @@ export class LiabilityComponent implements OnInit, OnDestroy {
   liabilityRowData: Liability[] = [];
   private liabilitySubscription: Subscription = new Subscription;
   private liabilityRowSubscription: Subscription = new Subscription;
+  private liabilityListSubscription: Subscription = new Subscription;
+  private addIncomeSubscription: Subscription = new Subscription;
+
   private gridApi!: GridApi;
   bsConfig?: Partial<BsDatepickerConfig>;
   agGridOptions: GridOptions = {
-    domLayout: 'autoHeight',
     defaultColDef: {
       flex: 1,
       minWidth: 100,
@@ -63,31 +65,17 @@ export class LiabilityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.liabilityForm = new FormGroup({
-      id: new FormControl<number | null>(null),
-      name: new FormControl<string>('', Validators.required),
-      amount: new FormControl<number>(0, Validators.required),
-      due_date: new FormControl<Date>(new Date(), Validators.required),
-      description: new FormControl<string>('')
+    this.initializeForm();
+    this.liabilityService.getLiabilities().subscribe((liabilities: Liability[]) => {
+      this.liabilityRowData = liabilities;
     });
-    this.liabilityRowData = this.liabilityService.liabilities;
-    
-    this.liabilityService.monthlyLiability = this.util.calculateMonthlyTotal(this.liabilityRowData);
-    this.liabilitySubscription = this.liabilityService.liabilityEvent.subscribe((updatedLiability: Liability[]) => {
-      this.liabilityRowData = updatedLiability;
-    })
-    this.liabilityRowSubscription = this.liabilityService.liabilityEditEvent.subscribe(({ action, idx, payload }) => {
-      if (action === 'edit') {
-        this.gridApi.setFocusedCell(idx, "name");
-        this.gridApi.startEditingCell({
-          rowIndex: idx,
-          colKey: "name",
-        });
-      } else {
-        this.gridApi.stopEditing();
-        this.liabilityService.updateLiability(payload as Liability);
-      }
-    })
+
+    this.liabilityListSubscription = this.liabilityService.liabilityListEvent.subscribe((updatedLiabilityList: Liability[]) => {
+      this.liabilityRowData = updatedLiabilityList;
+    });
+    this.liabilityRowSubscription = this.liabilityService.liabilityEditEvent.subscribe((event) => {
+      this.handleLiabilityEvent(event.action, event.idx, event?.payload);
+    });
   }
 
   addLiability() {
@@ -98,15 +86,53 @@ export class LiabilityComponent implements OnInit, OnDestroy {
     this.gridApi = params.api;
   }
 
+  initializeForm() {
+    this.liabilityForm = new FormGroup({
+      id: new FormControl<number | null>(null),
+      name: new FormControl<string>('', Validators.required),
+      amount: new FormControl<number>(0, Validators.required),
+      due_date: new FormControl<Date>(new Date(), Validators.required),
+      description: new FormControl<string>('')
+    });
+  }
+
+  handleLiabilityEvent(action: string, idx: number, payload?: Liability | null) {
+    switch (action) {
+      case 'edit':
+        this.gridApi.setFocusedCell(idx, "name");
+        this.gridApi.startEditingCell({ rowIndex: idx, colKey: "name" });
+        break;
+      case 'save':
+        this.gridApi.stopEditing();
+        this.liabilityService.updateLiability(payload as Liability).subscribe(res => {
+          const tableData = this.util.getAllRows(this.gridApi);
+          this.liabilityService.monthlyLiability = this.util.calculateTotalAmount(tableData);
+        });
+        break;
+      case 'delete':
+        const { id } = payload as Liability;
+        this.liabilityService.deleteLiability(id).subscribe(liabilities => {
+          this.liabilityRowData = liabilities;
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
   onSubmit(): void {
     const payload = this.liabilityForm.getRawValue();
-    payload.date = payload.date.toLocaleDateString();
-    this.liabilityService.addLiability(payload);
+    payload.due_date = payload.due_date.toLocaleDateString();
+    this.addIncomeSubscription = this.liabilityService.addLiability(payload).subscribe((incomes: Liability[]) => {
+      this.liabilityRowData = incomes;
+    });;
     this.hideLiabilityForm = this.util.toggle(this.hideLiabilityForm);
   }
 
   ngOnDestroy(): void {
     this.liabilitySubscription.unsubscribe();
     this.liabilityRowSubscription.unsubscribe();
+    this.liabilityListSubscription.unsubscribe();
+    this.addIncomeSubscription.unsubscribe();
   }
 }

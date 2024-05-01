@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { GridApi } from 'ag-grid-community';
 
 import { Liability } from '../liability/liability.model';
 import { Expense } from '../expense/expense.model';
@@ -19,9 +20,13 @@ export class UtilService {
     return sign + `${formatted}`;
   }
 
-  calculateMonthlyTotal(list: Liability[] | Income[] | Expense[]): number {
-    console.log('list',list);
-    
+  getAllRows(params: GridApi): Expense[] | Income[] | Liability[] {
+    const rowData: Expense[] | Income[] | Liability[] = [];
+    params.forEachNode(node => rowData.push(node.data));
+    return rowData;
+  }
+
+  calculateTotalAmount(list: Liability[] | Income[] | Expense[]): number {
     let total: number = 0;
     for (const entry of list) {
       if (entry?.amount) {

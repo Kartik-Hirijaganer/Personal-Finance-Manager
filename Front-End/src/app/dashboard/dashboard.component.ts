@@ -1,17 +1,26 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { AgChartOptions, PixelSize, AgChartTheme } from "ag-charts-community";
+
+import { ExpenseService } from "../expense/expense.service";
+import { IncomeService } from "../income/income.service";
+import { LiabilityService } from "../liability/liability.service";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
 
   public chartOptions: AgChartOptions;
   public showShadow: boolean = false;
+  public currentBalance: number = 0;
 
-  constructor() {
+  constructor(
+    public expenseService: ExpenseService,
+    public incomeService: IncomeService,
+    public liabilityService: LiabilityService
+  ) {
     this.chartOptions = {
       theme: {
         baseTheme: "ag-default",
@@ -37,5 +46,17 @@ export class DashboardComponent {
         { type: 'bar', xKey: 'month', yKey: 'income', yName: 'Income', stacked: false }
       ]
     };
+  }
+
+  ngOnInit(): void {
+    this.incomeService.monthlyIncomeEvent.subscribe((incomeAmount: number) => {
+      this.currentBalance -= incomeAmount;
+    })
+    this.liabilityService.monthlyLiabilityEvent.subscribe((liabilityAmount: number) => {
+      this.currentBalance -= liabilityAmount;
+    })
+    this.expenseService.monthlyExpenseEvent.subscribe((expenseAmount: number) => {
+      this.currentBalance -= expenseAmount;
+    })
   }
 }

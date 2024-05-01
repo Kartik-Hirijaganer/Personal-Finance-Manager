@@ -14,19 +14,19 @@ export class ExpenseService {
     'Content-Type': 'application/json'
   })
   public monthlyExpense: number = 0;
+  public monthlyExpenseEvent: Subject<number> = new Subject<number>();
   public expenseEvent: Subject<Expense[]> = new Subject<Expense[]>();
   public expenseEditEvent: Subject<{ action: string, idx: number, payload?: Expense }> = new Subject<{ action: string, idx: number, payload?: Expense }>();
 
   constructor(
     private util: UtilService,
     private http: HttpClient
-  ) { }
+  ) {
+    this.getExpenses().subscribe(() => { });
+  }
 
   addExpense(expense: Expense): Observable<Expense[]> {
-    const headers: HttpHeaders = new HttpHeaders({
-      'Content-Type': 'application/json'
-    })
-    return this.http.post<{ expenseId: string }>(`${environment.URL}:${environment.expense_port}/expense/add`, expense, { headers })
+    return this.http.post<{ expenseId: string }>(`${environment.URL}:${environment.expense_port}/expense/add`, expense, { headers: this.headers })
       .pipe(
         switchMap(postResponse => {
           return this.getExpenses();
@@ -42,9 +42,6 @@ export class ExpenseService {
   }
 
   updateExpense(expense: Expense): Observable<any> {
-    const headers: HttpHeaders = new HttpHeaders({
-      'Content-Type': 'application/json'
-    })
     return this.http.put<{ expenseId: string }>(`${environment.URL}:${environment.expense_port}/expense/update/${expense.id}`, expense, { headers: this.headers });
   }
 
@@ -52,6 +49,7 @@ export class ExpenseService {
     return this.http.get<{ expenses: Expense[] }>(`${environment.URL}:${environment.expense_port}/expense`, { headers: this.headers })
       .pipe(map(({ expenses }) => {
         this.monthlyExpense = this.util.calculateTotalAmount(expenses);
+        this.monthlyExpenseEvent.next(this.monthlyExpense);
         return expenses;
       }));
   }

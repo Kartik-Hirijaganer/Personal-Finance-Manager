@@ -7,6 +7,7 @@ import { IncomeService } from './income.service';
 import { Income } from './income.model';
 import { ActionComponent } from '../shared/action/action.component';
 import { UtilService } from '../shared/util.service'
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
 @Component({
   selector: 'app-income',
@@ -16,70 +17,104 @@ import { UtilService } from '../shared/util.service'
 export class IncomeComponent implements OnInit, OnDestroy {
   incomeForm: FormGroup = new FormGroup({});
   incomeColDefs: ColDef[] = [
-    { field: "id", 
+    {
+      field: "id",
       headerName: "Invoice ID",
       editable: false
     },
     { field: "from", headerName: "Received From", editable: true },
-    { field: "amount", 
+    {
+      field: "amount",
       headerName: "Amount",
       valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$'),
       editable: true
     },
     { field: "date", headerName: "Date", editable: true },
     { field: "description", headerName: "Description", editable: true },
-    { field: "Action", 
+    {
+      field: "Action",
       editable: false,
       cellRenderer: ActionComponent
-     }
+    }
   ];
   incomeRowData: Income[] = [];
   agGridOptions: GridOptions = {
-    domLayout: 'autoHeight',
     defaultColDef: {
       flex: 1,
       minWidth: 100,
       autoHeight: true
     }
   }
-  hideIncomeForm: boolean = true;
+  public hideIncomeForm: boolean = true;
   private gridApi!: GridApi;
-  incomeListSubscription: Subscription = new Subscription;
-  incomeRowSubscription: Subscription = new Subscription;
+  bsConfig?: Partial<BsDatepickerConfig>;
+
+  private incomeListSubscription: Subscription = new Subscription;
+  private incomeRowSubscription: Subscription = new Subscription;
+  private addIncomeSubscription: Subscription = new Subscription;
+  private getIncomeSubscription: Subscription = new Subscription;
 
   constructor(
     public incomeService: IncomeService,
     private util: UtilService
-  ) { }
-
-  ngOnInit() {
-    this.incomeForm = new FormGroup({
-      'from': new FormControl<string>('', Validators.required),
-      'date': new FormControl<string>('', Validators.required),
-      'amount': new FormControl<number>(0, Validators.required),
-      'description': new FormControl<string | null>('')
-    });
-    this.incomeRowData = this.incomeService.getIncomeList();
-    this.incomeService.monthly_income = this.util.calculateMonthlyTotal(this.incomeRowData);
-    this.incomeListSubscription = this.incomeService.incomeListEvent.subscribe((updatedIncomeList: Income[]) => {
-      this.incomeRowData = updatedIncomeList;
-    })
-    this.incomeRowSubscription = this.incomeService.incomeEditEvent.subscribe(({ action, idx, payload }) => {
-      if (action === 'edit') {
-        this.gridApi.setFocusedCell(idx, "from");
-        this.gridApi.startEditingCell({
-          rowIndex: idx,
-          colKey: "from",
-        });
-      } else {
-        this.gridApi.stopEditing();
-        this.incomeService.updateIncome(payload as Income);
-      }
+  ) {
+    const date = new Date();
+    this.bsConfig = Object.assign({}, {
+      containerClass: 'theme-green',
+      showWeekNumbers: false,
+      minDate: new Date(date.getFullYear(), date.getMonth(), 1),
+      maxDate: new Date(date.getFullYear(), date.getMonth() + 1, 0)
     })
   }
 
-  toggleIncomeForm(): void {
-    this.hideIncomeForm = !this.hideIncomeForm;
+  ngOnInit() {
+    this.initializeForm();
+    this.incomeService.getIncomes().subscribe((incomes: Income[]) => {
+      this.incomeRowData = incomes;
+    });
+    this.incomeListSubscription = this.incomeService.incomeListEvent.subscribe((updatedIncomeList: Income[]) => {
+      this.incomeRowData = updatedIncomeList;
+    });
+    this.incomeRowSubscription = this.incomeService.incomeEditEvent.subscribe((event) => {
+      this.handleIncomeEvent(event.action, event.idx, event?.payload);
+    });
+  }
+
+  initializeForm() {
+    this.incomeForm = new FormGroup({
+      'from': new FormControl<string>('', Validators.required),
+      'date': new FormControl<Date>(new Date(), Validators.required),
+      'amount': new FormControl<number>(0, Validators.required),
+      'description': new FormControl<string | null>('')
+    });
+  }
+
+  handleIncomeEvent(action: string, idx: number, payload?: Income | null) {
+    switch (action) {
+      case 'edit':
+        this.gridApi.setFocusedCell(idx, "from");
+        this.gridApi.startEditingCell({ rowIndex: idx, colKey: "from" });
+        break;
+      case 'save':
+        this.gridApi.stopEditing();
+        this.incomeService.updateIncome(payload as Income).subscribe(res => {
+          const tableData = this.util.getAllRows(this.gridApi);
+          this.incomeService.monthlyIncome = this.util.calculateTotalAmount(tableData);
+        });
+        break;
+      case 'delete':
+        const { id } = payload as Income;
+        this.incomeService.deleteIncome(id).subscribe(incomes => {
+          this.incomeRowData = incomes;
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
+  addIncome(): void {
+    this.hideIncomeForm = this.util.toggle(this.hideIncomeForm);
   }
 
   onGridReady(params: GridReadyEvent) {
@@ -87,13 +122,18 @@ export class IncomeComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    const { from, date, amount, description } = this.incomeForm.getRawValue();
-    this.incomeService.addIncome(from, date, amount, description);
-    this.toggleIncomeForm();
+    const payload = this.incomeForm.getRawValue();
+    payload.date = payload.date.toLocaleDateString();
+    this.addIncomeSubscription = this.incomeService.addIncome(payload).subscribe((incomes: Income[]) => {
+      this.incomeRowData = incomes;
+    });
+    this.hideIncomeForm = this.util.toggle(this.hideIncomeForm);
   }
 
   ngOnDestroy(): void {
     this.incomeListSubscription.unsubscribe();
     this.incomeRowSubscription.unsubscribe();
+    this.addIncomeSubscription.unsubscribe();
+    this.getIncomeSubscription.unsubscribe();
   }
 }

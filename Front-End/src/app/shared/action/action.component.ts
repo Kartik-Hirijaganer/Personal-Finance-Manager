@@ -17,47 +17,62 @@ export class ActionComponent implements ICellRendererAngularComp {
   private path: string = '';
   public showEdit: boolean = true;
 
-  constructor( 
+  constructor(
     private incomeService: IncomeService,
     private expenseService: ExpenseService,
     private liabilityService: LiabilityService,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   agInit(params: ICellRendererParams): void {
-    this.rowData = params;  
+    this.rowData = params;
     this.route.url.subscribe((event) => {
       this.path = event[0].path;
-    })  
+    })
   }
 
   refresh(params: ICellRendererParams<any, any, any>): boolean {
     return false; // returning false  will make ag-grid re-create the component when required.
   }
 
-  onSubmit(action: string): void {
-    const { id, ...entry } = this.rowData?.data;
-    
+  handleExpenseEvent(action: string, idx: number, payload: any) {
     if (action === 'delete') {
-      if (this.path === 'expenses') {
-        this.expenseService.deleteExpense(id);
-      } else if (this.path === 'incomes') {
-        this.incomeService.deleteIncome(id);
-      } else {
-        this.liabilityService.deleteLiability(id);
-      }
-    }
-
-    if (action === 'edit' || action === 'save') {
+      this.expenseService.expenseEditEvent.next({ action, idx, payload });
+    } else {
       this.showEdit = !this.showEdit;
-      if (this.path === 'expenses') {
-        this.expenseService.expenseEditEvent.next({ action, idx: this.rowData?.rowIndex, payload: this.rowData?.data });
-      } else if (this.path === 'incomes') {
-        this.incomeService.incomeEditEvent.next({ action, idx: this.rowData?.rowIndex, payload: this.rowData?.data });
-      } else {
-        this.liabilityService.liabilityEditEvent.next({ action, idx: this.rowData?.rowIndex, payload: this.rowData?.data });
-      }
+      this.expenseService.expenseEditEvent.next({ action, idx, payload: this.rowData?.data });
     }
   }
 
+  handleIncomeEvent(action: string, idx: number, payload: any) {
+    if (action === 'delete') {
+      this.incomeService.incomeEditEvent.next({ action, idx, payload });
+    } else {
+      this.showEdit = !this.showEdit;
+      this.incomeService.incomeEditEvent.next({ action, idx, payload: this.rowData?.data });
+    }
+  }
+
+  handleLiabilityEvent(action: string, idx: number, payload: any) {
+    if (action === 'delete') {
+      this.liabilityService.liabilityEditEvent.next({ action, idx, payload });
+    } else {
+      this.showEdit = !this.showEdit;
+      this.liabilityService.liabilityEditEvent.next({ action, idx, payload: this.rowData?.data });
+    }
+  }
+
+  onSubmit(action: string): void {
+    switch (this.path) {
+      case 'expenses':
+        this.handleExpenseEvent(action, this.rowData?.rowIndex, this.rowData?.data);
+        break;
+      case 'incomes':
+        this.handleIncomeEvent(action, this.rowData?.rowIndex, this.rowData?.data);
+        break;
+      case 'liabilities':
+        this.handleLiabilityEvent(action, this.rowData?.rowIndex, this.rowData?.data);
+        break;
+    }
+  }
 }
