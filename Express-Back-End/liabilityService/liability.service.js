@@ -22,7 +22,7 @@ const getLiability = async (req, res) => {
 
 const addNewLiability = async (req, res) => {
   const { name, due_date, amount, description } = req.body;
-  const liabilityId = util.generateID();
+  const liabilityId = util.generateID(name);
   const new_liability = new Liability({ id: liabilityId, name, due_date, amount: parseInt(amount), description });
   try {
     await new_liability.save();

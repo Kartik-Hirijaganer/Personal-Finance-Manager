@@ -6,7 +6,7 @@ const { DatabaseError, RecordNotFoundError } = require('../shared/errors');
 
 const getExpense = async (req, res) => {
   let expenses = [];
-  const id = req?.params?.id;
+  const id = req?.query?.id;
   try {
     if (id) {
       expenses = await Expense.findOne({ id });
@@ -22,7 +22,7 @@ const getExpense = async (req, res) => {
 
 const addNewExpense = async (req, res) => {
   const { to, date, amount, description } = req.body;
-  const expenseId = util.generateID();
+  const expenseId = util.generateID(to);
   const new_expense = new Expense({ id: expenseId, to, date, amount: parseInt(amount), description });
   try {
     await new_expense.save();

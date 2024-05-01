@@ -5,6 +5,7 @@ require('dotenv').config()
 
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const cors = require('cors');
 
 const util = require('../shared/util');
 const expenseService = require('./expense.service');
@@ -14,10 +15,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
 
+const corsOptions = {
+  origin: 'http://localhost:4200',
+  credentials: true,            //access-control-allow-credentials:true
+  optionSuccessStatus: 200
+}
+
+app.use(cors(corsOptions));
 util.connectDB();
 
 /** APIs */
-app.get('/expense/:id', expenseService.getExpense);
+app.get('/expense', expenseService.getExpense);
 
 app.post('/expense/add', expenseService.addNewExpense);
 

@@ -22,7 +22,7 @@ const getIncome = async (req, res) => {
 
 const addNewIncome = async (req, res) => {
   const { from, date, amount, description } = req.body;
-  const incomeId = util.generateID();
+  const incomeId = util.generateID(from);
   const new_income = new Income({ id: incomeId, from, date, amount: parseInt(amount), description });
   try {
     await new_income.save();
