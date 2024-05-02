@@ -42,12 +42,21 @@ export class IncomeService {
     return this.http.put<{ incomeId: string }>(`${environment.URL}:${environment.income_port}/income/update/${income.id}`, income, { headers: this.headers });
   }
 
-  getIncomes(): Observable<Income[]> {
+  // getIncomes(): Observable<Income[]> {
+  //   return this.http.get<{ incomes: Income[] }>(`${environment.URL}:${environment.income_port}/income`, { headers: this.headers })
+  //     .pipe(map(({ incomes }) => {
+  //       this.monthlyIncome = this.util.calculateTotalAmount(incomes);
+  //       this.monthlyIncomeEvent.next(this.monthlyIncome);
+  //       return incomes;
+  //     }));
+  // }
+
+  getIncomes(): Observable<any> {
     return this.http.get<{ incomes: Income[] }>(`${environment.URL}:${environment.income_port}/income`, { headers: this.headers })
       .pipe(map(({ incomes }) => {
         this.monthlyIncome = this.util.calculateTotalAmount(incomes);
         this.monthlyIncomeEvent.next(this.monthlyIncome);
-        return incomes;
+        return this.util.data;
       }));
   }
 }

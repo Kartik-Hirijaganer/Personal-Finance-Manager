@@ -45,12 +45,21 @@ export class ExpenseService {
     return this.http.put<{ expenseId: string }>(`${environment.URL}:${environment.expense_port}/expense/update/${expense.id}`, expense, { headers: this.headers });
   }
 
-  getExpenses(): Observable<Expense[]> {
+  // getExpenses(): Observable<Expense[]> {
+  //   return this.http.get<{ expenses: Expense[] }>(`${environment.URL}:${environment.expense_port}/expense`, { headers: this.headers })
+  //     .pipe(map(({ expenses }) => {
+  //       this.monthlyExpense = this.util.calculateTotalAmount(expenses);
+  //       this.monthlyExpenseEvent.next(this.monthlyExpense);
+  //       return expenses;
+  //     }));
+  // }
+
+  getExpenses(): Observable<any> {
     return this.http.get<{ expenses: Expense[] }>(`${environment.URL}:${environment.expense_port}/expense`, { headers: this.headers })
       .pipe(map(({ expenses }) => {
         this.monthlyExpense = this.util.calculateTotalAmount(expenses);
         this.monthlyExpenseEvent.next(this.monthlyExpense);
-        return expenses;
+        return this.util.data;
       }));
   }
 
