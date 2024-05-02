@@ -46,12 +46,21 @@ export class LiabilityService {
     return this.http.put<{ liabilityId: string }>(`${environment.URL}:${environment.liability_port}/liability/update/${liability.id}`, liability, { headers: this.headers });
   }
 
-  getLiabilities(): Observable<Liability[]> {
+  // getLiabilities(): Observable<Liability[]> {
+  //   return this.http.get<{ liabilities: Liability[] }>(`${environment.URL}:${environment.liability_port}/liability`, { headers: this.headers })
+  //     .pipe(map(({ liabilities }) => {
+  //       this.monthlyLiability = this.util.calculateTotalAmount(liabilities);
+  //       this.monthlyLiabilityEvent.next(this.monthlyLiability);
+  //       return liabilities;
+  //     }));
+  // }
+
+  getLiabilities(): Observable<any> {
     return this.http.get<{ liabilities: Liability[] }>(`${environment.URL}:${environment.liability_port}/liability`, { headers: this.headers })
       .pipe(map(({ liabilities }) => {
         this.monthlyLiability = this.util.calculateTotalAmount(liabilities);
         this.monthlyLiabilityEvent.next(this.monthlyLiability);
-        return liabilities;
+        return this.util.data;
       }));
   }
 

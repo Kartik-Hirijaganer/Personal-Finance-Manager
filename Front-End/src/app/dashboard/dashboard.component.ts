@@ -4,6 +4,7 @@ import { AgChartOptions, PixelSize, AgChartTheme } from "ag-charts-community";
 import { ExpenseService } from "../expense/expense.service";
 import { IncomeService } from "../income/income.service";
 import { LiabilityService } from "../liability/liability.service";
+import { DashboardService } from "./dashboard.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -19,7 +20,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     public expenseService: ExpenseService,
     public incomeService: IncomeService,
-    public liabilityService: LiabilityService
+    public liabilityService: LiabilityService,
+    private dashboardService: DashboardService
   ) {
     this.chartOptions = {
       theme: {
@@ -48,7 +50,7 @@ export class DashboardComponent implements OnInit {
     };
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.incomeService.monthlyIncomeEvent.subscribe((incomeAmount: number) => {
       this.currentBalance -= incomeAmount;
     })
@@ -58,5 +60,17 @@ export class DashboardComponent implements OnInit {
     this.expenseService.monthlyExpenseEvent.subscribe((expenseAmount: number) => {
       this.currentBalance -= expenseAmount;
     })
+
+    this.dashboardService.getChartData().subscribe((chartData) => {
+      this.setChartOptions({ data: chartData });
+    });
+
+  }
+
+  setChartOptions(currentOptions: any) {
+    this.chartOptions = {
+      ...this.chartOptions,
+      ...currentOptions
+    }
   }
 }
