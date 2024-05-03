@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "expense": "nodemon ./expenseService/expense.js",
     "income": "nodemon ./incomeService/income.js",
-    "liability": "nodemon ./liabilityService/liability.js"
+    "liability": "nodemon ./liabilityService/liability.js",
+    "user": "nodemon ./userService/user.js"
   },
   "keywords": [],
   "author": "",
