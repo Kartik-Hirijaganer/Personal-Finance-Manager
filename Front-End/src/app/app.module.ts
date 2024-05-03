@@ -15,6 +15,7 @@ import { IncomeComponent } from './income/income.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LiabilityComponent } from './liability/liability.component';
 import { ActionComponent } from './shared/action/action.component';
+import { UserComponent } from './user/user.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { ActionComponent } from './shared/action/action.component';
     IncomeComponent,
     ExpenseComponent,
     LiabilityComponent,
-    ActionComponent
+    ActionComponent,
+    UserComponent
   ],
   imports: [
     BrowserModule,
