@@ -1,1 +1,129 @@
-<div>user works!</div>
+<div class="container mt-4">
+  <div class="text-center">
+    <img class="user-logo" [src]="profile_img" alt="profile photo">
+    <div class="hide">Update</div>
+  </div>
+  <hr style="border-top: 2px solid #828282;">
+  <div class="row gx-3">
+    <div class="col-lg-8 fs-3">Profile Details</div>
+    <div class="col-lg-4">
+      <button type="text" class="btn btn-success" (click)="onEdit()" *ngIf="showEditBtn">Edit</button>
+    </div>
+  </div>
+  <hr style="border-top: 2px solid #828282;width: 200px;">
+  <form class="row g-3" [formGroup]="userForm" (ngSubmit)="onSubmit()" *ngIf="formLoaded">
+    <div class="col-lg-3">
+      <label for="fname" class="form-label">First Name<sup class="text-danger">*</sup></label>
+      <input type="text" 
+      [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('fname')?.valid && (userForm.get('fname')?.touched || userForm.get('fname')?.dirty))}" 
+      formControlName="fname" id="fname">
+      <div *ngIf="!userForm.get('fname')?.valid && (userForm.get('fname')?.touched || userForm.get('fname')?.dirty)" id="fname" class="invalid-feedback">
+        Please enter first name.
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <label for="mname" class="form-label">Middle Name</label>
+      <input type="text" class="form-control" id="mname" formControlName="mname">
+    </div>
+    <div class="col-lg-3">
+      <label for="lname" class="form-label">Last Name<sup class="text-danger">*</sup></label>
+      <input type="text" 
+      [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('lname')?.valid && (userForm.get('lname')?.touched || userForm.get('lname')?.dirty))}" 
+      id="lname" formControlName="lname">
+      <div *ngIf="!userForm.get('lname')?.valid && (userForm.get('lname')?.touched || userForm.get('lname')?.dirty)" id="lname" class="invalid-feedback">
+        Please enter last name.
+      </div>
+    </div>
+    <div class="col-lg-12"></div>
+    <div class="col-lg-3">
+      <label for="dob" class="form-label">Date of Birth<sup class="text-danger">*</sup></label>
+      <input type="text" 
+      [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('dob')?.valid && (userForm.get('dob')?.touched || userForm.get('dob')?.dirty))}" 
+      id="dob" formControlName="dob">
+      <div *ngIf="!userForm.get('dob')?.valid && (userForm.get('dob')?.touched || userForm.get('dob')?.dirty)" id="dob" class="invalid-feedback">
+        Please enter date of birth.
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <label for="gender" class="form-label">Gender<sup class="text-danger">*</sup></label>
+      <select 
+      [ngClass]="{'form-select': true, 'form-select-sm': true, 'is-invalid': (!userForm.get('gender')?.valid && (userForm.get('gender')?.touched || userForm.get('gender')?.dirty))}"
+      aria-label=".form-select-sm example" formControlName="gender">
+        <option selected></option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+        <option value="x">Prefer not to disclose</option>
+      </select>
+      <div *ngIf="!userForm.get('gender')?.valid && (userForm.get('gender')?.touched || userForm.get('gender')?.dirty)" 
+      id="gender" class="invalid-feedback">
+        Please select gender.
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <label for="phone" class="form-label">Phone Number<sup class="text-danger">*</sup></label>
+      <input type="text" 
+      [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('phone')?.valid && (userForm.get('phone')?.touched || userForm.get('phone')?.dirty))}" 
+      id="phone" formControlName="phone">
+      <div *ngIf="!userForm.get('phone')?.valid && (userForm.get('phone')?.touched || userForm.get('phone')?.dirty)" id="phone" class="invalid-feedback">
+        Please enter valid phone number.
+      </div>
+    </div>
+    <div class="col-lg-12"></div>
+    <div class="col-lg-3">
+      <label for="email" class="form-label">Email Address<sup class="text-danger">*</sup></label>
+      <input type="text" 
+      [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('email')?.valid && (userForm.get('email')?.touched || userForm.get('email')?.dirty))}" 
+      id="email" formControlName="email">
+      <div *ngIf="!userForm.get('email')?.valid && (userForm.get('email')?.touched || userForm.get('email')?.dirty)" id="email" class="invalid-feedback">
+        Please enter email address.
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <label for="id" class="form-label">Username<sup class="text-danger">*</sup></label>
+      <input type="text" 
+      [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('id')?.valid && (userForm.get('id')?.touched || userForm.get('id')?.dirty))}" 
+      id="id" formControlName="id">
+      <div *ngIf="!userForm.get('id')?.valid && (userForm.get('id')?.touched || userForm.get('id')?.dirty)" 
+      id="id" class="invalid-feedback">
+        Please enter username.
+      </div>
+    </div>
+    <div class="col-lg-12"></div>
+    <div class="col-lg-4">
+      <label for="password" class="form-label">Password<sup class="text-danger">*</sup></label>
+      <input type="password" 
+      [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('password')?.valid && (userForm.get('password')?.touched || userForm.get('password')?.dirty))}" 
+      id="password" formControlName="password">
+      <div *ngIf="!userForm.get('password')?.valid && (userForm.get('password')?.touched || userForm.get('password')?.dirty)" id="password" class="invalid-feedback">
+        Please enter password.
+      </div>
+    </div>
+    <div class="col-lg-4" *ngIf="editMode || !showEditBtn">
+      <label for="repass" class="form-label">Re-Enter Password<sup class="text-danger">*</sup></label>
+      <input [type]="showPassword ? 'text' : 'password'" 
+      [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('repass')?.valid && (userForm.get('repass')?.touched || userForm.get('repass')?.dirty))}" 
+      id="repass"
+      formControlName="repass">
+      <div *ngIf="!userForm.get('repass')?.valid && (userForm.get('repass')?.touched || userForm.get('repass')?.dirty)" class="invalid-feedback">
+        Confirm password check is mandatory.
+      </div>
+      <div *ngIf="passwordMismatch" id="repass" class="text-danger">
+        Re-entered password doesn't match.
+      </div>
+    </div>
+    <div class="col-lg-4" *ngIf="!editMode && showEditBtn">
+    </div>
+    <div class="col-lg-4" *ngIf="editMode">
+      <img *ngIf="!showPassword" (click)="showHidePassword()" style="margin-top: 40px;" src="../../assets/imgs/eye-show.svg" alt="Show password" width="20" height="20">
+      <img *ngIf="showPassword" (click)="showHidePassword()" style="margin-top: 40px;" src="../../assets/imgs/eye-hide.svg" alt="Hide password" width="20" height="20">
+    </div>
+    <div class="col-lg-4" *ngIf="!editMode"></div>
+    <div class="col-lg-3">
+      <button class="btn btn-success mr-3 mb-4" type="submit" [disabled]="!userForm.valid">Save</button>
+      <button class="btn btn-danger ms-3 mb-4" (click)="onCancel()">Cancel</button>
+    </div>
+    <div class="col-lg-12">
+    </div>
+  </form>
+</div>

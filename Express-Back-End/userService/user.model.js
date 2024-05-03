@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const { ReminderSchema } = require('../shared/models/reminder.model');
+
 const UserSchema = new Schema({
   id: {
     type: String,
@@ -27,6 +29,10 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
+  gender: {
+    type: String,
+    required: true
+  },
   email: {
     type: String,
     required: true,
@@ -44,33 +50,7 @@ const UserSchema = new Schema({
     type: [String]
   },
   reminders: {
-    type: [{
-      name: {
-        type: String,
-        required: true,
-        unique: true
-      },
-      date: {
-        type: String,
-        required: true
-      },
-      frequency: {
-        type: String,
-        default: 'daily'
-      },
-      note: {
-        type: String,
-        required: true
-      },
-      message: {
-        type: String,
-        default: ''
-      },
-      severity: {
-        type: String,
-        default: 'med'
-      }
-    }]
+    type: [ReminderSchema]
   }
 });
 

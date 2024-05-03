@@ -14,7 +14,7 @@ const appRoutes: Routes = [
   { path: 'incomes', component: IncomeComponent },
   { path: 'expenses', component: ExpenseComponent },
   { path: 'liabilities', component: LiabilityComponent},
-  { path: 'users', component: UserComponent }
+  { path: 'user', component: UserComponent }
 ]
 
 @NgModule({

@@ -1,15 +1,16 @@
 export class User {
   public id: string;
-  public password: string;
   public fname: string;
   public mname: string;
   public lname: string;
   public dob: string;
+  public gender: string;
   public email: string;
-  public mobile: string;
-  public profile_img: string;
-  public accounts: [ string ];
-  public reminders: [{
+  public phone: string;
+  public profile_img?: string;
+  public pass?: string;
+  public accounts?: [ string ];
+  public reminders?: [{
     name: string,
     date: string,
     frequency: string,
@@ -20,13 +21,14 @@ export class User {
 
   constructor(
     id: string, 
-    password: string, 
+    pass: string, 
     fname: string, 
     mname: string, 
     lname: string, 
     dob: string, 
+    gender: string,
     email: string, 
-    mobile: string, 
+    phone: string, 
     profile_img: string, 
     accounts: [ string ], 
     reminders: [{
@@ -39,13 +41,14 @@ export class User {
     }]
   ) {
     this.id = id;
-    this.password = password;
+    this.pass = pass;
     this.fname = fname;
     this.mname = mname;
     this.lname = lname;
     this.dob = dob;
+    this.gender = gender;
     this.email = email;
-    this.mobile = mobile;
+    this.phone = phone;
     this.profile_img = profile_img;
     this.accounts = accounts;
     this.reminders = reminders;
