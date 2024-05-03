@@ -19,12 +19,18 @@ export class UserComponent implements OnInit {
   public showEditBtn: boolean = false;
   public formLoaded: boolean = false;
   public profile_img: string = 'https://www.w3schools.com/howto/img_avatar.png';
+  bsConfig?: Partial<BsDatepickerConfig>;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private userService: UserService
-  ) { }
+  ) {
+    this.bsConfig = Object.assign({}, {
+      containerClass: 'theme-default',
+      showWeekNumbers: false
+    })
+  }
 
   ngOnInit(): void {
     this.route.url

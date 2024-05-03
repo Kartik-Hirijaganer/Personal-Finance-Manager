@@ -8,7 +8,7 @@ export class User {
   public email: string;
   public phone: string;
   public profile_img?: string;
-  public pass?: string;
+  public password?: string;
   public accounts?: [ string ];
   public reminders?: [{
     name: string,
@@ -21,7 +21,7 @@ export class User {
 
   constructor(
     id: string, 
-    pass: string, 
+    password: string, 
     fname: string, 
     mname: string, 
     lname: string, 
@@ -41,7 +41,7 @@ export class User {
     }]
   ) {
     this.id = id;
-    this.pass = pass;
+    this.password = password;
     this.fname = fname;
     this.mname = mname;
     this.lname = lname;

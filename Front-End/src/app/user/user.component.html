@@ -37,9 +37,10 @@
     <div class="col-lg-12"></div>
     <div class="col-lg-3">
       <label for="dob" class="form-label">Date of Birth<sup class="text-danger">*</sup></label>
-      <input type="text" 
+      <input type="text" placeholder="mm-dd-yyyy"
       [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('dob')?.valid && (userForm.get('dob')?.touched || userForm.get('dob')?.dirty))}" 
-      id="dob" formControlName="dob">
+      bsDatepicker [bsConfig]="bsConfig" id="dob"
+        formControlName="dob">
       <div *ngIf="!userForm.get('dob')?.valid && (userForm.get('dob')?.touched || userForm.get('dob')?.dirty)" id="dob" class="invalid-feedback">
         Please enter date of birth.
       </div>
