@@ -29,19 +29,19 @@
       <table class="tableBorder tdRightSpace">
         <tr>
           <th width="37%" class="tdbr label">Total Monthly Income</th>
-          <td width="63%" class="tdbr value">{{summary.income}}</td>
+          <td width="63%" class="tdbr value">{{symbolHelper (seperator summary.income) '$'}}</td>
         </tr>
         <tr>
           <th width="37%" class="tdbr label">Total Monthly Expense</th>
-          <td width="63%" class="tdbr value">{{summary.expense}}</td>
+          <td width="63%" class="tdbr value">{{symbolHelper (seperator summary.expense) '$'}}</td>
         </tr>
         <tr>
           <th width="37%" class="tdbr label">Total Monthly Liability</th>
-          <td width="63%" class="tdbr value">{{summary.liability}}</td>
+          <td width="63%" class="tdbr value">{{symbolHelper (seperator summary.liability) '$'}}</td>
         </tr>
         <tr class="lastRow label" style="background-color: #666;">
           <th class="tdbr label" style="color:#fff;background-color:#666">Current Balance</th>
-          <td class="tdbr last value" style="color:#fff">{{summary.current}}</td>
+          <td class="tdbr last value" style="color:#fff">{{symbolHelper (seperator summary.current) '$'}}</td>
         </tr>
       </table>
       <div class="title mt-3">6 Months Cash Flow</div>
@@ -68,14 +68,14 @@
         <tr>
           <td class="tdbr label">{{name}}</td>
           {{#each values}}
-          <td class="tdbr value">{{this}}</td>
+          <td class="tdbr value">{{symbolHelper (seperator this) '$'}}</td>
           {{/each}}
         </tr>
         {{/each}}
         <tr class="lastRow label" style="background-color: #666;">
           <td class="tdbr label" style="color:#fff">Total</td>
           {{#each totals}}
-          <td class="tdbr last value" style="color:#fff">{{this}}</td>
+          <td class="tdbr last value" style="color:#fff">{{symbolHelper (seperator this) '$'}}</td>
           {{/each}}
         </tr>
       </table>
