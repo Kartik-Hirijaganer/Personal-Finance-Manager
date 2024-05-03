@@ -50,10 +50,21 @@ class BrowserLaunchError extends Error {
   }
 }
 
+class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ValidationError",
+      this.errorMessage = message,
+      this.errorCode = 'GNR-0001',
+      this.status = 400
+  }
+}
+
 module.exports = {
   DatabaseError,
   RecordNotFoundError,
   GeneratePdfError,
   HandlebarCompileError,
-  BrowserLaunchError
+  BrowserLaunchError,
+  ValidationError
 }
