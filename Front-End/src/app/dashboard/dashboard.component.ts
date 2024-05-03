@@ -5,6 +5,7 @@ import { ExpenseService } from "../expense/expense.service";
 import { IncomeService } from "../income/income.service";
 import { LiabilityService } from "../liability/liability.service";
 import { DashboardService } from "./dashboard.service";
+import { DownloadService } from "../shared/download.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +22,8 @@ export class DashboardComponent implements OnInit {
     public expenseService: ExpenseService,
     public incomeService: IncomeService,
     public liabilityService: LiabilityService,
-    private dashboardService: DashboardService
+    private dashboardService: DashboardService,
+    private downloadService: DownloadService
   ) {
     this.chartOptions = {
       theme: {
@@ -33,14 +35,7 @@ export class DashboardComponent implements OnInit {
       // Data: Data to be displayed in the chart
       title: { text: '6 Months Cash Flow' },
       height: 270 as PixelSize,
-      data: [
-        { month: 'Jan', expense: 20000, liability: 10000, income: 120000, balance: 20000 },
-        { month: 'Feb', expense: 12000, liability: 10000, income: 120000, balance: 22000 },
-        { month: 'Mar', expense: 50000, liability: 10000, income: 120000, balance: 25000 },
-        { month: 'Apr', expense: 76000, liability: 10000, income: 120000, balance: 120000 },
-        { month: 'May', expense: 15000, liability: 10000, income: 120000, balance: 10000 },
-        { month: 'Jun', expense: 20000, liability: 10000, income: 120000, balance: 10500 },
-      ],
+      data: [ ],
       // Series: Defines which chart type and data to use
       series: [
         { type: 'bar', xKey: 'month', yKey: 'expense', yName: 'Expense', stacked: false },
@@ -61,10 +56,10 @@ export class DashboardComponent implements OnInit {
       this.currentBalance -= expenseAmount;
     })
 
-    this.dashboardService.getChartData().subscribe((chartData) => {
-      this.setChartOptions({ data: chartData });
+    this.dashboardService.getChartData().subscribe(({incomes, expenses, liabilities}) => {
+      const data = this.dashboardService.constructChartData(incomes, expenses, liabilities);
+      this.setChartOptions({ data });
     });
-
   }
 
   setChartOptions(currentOptions: any) {
@@ -72,5 +67,11 @@ export class DashboardComponent implements OnInit {
       ...this.chartOptions,
       ...currentOptions
     }
+  }
+
+  downloadPdf() {
+    this.dashboardService.getChartData().subscribe((response) => {
+      this.downloadService.generatePdf(response);
+    });
   }
 }

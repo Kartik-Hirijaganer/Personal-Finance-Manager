@@ -49,13 +49,11 @@ export class DashboardService {
     return chartData;
   }
 
-  getChartData(): Observable<Chart[]> {
+  getChartData(): Observable<{incomes: Income[], expenses: Expense[], liabilities: Liability[]}> {
     return forkJoin({
       incomes: this.incomeService.getIncomes(),
       expenses: this.expenseService.getExpenses(),
       liabilities: this.liabilityService.getLiabilities()
-    }).pipe(map(({ incomes, expenses, liabilities }) => {
-      return this.constructChartData(incomes, expenses, liabilities);
-    }));
+    });
   }
 }
