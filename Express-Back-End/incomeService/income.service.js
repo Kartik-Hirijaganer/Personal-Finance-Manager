@@ -15,7 +15,7 @@ const getIncome = async (req, res) => {
     }
   } catch (err) {
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage: 'Failed to get income data', error });
+    return res.status(400).send({ errorMessage: 'Failed to get income data', error });
   }
   return res.status(200).send({ incomes });
 }
@@ -48,10 +48,10 @@ const updateIncome = async (req, res) => {
   } catch (err) {
     const errorMessage = 'Failed to update income data';
     if (err instanceof RecordNotFoundError) {
-      return res.status(200).send({ errorMessage, err });
+      return res.status(400).send({ errorMessage, err });
     }
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage, error });
+    return res.status(400).send({ errorMessage, error });
   }
   return res.status(200).send({ incomeId: id });
 }
@@ -63,7 +63,7 @@ const deleteIncome = async (req, res) => {
     await Income.findOneAndDelete(query);
   } catch (err) {
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage: 'Failed to delete income data', error });
+    return res.status(400).send({ errorMessage: 'Failed to delete income data', error });
   }
   return res.status(200).send({ incomeId: id });
 }

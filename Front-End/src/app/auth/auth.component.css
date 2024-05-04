@@ -1,0 +1,14 @@
+.container{
+  /* background-image: url('../../assets/imgs/logo2.png'); */
+  background-color: #F0EBE3;
+  color: #102C57;
+  font-weight: bold;
+  /* margin-top: 50px; */
+  /* background-image: url('https://www.moneycrashers.com/wp-content/uploads/2019/01/personal-budgeting-tips.jpg'); */
+  height: 400px;
+  width: 500px;
+  border-radius: 2%;
+}
+.header{
+  background-color: #333948!important;
+}

@@ -16,6 +16,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { LiabilityComponent } from './liability/liability.component';
 import { ActionComponent } from './shared/action/action.component';
 import { UserComponent } from './user/user.component';
+import { AuthComponent } from './auth/auth.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { UserComponent } from './user/user.component';
     ExpenseComponent,
     LiabilityComponent,
     ActionComponent,
-    UserComponent
+    UserComponent,
+    AuthComponent
   ],
   imports: [
     BrowserModule,

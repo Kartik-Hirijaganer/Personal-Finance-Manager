@@ -7,6 +7,7 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
+const {authorize} = require('../auth/auth.service');
 
 const util = require('../shared/util');
 const userService = require('./user.service');
@@ -29,6 +30,8 @@ util.connectDB();
 app.get('/user/:id', userService.getUser);
 
 app.post('/user/add', userService.addNewUser);
+
+app.use(authorize);
 
 app.post('/user/generate-pdf', util.generatePdf);
 

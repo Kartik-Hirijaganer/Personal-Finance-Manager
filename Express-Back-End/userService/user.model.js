@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const { ReminderSchema } = require('../shared/models/reminder.model');
 
 const UserSchema = new Schema({
-  id: {
+  userId: {
     type: String,
     required: true,
     unique: true
