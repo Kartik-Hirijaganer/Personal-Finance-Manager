@@ -8,20 +8,21 @@ const cors = require('cors');
 
 const util = require('../shared/util');
 const liabilityService = require('./liability.service');
+const { authorize } = require('../auth/auth.service');
 
 const corsOptions = {
   origin: 'http://localhost:4200',
   credentials: true,            //access-control-allow-credentials:true
   optionSuccessStatus: 200
 }
+util.connectDB();
 
 /** Middlewares */
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
 app.use(cors(corsOptions))
-
-util.connectDB();
+app.use(authorize);
 
 /** APIs */
 app.get('/liability', liabilityService.getLiability);

@@ -1,6 +1,5 @@
 'use strict';
 
-const util = require('../shared/util');
 const User = require('./user.model');
 const { DatabaseError, RecordNotFoundError, ValidationError } = require('../shared/errors');
 
