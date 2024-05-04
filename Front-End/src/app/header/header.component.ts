@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 
 import { UserService } from '../user/user.service';
+import { AuthService } from '../auth/auth.service';
 import { switchMap } from 'rxjs';
 import { User } from '../user/user.model';
 
@@ -14,7 +15,11 @@ export class HeaderComponent implements OnInit {
   public user: string = '';
   public profile_img: string = '';
 
-  constructor( private userService: UserService, private route: ActivatedRoute ) { }
+  constructor( 
+    private userService: UserService, 
+    private route: ActivatedRoute,
+    public authService: AuthService
+  ) { }
 
   ngOnInit(): void {
     this.route.url.pipe(

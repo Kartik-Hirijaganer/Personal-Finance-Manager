@@ -7,9 +7,11 @@ import { IncomeComponent } from "./income/income.component";
 import { ExpenseComponent } from "./expense/expense.component";
 import { LiabilityComponent } from "./liability/liability.component";
 import { UserComponent } from "./user/user.component";
+import { AuthComponent } from "./auth/auth.component";
 
 const appRoutes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: AuthComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'incomes', component: IncomeComponent },
   { path: 'expenses', component: ExpenseComponent },

@@ -15,7 +15,7 @@ const getExpense = async (req, res) => {
     }
   } catch (err) {
     const error =  new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage: 'Failed to get expense data', error });
+    return res.status(400).send({ errorMessage: 'Failed to get expense data', error });
   }
   return res.status(200).send({ expenses });
 }
@@ -47,10 +47,10 @@ const updateExpense = async (req, res) => {
   } catch (err) {
     const errorMessage = 'Failed to update expense data';
     if (err instanceof RecordNotFoundError) {
-      return res.status(200).send({ errorMessage, err });
+      return res.status(400).send({ errorMessage, err });
     }
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage, error });
+    return res.status(400).send({ errorMessage, error });
   }
   return res.status(200).send({ expenseId: id });
 }
@@ -62,7 +62,7 @@ const deleteExpense = async (req, res) => {
     await Expense.findOneAndDelete(query);
   } catch (err) {
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage: 'Failed to delete expense data', error });
+    return res.status(400).send({ errorMessage: 'Failed to delete expense data', error });
   }
   return res.status(200).send({ expenseId: id });
 }

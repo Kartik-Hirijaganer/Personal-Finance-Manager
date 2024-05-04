@@ -15,7 +15,7 @@ const getLiability = async (req, res) => {
     }
   } catch (err) {
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage: 'Failed to get liability data', error });
+    return res.status(400).send({ errorMessage: 'Failed to get liability data', error });
   }
   return res.status(200).send({ liabilities });
 }
@@ -47,10 +47,10 @@ const updateLiability = async (req, res) => {
   } catch (err) {
     const errorMessage = 'Failed to update liability data';
     if (err instanceof RecordNotFoundError) {
-      return res.status(200).send({ errorMessage, err });
+      return res.status(400).send({ errorMessage, err });
     }
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage, error });
+    return res.status(400).send({ errorMessage, error });
   }
   return res.status(200).send({ liabilityId: id });
 }
@@ -62,7 +62,7 @@ const deleteLiability = async (req, res) => {
     await Liability.findOneAndDelete(query);
   } catch (err) {
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage: 'Failed to delete liability data', error });
+    return res.status(400).send({ errorMessage: 'Failed to delete liability data', error });
   }
   return res.status(200).send({ liabilityId: id });
 }

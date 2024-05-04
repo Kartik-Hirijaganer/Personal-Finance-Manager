@@ -98,6 +98,7 @@ export class UserComponent implements OnInit {
       this.passwordMismatch = true;
       return;
     }
+    // payload.profile_img = this.profile_img;
     this.userService.addUser(payload).subscribe(response => {
       if (response) {
         this.router.navigateByUrl('/dashboard');
