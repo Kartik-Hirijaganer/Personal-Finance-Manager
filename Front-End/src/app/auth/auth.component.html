@@ -8,10 +8,11 @@
         <div class="mb-3">
           <label for="email" class="form-label">Email address</label>
           <input type="email" 
+          formControlName="email"
           placeholder="abc@email.com" 
-          [ngClass]="{'form-control': true, 'is-invalid': (!loginForm.get('email')?.valid && (loginForm.get('email')?.touched || loginForm.get('password')?.dirty))}" 
+          [ngClass]="{'form-control': true, 'is-invalid': (!loginForm.get('email')?.valid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty))}" 
           id="email" aria-describedby="email">
-          <div id="email" *ngIf="!loginForm.get('password')?.valid && (loginForm.get('password')?.touched || loginForm.get('password')?.dirty)" class="form-text invalid-feedback">Please enter a valid email address</div>
+          <div id="email" *ngIf="!loginForm.get('email')?.valid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty)" class="form-text invalid-feedback">Please enter a valid email address</div>
         </div>
         <div class="mb-5">
           <label for="password" class="form-label">Password</label>
