@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
+import { ActivatedRoute, UrlSegment } from '@angular/router';
+import { switchMap } from 'rxjs';
 
 import { UserService } from '../user/user.service';
 import { AuthService } from '../auth/auth.service';
-import { switchMap } from 'rxjs';
-import { User } from '../user/user.model';
 
 @Component({
   selector: 'app-header',
