@@ -44,6 +44,7 @@ export class UserComponent implements OnInit {
         if (user) {
           this.showEditBtn = true;
           user?.profile_img && (this.userService.profile_img = user.profile_img);
+          this.userService.userEvent.next({ user_fname: user.fname, profile_img: user.profile_img, userId: user.userId })
         }
         this.setUserForm(user);
       })
@@ -62,7 +63,6 @@ export class UserComponent implements OnInit {
       });
     } else {
       this.userForm.addControl('repass', new FormControl('', Validators.required));
-      this.userForm.setValue({ profile_img: data.profile_img })
     }
     this.formLoaded = true;
   }

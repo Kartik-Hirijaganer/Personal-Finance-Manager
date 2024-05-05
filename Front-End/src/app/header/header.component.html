@@ -6,40 +6,46 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
-        <li class="nav-item" routerLinkActive="active-link" routerLink="/dashboard">
+        <li class="nav-item" routerLinkActive="active-link" routerLink="/dashboard"
+          [ngStyle]="{pointerEvents: !!userName ? 'auto' : 'not-allowed', cursor: !!userName ? 'pointer' : 'not-allowed' }">
           <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;" aria-current="page"
             routerLinkActive="active-link">
             <img class="navbar-link-logo" src="../../assets/imgs/transaction.svg"><span>Transactions</span>
           </a>
         </li>
-        <li class="nav-item" routerLinkActive="active-link" routerLink="/incomes">
+        <li class="nav-item" routerLinkActive="active-link" routerLink="/incomes"
+          [ngStyle]="{pointerEvents: !!userName ? 'auto' : 'not-allowed', cursor: !!userName ? 'pointer' : 'not-allowed' }">
           <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;"
             routerLinkActive="active-link">
             <span><img src="../../assets/imgs/income.svg" class="navbar-link-logo"></span>
             Incomes
           </a>
         </li>
-        <li class="nav-item" routerLinkActive="active-link" routerLink="/expenses">
+        <li class="nav-item" routerLinkActive="active-link" routerLink="/expenses"
+          [ngStyle]="{pointerEvents: !!userName ? 'auto' : 'not-allowed', cursor: !!userName ? 'pointer' : 'not-allowed' }">
           <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;"
             routerLinkActive="active-link">
             <span><img src="../../assets/imgs/expense.svg" class="navbar-link-logo"></span>
             Expenses
           </a>
         </li>
-        <li class="nav-item" routerLinkActive="active-link" routerLink="/liabilities">
+        <li class="nav-item" routerLinkActive="active-link" routerLink="/liabilities"
+          [ngStyle]="{pointerEvents: !!userName ? 'auto' : 'not-allowed', cursor: !!userName ? 'pointer' : 'not-allowed' }">
           <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;"
             routerLinkActive="active-link">
             <span><img src="../../assets/imgs/price-tag.svg" class="navbar-link-logo"></span>
             Liabilities
           </a>
         </li>
-        <li *ngIf="userService.user_fname" class="nav-item dropdown mt-3" style="margin-left: 500px;">
+        <li *ngIf="userName" class="nav-item dropdown mt-3"
+          [ngStyle]="{ 'margin-left': '500px;', pointerEvents: !!userName ? 'auto' : 'not-allowed', cursor: !!userName ? 'pointer' : 'not-allowed' }"
+          style="margin-left: 500px;">
           <a class="nav-link dropdown-toggle" style="color: #ffff;" href="#" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">
-            {{userService.user_fname}}&nbsp;<span><img [src]="userService.profile_img" class="navbar-user-logo"></span>
+            {{userName}}&nbsp;<span><img [src]="profile_img" class="navbar-user-logo"></span>
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" [routerLink]="['user', userService.userId]">Profile</a></li>
+            <li><a class="dropdown-item" [routerLink]="['user', userId]">Profile</a></li>
             <li><a class="dropdown-item" href="#">Accounts</a></li>
             <li><a class="dropdown-item" href="#">Delete Profile</a></li>
             <li>
