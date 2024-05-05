@@ -100,10 +100,10 @@ const register = async (req, res) => {
     }
   };
   let userId;
-  const payload = JSON.stringify(postData);
-  options.headers['Content-Length'] = Buffer.byteLength(payload);
   try {
     postData['password'] = bcrypt.hashSync(password, 10);
+    const payload = JSON.stringify(postData);
+    options.headers['Content-Length'] = Buffer.byteLength(payload);
     (userId = await httprequest(options, payload));
   } catch (err) {
     if (err instanceof DatabaseError) {

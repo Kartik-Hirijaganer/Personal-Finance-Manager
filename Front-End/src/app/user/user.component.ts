@@ -6,6 +6,7 @@ import { catchError, switchMap, of } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 
 import { UserService } from './user.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-user',
@@ -26,7 +27,8 @@ export class UserComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     public userService: UserService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private authService: AuthService
   ) {
     this.bsConfig = Object.assign({}, {
       containerClass: 'theme-default',
@@ -35,19 +37,27 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.url
-      .pipe(switchMap((event: UrlSegment[]) => {
+    this.route.url.pipe(
+      switchMap((event: UrlSegment[]) => {
         this.userId = event[1].path;
+        if (this.userId === 'null' || !this.userId) {
+          return of(null);
+        }
         return this.userService.getUser(this.userId);
-      }))
-      .subscribe(({ user }) => {
+      })).subscribe((response) => {
+        if (!response) {
+          this.setUserForm(null);
+          return;
+        }
+        const user = response.user;
         if (user) {
           this.showEditBtn = true;
           user?.profile_img && (this.userService.profile_img = user.profile_img);
           this.userService.userEvent.next({ user_fname: user.fname, profile_img: user.profile_img, userId: user.userId })
         }
         this.setUserForm(user);
-      })
+      });
+    // this.setUserForm(null); // uncomment if new register form doesn't open
   }
 
   showHidePassword() {
@@ -78,7 +88,7 @@ export class UserComponent implements OnInit {
       email: new FormControl<string>('', [Validators.required, Validators.email]),
       password: new FormControl<string>('', Validators.required),
       userId: new FormControl<string>('', Validators.required),
-      profile_img: new FormControl<File | null>(null, Validators.required)
+      profile_img: new FormControl<File | null>(null)
     });
   }
 
@@ -117,22 +127,39 @@ export class UserComponent implements OnInit {
       this.passwordMismatch = true;
       return;
     }
-    this.userService.addUser(payload)
-      .pipe(
-        catchError(err => {
-          const title: string = err.error?.errorMessage;
-          let message: string = 'Database error';
-          if (err.error?.error?.errorMessage?.includes('E11000')) {
-            message = 'Duplicate key error. Username, email, phone must be unique';
-          }
-          this.toastr.error(message, title);
-          return of(null);
-        })
-      )
+    if (!payload.profile_img) {
+      payload.profile_img = this.userService.profile_img || 'https://www.w3schools.com/howto/img_avatar.png';
+    }
+    if (this.editMode) {
+      this.userService.updateUser(payload)
+      .pipe(catchError(err => {
+        const title: string = err.error?.errorMessage;
+        let message: string = 'Database error';
+        this.toastr.error(message, title);
+        return of(null);
+      }))
+      .subscribe(response => {
+        return response.userId;
+      })
+    } else {
+      this.authService.register(payload)
+      .pipe(catchError(err => {
+        const title: string = err.error?.errorMessage;
+        let message: string = 'Database error';
+        if (err.error?.error?.errorMessage?.includes('E11000')) {
+          message = 'Duplicate key error. Username, email, phone must be unique';
+        }
+        this.toastr.error(message, title);
+        return of(null);
+      }))
       .subscribe(response => {
         if (response) {
+          this.authService.setToken(response.token);
+          this.userService.userEvent.next({ user_fname: payload.fname, profile_img: payload.profile_img, userId: response.userId })
           this.router.navigateByUrl(`/dashboard/${response.userId}`);
+          // this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId }})
         }
-      });
+      })
+    }
   }
 }

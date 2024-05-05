@@ -21,8 +21,6 @@ export class HeaderComponent implements OnInit {
       this.userName = userDetails.user_fname;
       this.profile_img = userDetails.profile_img;
       this.userId = userDetails.userId;
-      console.log('here');
-
     })
   }
 }

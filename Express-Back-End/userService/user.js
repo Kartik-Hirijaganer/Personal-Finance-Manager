@@ -27,7 +27,7 @@ app.use(cors(corsOptions));
 util.connectDB();
 
 /** APIs */
-app.get('/user/:id', userService.getUser);
+app.get('/user/:userId', userService.getUser);
 
 app.post('/user/add', userService.addNewUser);
 
