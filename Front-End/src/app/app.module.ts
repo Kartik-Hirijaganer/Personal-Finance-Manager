@@ -17,6 +17,7 @@ import { LiabilityComponent } from './liability/liability.component';
 import { ActionComponent } from './shared/action/action.component';
 import { UserComponent } from './user/user.component';
 import { AuthComponent } from './auth/auth.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { AuthComponent } from './auth/auth.component';
     LiabilityComponent,
     ActionComponent,
     UserComponent,
-    AuthComponent
+    AuthComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,

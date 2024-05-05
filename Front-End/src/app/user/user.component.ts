@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { Router, ActivatedRoute, UrlSegment } from '@angular/router';
+import { switchMap, of } from 'rxjs';
 
 import { UserService } from './user.service';
-import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-user',
@@ -35,11 +35,14 @@ export class UserComponent implements OnInit {
   ngOnInit(): void {
     this.route.url
       .pipe(switchMap((event: UrlSegment[]) => {
-        // const userId = event[0].path || 'username';
-        const userId = 'username'
+        const userId = event[1].path;
+        if (userId === 'null') {
+          return of(null);
+        }
         return this.userService.getUser(userId);
       }))
-      .subscribe(({ user }) => {
+      .subscribe((response) => {
+        const user = response?.user;
         if (user) {
           this.showEditBtn = true;
           this.profile_img = user?.profile_img && user.profile_img;

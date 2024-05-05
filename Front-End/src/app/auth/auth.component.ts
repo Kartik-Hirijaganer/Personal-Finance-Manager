@@ -10,7 +10,7 @@ import { AuthService } from './auth.service';
 })
 export class AuthComponent implements OnInit {
   loginForm: FormGroup = new FormGroup({});
-  public userId: string = 'username';
+  public userId: string | null = null;
 
   constructor( private authService: AuthService ) { }
 
