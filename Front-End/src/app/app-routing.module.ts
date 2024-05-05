@@ -12,7 +12,7 @@ import { AuthComponent } from "./auth/auth.component";
 const appRoutes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: AuthComponent },
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'dashboard/:userId', component: DashboardComponent },
   { path: 'incomes', component: IncomeComponent },
   { path: 'expenses', component: ExpenseComponent },
   { path: 'liabilities', component: LiabilityComponent},

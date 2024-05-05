@@ -23,9 +23,6 @@ app.use(bodyParser.json());
 app.use(morgan('tiny'));
 app.use(cors(corsOptions));
 
-const util = require('../shared/util');
-util.connectDB();
-
 app.post('/login', login)
 
 app.post('/register', register)
@@ -34,5 +31,4 @@ app.listen(process.env.AUTH_PORT, () => {
   console.log('Auth running on port', process.env.AUTH_PORT);
 })
 
-module.exports = authorize;
 

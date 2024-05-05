@@ -22,9 +22,7 @@ textarea.ng-invalid.ng-touched {
 .hide{
   display: none;
 }
-.user-logo:hover + .hide{
-  display: block;
-}
+
 .user-logo:hover{
   filter: brightness(0.5);
 }

@@ -9,7 +9,7 @@
     "income": "nodemon ./incomeService/income.js",
     "liability": "nodemon ./liabilityService/liability.js",
     "user": "nodemon ./userService/user.js",
-    "auth": "nodemon ./shared/auth.js"
+    "auth": "nodemon ./auth/auth.js"
   },
   "keywords": [],
   "author": "",
