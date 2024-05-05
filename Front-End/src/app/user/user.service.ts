@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment.dev';
-import { User } from './user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,5 +23,4 @@ export class UserService {
   validatePassword(pass: string, repass: string): boolean {
     return pass === repass;
   }
-
 }

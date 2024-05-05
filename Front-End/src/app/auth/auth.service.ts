@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
-
-import { environment } from '../../environments/environment.dev';
 import { ToastrService } from 'ngx-toastr';
 
 @Injectable({

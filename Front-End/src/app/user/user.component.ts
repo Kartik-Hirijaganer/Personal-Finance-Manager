@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { Router, ActivatedRoute, UrlSegment } from '@angular/router';
+import { catchError, switchMap, of } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 import { UserService } from './user.service';
-import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-user',
@@ -18,13 +19,15 @@ export class UserComponent implements OnInit {
   public editMode: boolean = false;
   public showEditBtn: boolean = false;
   public formLoaded: boolean = false;
+  private userId: string | null = null;
   public profile_img: string = 'https://www.w3schools.com/howto/img_avatar.png';
   bsConfig?: Partial<BsDatepickerConfig>;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private userService: UserService
+    private userService: UserService,
+    private toastr: ToastrService
   ) {
     this.bsConfig = Object.assign({}, {
       containerClass: 'theme-default',
@@ -35,9 +38,8 @@ export class UserComponent implements OnInit {
   ngOnInit(): void {
     this.route.url
       .pipe(switchMap((event: UrlSegment[]) => {
-        // const userId = event[0].path || 'username';
-        const userId = 'username'
-        return this.userService.getUser(userId);
+        this.userId = event[1].path;
+        return this.userService.getUser(this.userId);
       }))
       .subscribe(({ user }) => {
         if (user) {
@@ -88,8 +90,16 @@ export class UserComponent implements OnInit {
     this.showEditBtn = !this.showEditBtn;
   }
 
+  onProfileUpdate() {
+
+  }
+
   onCancel() {
-    this.router.navigateByUrl('/dashboard');
+    if (this.userId === 'null' || this.userId === null) {
+      this.router.navigateByUrl('/login');
+    } else {
+      this.router.navigateByUrl(`/dashboard/${this.userId}`);
+    }
   }
 
   onSubmit() {
@@ -98,12 +108,23 @@ export class UserComponent implements OnInit {
       this.passwordMismatch = true;
       return;
     }
-    // payload.profile_img = this.profile_img;
-    this.userService.addUser(payload).subscribe(response => {
+    payload.profile_img = this.profile_img;
+    this.userService.addUser(payload)
+    .pipe(
+      catchError(err => {
+        debugger
+        const title: string = err.error?.errorMessage;
+        let message: string = 'Database error';
+        if (err.error?.error?.errorMessage?.includes('E11000')) {
+          message = 'Duplicate key error. Username, email, phone must be unique';
+        }
+        this.toastr.error(message, title);
+        return of(null);
+      })
+    )
+    .subscribe(response => {
       if (response) {
         this.router.navigateByUrl(`/dashboard/${response.userId}`);
-      } else {
-        console.log('Error, account not created');
       }
     });
   }

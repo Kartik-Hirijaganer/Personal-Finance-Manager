@@ -1,7 +1,7 @@
 <div class="container mt-4">
   <div class="text-center">
-    <img class="user-logo" [src]="profile_img" alt="profile photo">
-    <div class="hide">Update</div>
+    <img class="user-logo" [src]="profile_img" alt="profile photo" (click)="onProfileUpdate()">
+    <div class="hide">Click to update</div>
   </div>
   <hr style="border-top: 2px solid #828282;">
   <div class="row gx-3">
