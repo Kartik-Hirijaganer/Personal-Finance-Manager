@@ -4,19 +4,19 @@ const User = require('./user.model');
 const { DatabaseError, RecordNotFoundError, ValidationError } = require('../shared/errors');
 
 const getUser = async (req, res) => {
-  let email, id, user;
+  let email, userId, user;
   const type = req?.headers?.type;
   if (type === 'email') {
-    email = req?.params?.id;
+    email = req?.params?.userId;
   } else {
-    id = req?.params?.id;
+    userId = req?.params?.userId;
   }
   try {
-    if (id || email) {
+    if (userId || email) {
       if (email) {
         user = await User.findOne({ email });
       } else {
-        user = await User.findOne({ id });
+        user = await User.findOne({ userId });
       }
     } else {
       throw new ValidationError(`Missing ${email ? 'email' : 'user id'} in path`);

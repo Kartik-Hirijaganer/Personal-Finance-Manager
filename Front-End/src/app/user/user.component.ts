@@ -20,13 +20,12 @@ export class UserComponent implements OnInit {
   public showEditBtn: boolean = false;
   public formLoaded: boolean = false;
   private userId: string | null = null;
-  public profile_img: string = 'https://www.w3schools.com/howto/img_avatar.png';
   bsConfig?: Partial<BsDatepickerConfig>;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private userService: UserService,
+    public userService: UserService,
     private toastr: ToastrService
   ) {
     this.bsConfig = Object.assign({}, {
@@ -44,7 +43,7 @@ export class UserComponent implements OnInit {
       .subscribe(({ user }) => {
         if (user) {
           this.showEditBtn = true;
-          this.profile_img = user?.profile_img && user.profile_img;
+          user?.profile_img && (this.userService.profile_img = user.profile_img);
         }
         this.setUserForm(user);
       })
@@ -63,6 +62,7 @@ export class UserComponent implements OnInit {
       });
     } else {
       this.userForm.addControl('repass', new FormControl('', Validators.required));
+      this.userForm.setValue({ profile_img: data.profile_img })
     }
     this.formLoaded = true;
   }
@@ -77,7 +77,8 @@ export class UserComponent implements OnInit {
       phone: new FormControl<string>('', [Validators.required, Validators.pattern(/^[0-9+]+$/)]),
       email: new FormControl<string>('', [Validators.required, Validators.email]),
       password: new FormControl<string>('', Validators.required),
-      userId: new FormControl<string>('', Validators.required)
+      userId: new FormControl<string>('', Validators.required),
+      profile_img: new FormControl<File | null>(null, Validators.required)
     });
   }
 
@@ -90,8 +91,16 @@ export class UserComponent implements OnInit {
     this.showEditBtn = !this.showEditBtn;
   }
 
-  onProfileUpdate() {
-
+  onUpload(event: any) {
+    if (event?.target?.files) {
+      const file = event.target.files[0];
+      let reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event: any) => {
+        this.userForm.patchValue({ profile_img: event.target.result });
+        this.userService.profile_img = event.target.result
+      }
+    }
   }
 
   onCancel() {
@@ -108,24 +117,22 @@ export class UserComponent implements OnInit {
       this.passwordMismatch = true;
       return;
     }
-    payload.profile_img = this.profile_img;
     this.userService.addUser(payload)
-    .pipe(
-      catchError(err => {
-        debugger
-        const title: string = err.error?.errorMessage;
-        let message: string = 'Database error';
-        if (err.error?.error?.errorMessage?.includes('E11000')) {
-          message = 'Duplicate key error. Username, email, phone must be unique';
+      .pipe(
+        catchError(err => {
+          const title: string = err.error?.errorMessage;
+          let message: string = 'Database error';
+          if (err.error?.error?.errorMessage?.includes('E11000')) {
+            message = 'Duplicate key error. Username, email, phone must be unique';
+          }
+          this.toastr.error(message, title);
+          return of(null);
+        })
+      )
+      .subscribe(response => {
+        if (response) {
+          this.router.navigateByUrl(`/dashboard/${response.userId}`);
         }
-        this.toastr.error(message, title);
-        return of(null);
-      })
-    )
-    .subscribe(response => {
-      if (response) {
-        this.router.navigateByUrl(`/dashboard/${response.userId}`);
-      }
-    });
+      });
   }
 }

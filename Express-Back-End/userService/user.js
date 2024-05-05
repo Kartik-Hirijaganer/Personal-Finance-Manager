@@ -7,7 +7,7 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
-const {authorize} = require('../auth/auth.service');
+const { authorize } = require('../auth/auth.service');
 
 const util = require('../shared/util');
 const userService = require('./user.service');
@@ -20,7 +20,7 @@ const corsOptions = {
 
 /** Middlewares */
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '2mb' }));
 app.use(morgan('tiny'));
 app.use(cors(corsOptions));
 
