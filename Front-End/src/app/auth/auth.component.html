@@ -8,6 +8,7 @@
         <div class="mb-3">
           <label for="email" class="form-label">Email address</label>
           <input type="email" 
+          formControlName="email"
           placeholder="abc@email.com" 
           formControlName="email"
           [ngClass]="{'form-control': true, 'is-invalid': (!loginForm.get('email')?.valid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty))}" 
