@@ -3,22 +3,20 @@
 const User = require('./user.model');
 const { DatabaseError, RecordNotFoundError, ValidationError } = require('../shared/errors');
 
-const { v4 } = require('uuid');
-
 const getUser = async (req, res) => {
-  let email, id, user;
+  let email, userId, user;
   const type = req?.headers?.type;
   if (type === 'email') {
-    email = req?.params?.id;
+    email = req?.params?.userId;
   } else {
-    id = req?.params?.id;
+    userId = req?.params?.userId;
   }
   try {
-    if (id || email) {
+    if (userId || email) {
       if (email) {
         user = await User.findOne({ email });
       } else {
-        user = await User.findOne({ id });
+        user = await User.findOne({ userId });
       }
     } else {
       throw new ValidationError(`Missing ${email ? 'email' : 'user id'} in path`);
@@ -34,15 +32,14 @@ const getUser = async (req, res) => {
 }
 
 const addNewUser = async (req, res) => {
-  const userId = v4();
-  const new_user = new User({ ...req.body, userId });
+  const new_user = new User({ ...req.body });
   try {
     await new_user.save();
   } catch (err) {
     const error = new DatabaseError(err.message);
     return res.status(400).send({ errorMessage: 'Failed to save user data', error });
   }
-  return res.status(200).send({ userId });
+  return res.status(200).send({ userId: req.body?.userId });
 }
 
 const updateUser = async (req, res) => {

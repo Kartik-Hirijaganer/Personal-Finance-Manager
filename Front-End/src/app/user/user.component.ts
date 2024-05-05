@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { Router, ActivatedRoute, UrlSegment } from '@angular/router';
-import { switchMap, of } from 'rxjs';
+import { catchError, switchMap, of } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 import { UserService } from './user.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-user',
@@ -18,13 +20,15 @@ export class UserComponent implements OnInit {
   public editMode: boolean = false;
   public showEditBtn: boolean = false;
   public formLoaded: boolean = false;
-  public profile_img: string = 'https://www.w3schools.com/howto/img_avatar.png';
+  private userId: string | null = null;
   bsConfig?: Partial<BsDatepickerConfig>;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private userService: UserService
+    public userService: UserService,
+    private toastr: ToastrService,
+    private authService: AuthService
   ) {
     this.bsConfig = Object.assign({}, {
       containerClass: 'theme-default',
@@ -33,22 +37,27 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.url
-      .pipe(switchMap((event: UrlSegment[]) => {
-        const userId = event[1].path;
-        if (userId === 'null') {
+    this.route.url.pipe(
+      switchMap((event: UrlSegment[]) => {
+        this.userId = event[1].path;
+        if (this.userId === 'null' || !this.userId) {
           return of(null);
         }
-        return this.userService.getUser(userId);
-      }))
-      .subscribe((response) => {
-        const user = response?.user;
+        return this.userService.getUser(this.userId);
+      })).subscribe((response) => {
+        if (!response) {
+          this.setUserForm(null);
+          return;
+        }
+        const user = response.user;
         if (user) {
           this.showEditBtn = true;
-          this.profile_img = user?.profile_img && user.profile_img;
+          user?.profile_img && (this.userService.profile_img = user.profile_img);
+          this.userService.userEvent.next({ user_fname: user.fname, profile_img: user.profile_img, userId: user.userId })
         }
         this.setUserForm(user);
-      })
+      });
+    // this.setUserForm(null); // uncomment if new register form doesn't open
   }
 
   showHidePassword() {
@@ -78,7 +87,8 @@ export class UserComponent implements OnInit {
       phone: new FormControl<string>('', [Validators.required, Validators.pattern(/^[0-9+]+$/)]),
       email: new FormControl<string>('', [Validators.required, Validators.email]),
       password: new FormControl<string>('', Validators.required),
-      id: new FormControl<string>('', Validators.required)
+      userId: new FormControl<string>('', Validators.required),
+      profile_img: new FormControl<File | null>(null)
     });
   }
 
@@ -91,8 +101,24 @@ export class UserComponent implements OnInit {
     this.showEditBtn = !this.showEditBtn;
   }
 
+  onUpload(event: any) {
+    if (event?.target?.files) {
+      const file = event.target.files[0];
+      let reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event: any) => {
+        this.userForm.patchValue({ profile_img: event.target.result });
+        this.userService.profile_img = event.target.result
+      }
+    }
+  }
+
   onCancel() {
-    this.router.navigateByUrl('/dashboard');
+    if (this.userId === 'null' || this.userId === null) {
+      this.router.navigateByUrl('/login');
+    } else {
+      this.router.navigateByUrl(`/dashboard/${this.userId}`);
+    }
   }
 
   onSubmit() {
@@ -101,13 +127,39 @@ export class UserComponent implements OnInit {
       this.passwordMismatch = true;
       return;
     }
-    // payload.profile_img = this.profile_img;
-    this.userService.addUser(payload).subscribe(response => {
-      if (response) {
-        this.router.navigateByUrl('/dashboard');
-      } else {
-        console.log('Error, account not created');
-      }
-    });
+    if (!payload.profile_img) {
+      payload.profile_img = this.userService.profile_img || 'https://www.w3schools.com/howto/img_avatar.png';
+    }
+    if (this.editMode) {
+      this.userService.updateUser(payload)
+      .pipe(catchError(err => {
+        const title: string = err.error?.errorMessage;
+        let message: string = 'Database error';
+        this.toastr.error(message, title);
+        return of(null);
+      }))
+      .subscribe(response => {
+        return response.userId;
+      })
+    } else {
+      this.authService.register(payload)
+      .pipe(catchError(err => {
+        const title: string = err.error?.errorMessage;
+        let message: string = 'Database error';
+        if (err.error?.error?.errorMessage?.includes('E11000')) {
+          message = 'Duplicate key error. Username, email, phone must be unique';
+        }
+        this.toastr.error(message, title);
+        return of(null);
+      }))
+      .subscribe(response => {
+        if (response) {
+          this.authService.setToken(response.token);
+          this.userService.userEvent.next({ user_fname: payload.fname, profile_img: payload.profile_img, userId: response.userId })
+          this.router.navigateByUrl(`/dashboard/${response.userId}`);
+          // this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId }})
+        }
+      })
+    }
   }
 }

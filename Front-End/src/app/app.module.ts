@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AgGridModule } from 'ag-grid-angular';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { ToastrModule } from 'ngx-toastr';
 import { AgChartsAngular } from 'ag-charts-angular';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -39,6 +40,7 @@ import { FooterComponent } from './footer/footer.component';
     ReactiveFormsModule,
     AgGridModule,
     BsDatepickerModule.forRoot(),
+    ToastrModule.forRoot(),
     AgChartsAngular,
     HttpClientModule
   ],

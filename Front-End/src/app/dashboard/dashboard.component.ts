@@ -1,11 +1,14 @@
 import { Component, OnInit } from "@angular/core";
 import { AgChartOptions, PixelSize, AgChartTheme } from "ag-charts-community";
+import { ActivatedRoute, UrlSegment } from "@angular/router";
+import { switchMap } from "rxjs";
 
 import { ExpenseService } from "../expense/expense.service";
 import { IncomeService } from "../income/income.service";
 import { LiabilityService } from "../liability/liability.service";
 import { DashboardService } from "./dashboard.service";
 import { DownloadService } from "../shared/download.service";
+import { UserService } from "../user/user.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -23,7 +26,9 @@ export class DashboardComponent implements OnInit {
     public incomeService: IncomeService,
     public liabilityService: LiabilityService,
     private dashboardService: DashboardService,
-    private downloadService: DownloadService
+    private downloadService: DownloadService,
+    private route: ActivatedRoute,
+    private userService: UserService
   ) {
     this.chartOptions = {
       theme: {
@@ -35,7 +40,7 @@ export class DashboardComponent implements OnInit {
       // Data: Data to be displayed in the chart
       title: { text: '6 Months Cash Flow' },
       height: 270 as PixelSize,
-      data: [ ],
+      data: [],
       // Series: Defines which chart type and data to use
       series: [
         { type: 'bar', xKey: 'month', yKey: 'expense', yName: 'Expense', stacked: false },
@@ -56,7 +61,18 @@ export class DashboardComponent implements OnInit {
       this.currentBalance -= expenseAmount;
     })
 
-    this.dashboardService.getChartData().subscribe(({incomes, expenses, liabilities}) => {
+    this.route.url.pipe(
+      switchMap((event: UrlSegment[]) => {
+        const userId = event[1]?.path;
+        this.userService.userId = userId;
+        return this.userService.getUser(userId);
+      })
+    ).subscribe((res: any) => {
+      this.userService.user_fname = res.user?.fname;
+      this.userService.profile_img = res.user?.profile_img;
+    })
+
+    this.dashboardService.getChartData().subscribe(({ incomes, expenses, liabilities }) => {
       const data = this.dashboardService.constructChartData(incomes, expenses, liabilities);
       this.setChartOptions({ data });
     });

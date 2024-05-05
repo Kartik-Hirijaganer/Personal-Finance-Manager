@@ -6,13 +6,18 @@ import { Liability } from '../liability/liability.model';
 import { Income } from '../income/income.model';
 import { Expense } from '../expense/expense.model';
 import * as template from './pdf_template.json';
+import { AuthService } from '../auth/auth.service';
+import { environment } from '../../environments/environment.dev';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DownloadService {
   private letter_data = {};
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) { }
 
   generatePdf(payload: any) {
     payload = {
@@ -296,7 +301,7 @@ export class DownloadService {
 
 
   showPdf(data: any, fileName: string = 'cashflow') {
-    this.http.post('http://localhost:3000/generate-pdf', { data, payload: this.letter_data }, { headers: { 'Content-Type': 'application/json' }, responseType: 'blob' })
+    this.http.post(`${environment.URL}:${environment.user_port}/generate-pdf`, { data, payload: this.letter_data }, { headers: { 'Content-Type': 'application/json', 'Authorization': this.authService.getToken() }, responseType: 'blob' })
       .pipe(
         catchError((err) => {
           console.log(err);

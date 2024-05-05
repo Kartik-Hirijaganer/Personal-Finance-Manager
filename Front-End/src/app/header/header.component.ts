@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, UrlSegment } from '@angular/router';
-import { switchMap } from 'rxjs';
 
 import { UserService } from '../user/user.service';
-import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -11,27 +8,19 @@ import { AuthService } from '../auth/auth.service';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  public user: string = '';
+  public userName: string | null = null;
   public profile_img: string = '';
+  public userId: string | null = null;
 
-  constructor( 
-    private userService: UserService, 
-    private route: ActivatedRoute,
-    public authService: AuthService
+  constructor(
+    public userService: UserService
   ) { }
 
   ngOnInit(): void {
-    this.route.url.pipe(
-      switchMap((event: UrlSegment[]) => {
-        // const userId = event[0]?.path;
-        const userId = 'username';
-        return this.userService.getUser(userId);
-      })
-    ).subscribe(({user}) => {
-      console.log(user);
-      
-      this.user = user.fname;
-      this.profile_img = user?.profile_img || 'https://www.w3schools.com/howto/img_avatar.png';
+    this.userService.userEvent.subscribe(userDetails => {
+      this.userName = userDetails.user_fname;
+      this.profile_img = userDetails.profile_img;
+      this.userId = userDetails.userId;
     })
   }
 }
