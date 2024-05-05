@@ -75,7 +75,7 @@ export class UserComponent implements OnInit {
       phone: new FormControl<string>('', [Validators.required, Validators.pattern(/^[0-9+]+$/)]),
       email: new FormControl<string>('', [Validators.required, Validators.email]),
       password: new FormControl<string>('', Validators.required),
-      id: new FormControl<string>('', Validators.required)
+      userId: new FormControl<string>('', Validators.required)
     });
   }
 
@@ -101,7 +101,7 @@ export class UserComponent implements OnInit {
     // payload.profile_img = this.profile_img;
     this.userService.addUser(payload).subscribe(response => {
       if (response) {
-        this.router.navigateByUrl('/dashboard');
+        this.router.navigateByUrl(`/dashboard/${response.userId}`);
       } else {
         console.log('Error, account not created');
       }

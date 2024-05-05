@@ -77,7 +77,7 @@ const login = async (req, res) => {
   }
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    const error = new AuthenticationError('Invalid credentials')
+    const error = new AuthenticationError('Invalid credentials');
     return res.status(401).send({ errorMessage: 'Invalid credentials', error });
   }
 
@@ -87,8 +87,7 @@ const login = async (req, res) => {
 }
 
 const register = async (req, res) => {
-  const postData = JSON.stringify(req.body);
-
+  const { password, ...postData } = req.body;
   const options = {
     hostname: 'localhost',
     port: process.env.USER_PORT,
@@ -97,13 +96,15 @@ const register = async (req, res) => {
     agent: false,  // Create a new agent just for this one request. Agent manages the connection,
     timeout: 10000,
     headers: {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(postData),
-    },
+      'Content-Type': 'application/json'
+    }
   };
   let userId;
+  const payload = JSON.stringify(postData);
+  options.headers['Content-Length'] = Buffer.byteLength(payload);
   try {
-    (userId = await httprequest(options, postData));
+    postData['password'] = bcrypt.hashSync(password, 10);
+    (userId = await httprequest(options, payload));
   } catch (err) {
     if (err instanceof DatabaseError) {
       return res.status(400).send({ errorMessage: 'Failed to save user data', error });

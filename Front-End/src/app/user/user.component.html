@@ -81,12 +81,12 @@
       </div>
     </div>
     <div class="col-lg-3">
-      <label for="id" class="form-label">Username<sup class="text-danger">*</sup></label>
+      <label for="userId" class="form-label">Username<sup class="text-danger">*</sup></label>
       <input type="text" 
-      [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('id')?.valid && (userForm.get('id')?.touched || userForm.get('id')?.dirty))}" 
-      id="id" formControlName="id">
-      <div *ngIf="!userForm.get('id')?.valid && (userForm.get('id')?.touched || userForm.get('id')?.dirty)" 
-      id="id" class="invalid-feedback">
+      [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('userId')?.valid && (userForm.get('userId')?.touched || userForm.get('userId')?.dirty))}" 
+      id="userId" formControlName="userId">
+      <div *ngIf="!userForm.get('iuserId')?.valid && (userForm.get('userId')?.touched || userForm.get('userId')?.dirty)" 
+      id="userId" class="invalid-feedback">
         Please enter username.
       </div>
     </div>

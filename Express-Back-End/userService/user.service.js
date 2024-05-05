@@ -3,8 +3,6 @@
 const User = require('./user.model');
 const { DatabaseError, RecordNotFoundError, ValidationError } = require('../shared/errors');
 
-const { v4 } = require('uuid');
-
 const getUser = async (req, res) => {
   let email, id, user;
   const type = req?.headers?.type;
@@ -34,15 +32,14 @@ const getUser = async (req, res) => {
 }
 
 const addNewUser = async (req, res) => {
-  const userId = v4();
-  const new_user = new User({ ...req.body, userId });
+  const new_user = new User({ ...req.body });
   try {
     await new_user.save();
   } catch (err) {
     const error = new DatabaseError(err.message);
     return res.status(400).send({ errorMessage: 'Failed to save user data', error });
   }
-  return res.status(200).send({ userId });
+  return res.status(200).send({ userId: req.body?.userId });
 }
 
 const updateUser = async (req, res) => {
