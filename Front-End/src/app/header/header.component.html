@@ -1,5 +1,5 @@
-<nav *ngIf="userId"
- class="navbar navbar-expand-lg navbar-light bg-light header" style="min-height: 30px;max-height: 40px;">
+<nav *ngIf="authService.getToken() !== ''" class="navbar navbar-expand-lg navbar-light bg-light header"
+  style="min-height: 30px;max-height: 40px;">
   <div class="container-fluid header">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,14 +48,16 @@
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" [routerLink]="['user', userId]">Profile</a></li>
             <li><a class="dropdown-item" href="#">Accounts</a></li>
-            <li><a class="dropdown-item" href="#">Delete Profile</a></li>
+            <li><a class="dropdown-item" (click)="onDelete()">Delete Profile</a></li>
             <li>
               <hr class="dropdown-divider">
             </li>
-            <li><a class="dropdown-item" href="#">Logout</a></li>
+            <li><a class="dropdown-item" (click)="authService.logout()">Logout</a></li>
           </ul>
         </li>
       </ul>
     </div>
   </div>
 </nav>
+
+<app-confirmation-popup (confirmationEvent)="onConfirmationEvent($event)"></app-confirmation-popup>

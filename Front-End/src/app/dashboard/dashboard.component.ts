@@ -68,8 +68,11 @@ export class DashboardComponent implements OnInit {
         return this.userService.getUser(userId);
       })
     ).subscribe((res: any) => {
-      this.userService.user_fname = res.user?.fname;
-      this.userService.profile_img = res.user?.profile_img;
+      if (res.user) {
+        this.userService.userEvent.next({ user_fname: res.user.fname, profile_img: res.user.profile_img, userId: res.user.userId })
+        this.userService.user_fname = res.user?.fname;
+        this.userService.profile_img = res.user?.profile_img;
+      }
     })
 
     this.dashboardService.getChartData().subscribe(({ incomes, expenses, liabilities }) => {

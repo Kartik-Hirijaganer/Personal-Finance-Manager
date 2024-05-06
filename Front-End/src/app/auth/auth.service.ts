@@ -15,12 +15,12 @@ export class AuthService {
   private token: string = '';
 
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private toastr: ToastrService,
     private router: Router
   ) { }
 
-  login(payload: { email: string, password: string }) {
+  login(payload: { email: string, password: string }): void {
     this.http.post<{ token: string, userId: string }>(`${environment.URL}:${environment.auth_port}/login`, payload, { headers: { 'Content-Type': 'application/json', type: 'email' } })
       .pipe(
         catchError(err => {
@@ -40,12 +40,17 @@ export class AuthService {
     return this.http.post(`${environment.URL}:${environment.auth_port}/register`, payload);
   }
 
-  public setToken(token: string) {
+  public setToken(token: string): void {
     this.token = token;
     this.isLoginMode = !this.isLoginMode;
   }
 
   public getToken(): string {
     return this.token;
+  }
+
+  public logout(): void {
+    this.setToken('');
+    this.router.navigateByUrl('/');
   }
 }

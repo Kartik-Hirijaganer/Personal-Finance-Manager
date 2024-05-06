@@ -121,7 +121,7 @@ const authorize = async (req, res, next) => {
   if (!token) {
     return res.status(401).send({ errorMessage: 'Token required' }); //  make custom error
   }
-  jwt.verify(token, process.env.SERECT, (err, user) => {
+  jwt.verify(token, process.env.SECRET, (err, user) => {
     if (err) return res.status(403).send({ errorMessage: 'Invalid or expired token' });
     req.user = user;
     next();

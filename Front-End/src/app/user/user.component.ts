@@ -132,34 +132,36 @@ export class UserComponent implements OnInit {
     }
     if (this.editMode) {
       this.userService.updateUser(payload)
-      .pipe(catchError(err => {
-        const title: string = err.error?.errorMessage;
-        let message: string = 'Database error';
-        this.toastr.error(message, title);
-        return of(null);
-      }))
-      .subscribe(response => {
-        return response.userId;
-      })
+        .pipe(catchError(err => {
+          const title: string = err.error?.errorMessage;
+          let message: string = 'Database error';
+          this.toastr.error(message, title);
+          return of(null);
+        }))
+        .subscribe(response => {
+          this.toastr.success('Successfully updated user details', 'Success');
+          return response.userId;
+        })
     } else {
       this.authService.register(payload)
-      .pipe(catchError(err => {
-        const title: string = err.error?.errorMessage;
-        let message: string = 'Database error';
-        if (err.error?.error?.errorMessage?.includes('E11000')) {
-          message = 'Duplicate key error. Username, email, phone must be unique';
-        }
-        this.toastr.error(message, title);
-        return of(null);
-      }))
-      .subscribe(response => {
-        if (response) {
-          this.authService.setToken(response.token);
-          this.userService.userEvent.next({ user_fname: payload.fname, profile_img: payload.profile_img, userId: response.userId })
-          this.router.navigateByUrl(`/dashboard/${response.userId}`);
-          // this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId }})
-        }
-      })
+        .pipe(catchError(err => {
+          const title: string = err.error?.errorMessage;
+          let message: string = 'Database error';
+          if (err.error?.error?.errorMessage?.includes('E11000')) {
+            message = 'Duplicate key error. Username, email, phone must be unique';
+          }
+          this.toastr.error(message, title);
+          return of(null);
+        }))
+        .subscribe(response => {
+          if (response) {
+            this.authService.setToken(response.token);
+            this.userService.userEvent.next({ user_fname: payload.fname, profile_img: payload.profile_img, userId: response.userId });
+            this.toastr.success('Registeration successfull', 'Success');
+            this.router.navigateByUrl(`/dashboard/${response.userId}`);
+            // this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId }})
+          }
+        })
     }
   }
 }
