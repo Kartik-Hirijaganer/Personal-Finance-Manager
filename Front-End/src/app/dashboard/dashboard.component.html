@@ -1,10 +1,5 @@
 <div class="container-fluid">
-  <div class="row">
-    <div class="col mb-2 d-flex flex-row-reverse mt-3">
-      <button type="button" class="btn btn-info btn-sm" style="text-align: center;" (click)="downloadPdf()">Generate PDF</button>
-    </div>
-  </div>
-  <div class="row mb-2">
+  <div class="row mb-2 mt-4 ms-2">
     <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover"
       style="text-align: center; max-width: 300px;">
       <span><img class="dashboard-logo" src="../../assets/imgs/balance.svg"></span>
@@ -32,14 +27,19 @@
       <span class="text-danger">{{ liabilityService.monthlyLiability | currency: 'USD' }}</span>
     </div>
   </div>
-  <div class="row pb-3">
-    <div class="col col-lg-9 border bg-white me-2" style="max-width: 916px;">
+  <div class="row ps-2">
+    <div class="col col-lg-12 mb-2 mt-5">
+      <button type="button" class="btn btn-info" style="text-align: center;" (click)="downloadPdf()">Download Cash Flow</button>
+    </div>
+  </div>
+  <div class="row pb-3 ms-2">
+    <div class="col col-lg-9 border bg-white me-2 dashboard-hover" style="max-width: 916px;">
       <ag-charts-angular [options]="chartOptions"></ag-charts-angular>
     </div>
-    <div class="col col-lg-3 border bg-white p-3" style="text-align: center; max-width: 300px; max-height: 270px;">
-      <span><img class="dashboard-logo" src="../../assets/imgs/account.svg"></span>
-      <br>Accounts<br>
-      TODO
+    <div class="col col-lg-3 border bg-white p-3 dashboard-hover" style="text-align: center; max-width: 300px;">
+      <div class="fs-3 font-monospace" (click)="onAddManageAccount()">Add/Manage Accounts</div>
+      <hr>
+      <div><img class="account-logo" src="../../assets/imgs/account.svg"></div>
     </div>
   </div>
 </div>

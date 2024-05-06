@@ -8,6 +8,7 @@ import { ExpenseComponent } from "./expense/expense.component";
 import { LiabilityComponent } from "./liability/liability.component";
 import { UserComponent } from "./user/user.component";
 import { AuthComponent } from "./auth/auth.component";
+import { AccountComponent } from "./account/account.component";
 
 const appRoutes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -16,7 +17,8 @@ const appRoutes: Routes = [
   { path: 'incomes', component: IncomeComponent },
   { path: 'expenses', component: ExpenseComponent },
   { path: 'liabilities', component: LiabilityComponent},
-  { path: 'user/:userId', component: UserComponent }
+  { path: 'user/:userId', component: UserComponent },
+  { path: 'accounts', component: AccountComponent }
 ]
 
 @NgModule({

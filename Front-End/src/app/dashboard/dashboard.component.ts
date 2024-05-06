@@ -9,6 +9,7 @@ import { LiabilityService } from "../liability/liability.service";
 import { DashboardService } from "./dashboard.service";
 import { DownloadService } from "../shared/download.service";
 import { UserService } from "../user/user.service";
+import { AuthService } from "../auth/auth.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -28,7 +29,8 @@ export class DashboardComponent implements OnInit {
     private dashboardService: DashboardService,
     private downloadService: DownloadService,
     private route: ActivatedRoute,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService
   ) {
     this.chartOptions = {
       theme: {
@@ -39,7 +41,7 @@ export class DashboardComponent implements OnInit {
       } as AgChartTheme,
       // Data: Data to be displayed in the chart
       title: { text: '6 Months Cash Flow' },
-      height: 270 as PixelSize,
+      // height: 270 as PixelSize,
       data: [],
       // Series: Defines which chart type and data to use
       series: [
@@ -92,5 +94,10 @@ export class DashboardComponent implements OnInit {
     this.dashboardService.getChartData().subscribe((response) => {
       this.downloadService.generatePdf(response);
     });
+  }
+
+  onAddManageAccount() {
+    console.log('here');
+    
   }
 }
