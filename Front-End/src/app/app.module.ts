@@ -7,6 +7,7 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { ToastrModule } from 'ngx-toastr';
 import { AgChartsAngular } from 'ag-charts-angular';
 import { HttpClientModule } from '@angular/common/http';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -18,6 +19,8 @@ import { LiabilityComponent } from './liability/liability.component';
 import { ActionComponent } from './shared/action/action.component';
 import { UserComponent } from './user/user.component';
 import { AuthComponent } from './auth/auth.component';
+import { FooterComponent } from './footer/footer.component';
+import { ConfirmationPopupComponent } from './shared/confirmation-modal/confirmation-modal-component';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,9 @@ import { AuthComponent } from './auth/auth.component';
     LiabilityComponent,
     ActionComponent,
     UserComponent,
-    AuthComponent
+    AuthComponent,
+    FooterComponent,
+    ConfirmationPopupComponent
   ],
   imports: [
     BrowserModule,
@@ -39,6 +44,7 @@ import { AuthComponent } from './auth/auth.component';
     AgGridModule,
     BsDatepickerModule.forRoot(),
     ToastrModule.forRoot(),
+    ModalModule.forRoot(),
     AgChartsAngular,
     HttpClientModule
   ],

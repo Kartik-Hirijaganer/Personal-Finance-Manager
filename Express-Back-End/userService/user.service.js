@@ -65,7 +65,7 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   const id = req?.params?.id;
-  const query = { id };
+  const query = { userId: id };
   try {
     await User.findOneAndDelete(query);
   } catch (err) {

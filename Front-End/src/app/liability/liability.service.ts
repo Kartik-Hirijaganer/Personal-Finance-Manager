@@ -27,7 +27,7 @@ export class LiabilityService {
   }
 
   addLiability(liability: Liability): Observable<Liability[]> {
-    console.log(liability);
+    // console.log(liability);
 
     return this.http.post(`${environment.URL}:${environment.liability_port}/liability/add`, liability, { headers: this.headers })
       .pipe(switchMap(() => {
