@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "expense": "nodemon ./expenseService/expense.js",
-    "income": "nodemon ./incomeService/income.js",
-    "liability": "nodemon ./liabilityService/liability.js",
+    "expense": "nodemon ./accountService/account.js",
     "user": "nodemon ./userService/user.js",
     "auth": "nodemon ./auth/auth.js"
   },
