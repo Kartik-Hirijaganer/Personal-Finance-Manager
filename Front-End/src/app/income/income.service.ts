@@ -24,22 +24,39 @@ export class IncomeService {
     this.getIncomes().subscribe(() => { });
   }
 
-  addIncome(income: Income): Observable<Income[]> {
-    return this.http.post(`${environment.URL}:${environment.income_port}/income/add`, income, { headers: this.headers })
-      .pipe(switchMap(() => {
-        return this.getIncomes();
-      }));
+  addIncome(income: Income): Observable<{incomeId: string}> {
+    return this.http.post<{incomeId: string}>(
+      `${environment.URL}:${environment.account_port}/income/add`, 
+      income, 
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token') || ''
+        }),
+        params: { 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' }
+      });
   }
 
-  deleteIncome(id: string): Observable<Income[]> {
-    return this.http.delete(`${environment.URL}:${environment.income_port}/income/delete/${id}`, { headers: this.headers })
-      .pipe(switchMap(() => {
-        return this.getIncomes();
-      }))
+  deleteIncome(id: string): Observable<{incomeId: string}> {
+    return this.http.delete <{ incomeId: string }>(
+      `${environment.URL}:${environment.account_port}/income/delete/${id}`, 
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token') || ''
+        }),
+        params: { 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' } 
+      });
   }
 
-  updateIncome(income: Income): Observable<any> {
-    return this.http.put<{ incomeId: string }>(`${environment.URL}:${environment.income_port}/income/update/${income.id}`, income, { headers: this.headers });
+  updateIncome(income: Income): Observable<{incomeId: string}> {
+    return this.http.put<{ incomeId: string }>(
+      `${environment.URL}:${environment.account_port}/income/update/${income.id}`, 
+      income, 
+      { headers: new HttpHeaders({ 'Authorization': localStorage.getItem('token') || '', 'Content-Type': 'application/json' }),
+        params: { 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' }
+      }
+    )
   }
 
   // getIncomes(): Observable<Income[]> {

@@ -1,13 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { ColDef, GridReadyEvent, GridOptions, GridApi } from "ag-grid-community";
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { Subscription } from 'rxjs';
 
 import { IncomeService } from './income.service';
 import { Income } from './income.model';
 import { ActionComponent } from '../shared/action/action.component';
 import { UtilService } from '../shared/util.service'
-import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import { AccountService } from '../account/account.service';
 
 @Component({
   selector: 'app-income',
@@ -34,7 +35,14 @@ export class IncomeComponent implements OnInit, OnDestroy {
     {
       field: "Action",
       editable: false,
-      cellRenderer: ActionComponent
+      cellRenderer: ActionComponent,
+      cellRendererParams: {
+        actions: {
+          'delete': true,
+          'edit': true,
+          'select': false
+        }
+      }
     }
   ];
   incomeRowData: Income[] = [];
@@ -56,7 +64,8 @@ export class IncomeComponent implements OnInit, OnDestroy {
 
   constructor(
     public incomeService: IncomeService,
-    private util: UtilService
+    private util: UtilService,
+    private accountService: AccountService
   ) {
     const date = new Date();
     this.bsConfig = Object.assign({}, {
@@ -69,11 +78,9 @@ export class IncomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeForm();
-    this.incomeService.getIncomes().subscribe((incomes: Income[]) => {
-      this.incomeRowData = incomes;
-    });
-    this.incomeListSubscription = this.incomeService.incomeListEvent.subscribe((updatedIncomeList: Income[]) => {
-      this.incomeRowData = updatedIncomeList;
+    const accountId = localStorage.getItem('account_id') || '';
+    this.accountService.getAccountDetails(accountId).subscribe(account => {
+      this.incomeRowData = account.incomes || [];
     });
     this.incomeRowSubscription = this.incomeService.incomeEditEvent.subscribe((event) => {
       this.handleIncomeEvent(event.action, event.idx, event?.payload);
@@ -104,8 +111,10 @@ export class IncomeComponent implements OnInit, OnDestroy {
         break;
       case 'delete':
         const { id } = payload as Income;
-        this.incomeService.deleteIncome(id).subscribe(incomes => {
-          this.incomeRowData = incomes;
+        this.incomeService.deleteIncome(id).subscribe(res => {
+          this.gridApi?.applyTransaction({ remove: [payload] });
+          const tableData = this.util.getAllRows(this.gridApi);
+          this.incomeService.monthlyIncome = this.util.calculateTotalAmount(tableData);
         });
         break;
       default:
@@ -124,10 +133,13 @@ export class IncomeComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     const payload = this.incomeForm.getRawValue();
     payload.date = payload.date.toLocaleDateString();
-    this.addIncomeSubscription = this.incomeService.addIncome(payload).subscribe((incomes: Income[]) => {
-      this.incomeRowData = incomes;
+    this.addIncomeSubscription = this.incomeService.addIncome(payload).subscribe(({incomeId}) => {
+      const newIncome = { ...payload, id: incomeId };
+      this.gridApi.applyTransaction({ add: [newIncome] });
+      const tableData = this.util.getAllRows(this.gridApi);
+      this.incomeService.monthlyIncome = this.util.calculateTotalAmount(tableData);
+      this.hideIncomeForm = this.util.toggle(this.hideIncomeForm);
     });
-    this.hideIncomeForm = this.util.toggle(this.hideIncomeForm);
   }
 
   ngOnDestroy(): void {
