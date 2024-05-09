@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 
 import { environment } from '../../environments/environment.dev';
@@ -24,6 +24,17 @@ export class AccountService {
       {
         headers: { 'Authorization': this.authService.getToken(), 'Content-Type': 'application/json' }
       }
+    )
+  }
+
+  getAccounts(): Observable<Account[]> {
+    const options = {
+      headers: { 'Authorization': this.authService.getToken(), 'Content-Type': 'application/json', 'user-type': 'new' },
+      params: new HttpParams().set('userId', localStorage.getItem('user_id') || '')
+    }
+    return this.http.get<Account[]>(
+      `${environment.URL}:${environment.account_port}/accounts`,
+      options
     )
   }
 

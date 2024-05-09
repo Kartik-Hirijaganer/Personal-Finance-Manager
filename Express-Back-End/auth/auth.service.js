@@ -40,9 +40,11 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
   let userId = '';
+  let user = '';
   try {
     const encryptedPassword = bcrypt.hashSync(req.body.password, 10);
     const payload = { ...req.body, userId: v4(), password: encryptedPassword };
+    user = payload.fname;
     const response = await axios.post(`http://localhost:${process.env.USER_PORT}/user/add`, payload);
     if (response?.data?.error) {
       const error = response.data.error;
@@ -54,7 +56,7 @@ const register = async (req, res) => {
     return res.status(400).send({ errorMessage: 'Unknown error', error });
   }
   const token = jwt.sign({ userId }, process.env.SECRET, { expiresIn: '1h' });
-  return res.status(200).send({ userId, token, accountId: '' });
+  return res.status(200).send({ userId, token, accountId: '', user });
 }
 
 const authorize = async (req, res, next) => {

@@ -106,6 +106,7 @@ export class UserComponent implements OnInit {
       reader.readAsDataURL(file);
       reader.onload = (event: any) => {
         this.userForm.patchValue({ profile_img: event.target.result });
+        this.userService.profile_img = event.target.result;
       }
     }
   }
@@ -124,6 +125,7 @@ export class UserComponent implements OnInit {
       this.passwordMismatch = true;
       return;
     }
+    delete payload.repass;
     if (!payload.profile_img) {
       payload.profile_img = 'https://www.w3schools.com/howto/img_avatar.png';
     }
@@ -145,7 +147,7 @@ export class UserComponent implements OnInit {
           const title: string = err.error?.errorMessage;
           let message: string = 'Database error';
           if (err.error?.error?.errorMessage?.includes('E11000')) {
-            message = 'Duplicate key error. Username, email, phone must be unique';
+            message = 'Duplicate key error. Email, phone must be unique';
           }
           this.toastr.error(message, title);
           return of(null);

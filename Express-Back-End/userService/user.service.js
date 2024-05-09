@@ -32,24 +32,25 @@ const getUser = async (req, res) => {
 }
 
 const addNewUser = async (req, res) => {
-  const new_user = new User({ ...req.body });
+  const payload = req.body;
+  const new_user = new User(payload);
   try {
     await new_user.save();
   } catch (err) {
     const error = new DatabaseError(err.message);
     return res.status(200).send({ errorMessage: 'Failed to save user data', error });
   }
-  return res.status(200).send({ userId: req.body?.userId });
+  return res.status(200).send({ userId: payload?.userId });
 }
 
 const updateUser = async (req, res) => {
-  const id = req?.params?.id;
-  const query = { id };
+  const userId = req?.params?.userId;
+  const query = { userId };
   const updatedUser = { ...req.body };
   try {
     const user = await User.findOne(query);
     if (!user) {
-      throw new RecordNotFoundError(`User record with id: ${id} not found`);
+      throw new RecordNotFoundError(`User record with id: ${userId} not found`);
     }
     await User.findOneAndUpdate(query, updatedUser);
   } catch (err) {
@@ -60,7 +61,7 @@ const updateUser = async (req, res) => {
     const error = new DatabaseError(err.message);
     return res.status(200).send({ errorMessage, error });
   }
-  return res.status(200).send({ userId: id });
+  return res.status(200).send({ userId });
 }
 
 const deleteUser = async (req, res) => {

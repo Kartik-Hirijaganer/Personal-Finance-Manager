@@ -35,9 +35,9 @@ app.use(authorize);
 
 app.post('/user/generate-pdf', util.generatePdf);
 
-app.put('/user/update/:id', userService.updateUser);
+app.put('/user/update/:userId', userService.updateUser);
 
-app.delete('/user/delete/:id', userService.deleteUser);
+app.delete('/user/delete/:userId', userService.deleteUser);
 
 app.listen(process.env.USER_PORT, () => {
   console.log('User running on port', process.env.USER_PORT);

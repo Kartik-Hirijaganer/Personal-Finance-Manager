@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 const LiabilitySchema = new Schema({
   id: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   name: {
     type: String,

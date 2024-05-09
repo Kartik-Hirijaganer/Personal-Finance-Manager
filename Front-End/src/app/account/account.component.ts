@@ -51,24 +51,7 @@ export class AccountComponent implements OnInit {
       accountSource: new FormControl<string>('', Validators.required),
       description: new FormControl<string | null>('')
     })
-    this.accountRowData = [
-      {
-        accountNo: 111111111,
-        "accountSource": "Salary",
-        "description": "Savings account",
-        selected: true
-      }, {
-        accountNo: 222222222,
-        "accountSource": "Salary",
-        "description": "Savings account",
-        selected: false
-      }, {
-        accountNo: 333333333,
-        "accountSource": "Salary",
-        "description": "Savings account",
-        selected: false
-      }
-    ]
+    this.getAccountRowData();
     this.accountService.accountSelectEvent.subscribe(event => {
       this.gridApi.forEachNode(node => {
         if (node.data?.selected) {
@@ -89,6 +72,33 @@ export class AccountComponent implements OnInit {
     this.enableForm = !this.enableForm;
   }
 
+  getAccountRowData() {
+    this.accountService.getAccounts().pipe(
+      catchError(err => {
+        const errorMessage: string = err?.error?.error?.errorMessage;
+        const title: string = err?.error?.errorMessage;
+        this.toastr.error(errorMessage, title);
+        return of(null);
+      })
+    ).subscribe(accounts => {
+      if (accounts) {
+        this.accountRowData = this.setRowActionData(accounts);
+      }
+    })
+  }
+
+  setRowActionData(accounts: Account[]): Account[] {
+    const accountsWithActionData = [];
+    for (let i = 0; i < accounts.length; i++) {
+      let selected: boolean = false;
+      if (i === 0) {
+        selected = true
+      }
+      accountsWithActionData.push({ ...accounts[i], selected });
+    }
+    return accountsWithActionData;
+  }
+
   onSubmit() {
     const { accountNo, ...rest } = this.accountForm.getRawValue();
     const payload = {
@@ -97,18 +107,19 @@ export class AccountComponent implements OnInit {
     } as Account;
     this.accountService.addAccount(payload).pipe(
       catchError(err => {
-        const errorMessage: string = err;
-        this.toastr.error(`Failed to save account details. ${errorMessage}`, 'error');
+        const errorMessage: string = err?.error?.error?.errorMessage;
+        const title: string = err?.error?.errorMessage;
+        this.toastr.error(errorMessage, title);
         return of(null);
       })
     ).subscribe((res) => {
       if (res) {
-        if (!localStorage.getItem('accountId')) {
-          localStorage.setItem('accountId', res.accountId);
+        if (!localStorage.getItem('account_id')) {
+          localStorage.setItem('account_id', res.accountId);
         }
-        this.accountRowData.push(payload);
-        this.toggleForm();
+        this.accountRowData = this.setRowActionData([...this.accountRowData, payload]);
         this.toastr.success('Added new account', 'Success');
+        this.toggleForm();
       }
     });
   }

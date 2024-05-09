@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 const ExpenseSchema = new Schema({
   id: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   to: {
     type: String,
