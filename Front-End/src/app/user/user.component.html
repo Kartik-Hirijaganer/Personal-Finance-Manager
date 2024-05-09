@@ -77,16 +77,6 @@
         Please select gender.
       </div>
     </div>
-    <div class="col-lg-3">
-      <label for="phone" class="form-label">Phone Number<sup class="text-danger">*</sup></label>
-      <input type="text"
-        [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('phone')?.valid && (userForm.get('phone')?.touched || userForm.get('phone')?.dirty))}"
-        id="phone" formControlName="phone">
-      <div *ngIf="!userForm.get('phone')?.valid && (userForm.get('phone')?.touched || userForm.get('phone')?.dirty)"
-        id="phone" class="invalid-feedback">
-        Please enter valid phone number.
-      </div>
-    </div>
     <div class="col-lg-12"></div>
     <div class="col-lg-3">
       <label for="email" class="form-label">Email Address<sup class="text-danger">*</sup></label>
@@ -99,13 +89,13 @@
       </div>
     </div>
     <div class="col-lg-3">
-      <label for="userId" class="form-label">Username<sup class="text-danger">*</sup></label>
+      <label for="phone" class="form-label">Phone Number<sup class="text-danger">*</sup></label>
       <input type="text"
-        [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('userId')?.valid && (userForm.get('userId')?.touched || userForm.get('userId')?.dirty))}"
-        id="userId" formControlName="userId">
-      <div *ngIf="!userForm.get('iuserId')?.valid && (userForm.get('userId')?.touched || userForm.get('userId')?.dirty)"
-        id="userId" class="invalid-feedback">
-        Please enter username.
+        [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('phone')?.valid && (userForm.get('phone')?.touched || userForm.get('phone')?.dirty))}"
+        id="phone" formControlName="phone">
+      <div *ngIf="!userForm.get('phone')?.valid && (userForm.get('phone')?.touched || userForm.get('phone')?.dirty)"
+        id="phone" class="invalid-feedback">
+        Please enter valid phone number.
       </div>
     </div>
     <div class="col-lg-12"></div>

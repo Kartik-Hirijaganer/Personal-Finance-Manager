@@ -21,6 +21,7 @@ import { UserComponent } from './user/user.component';
 import { AuthComponent } from './auth/auth.component';
 import { FooterComponent } from './footer/footer.component';
 import { ConfirmationPopupComponent } from './shared/confirmation-modal/confirmation-modal-component';
+import { AccountComponent } from './account/account.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { ConfirmationPopupComponent } from './shared/confirmation-modal/confirma
     UserComponent,
     AuthComponent,
     FooterComponent,
-    ConfirmationPopupComponent
+    ConfirmationPopupComponent,
+    AccountComponent
   ],
   imports: [
     BrowserModule,

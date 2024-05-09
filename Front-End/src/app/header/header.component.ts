@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../user/user.service';
 import { AuthService } from '../auth/auth.service';
 import { ConfirmationPopupComponent } from '../shared/confirmation-modal/confirmation-modal-component';
+import { DashboardService } from '../dashboard/dashboard.service';
 
 @Component({
   selector: 'app-header',
@@ -13,33 +14,41 @@ import { ConfirmationPopupComponent } from '../shared/confirmation-modal/confirm
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  public userName: string = '';
-  public profile_img: string = '';
-  public userId: string = '';
+  public userName: string | null = null;
+  public profile_img: string | null = null;
+  public userId: string | null = null;
   public showConfirmationPopup: boolean = false;
   @ViewChild(ConfirmationPopupComponent) popup!: ConfirmationPopupComponent
 
   constructor(
     public userService: UserService,
     public authService: AuthService,
+    public dashboardService: DashboardService,
     private toastr: ToastrService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.userService.userEvent.subscribe(userDetails => {
-      this.userName = userDetails.user_fname;
-      this.profile_img = userDetails.profile_img;
-      this.userId = userDetails.userId;
-    })
+    this.userName = localStorage.getItem('user_name');
+    this.profile_img = localStorage.getItem('profile_img');
+    this.userId = localStorage.getItem('user_id');
   }
+
   onDelete() {
     this.popup.openModal('danger', 'Are you sure, you want to delete your profile?');
   }
 
+  logout(): void {
+    localStorage.clear();
+    this.userName = null;
+    this.profile_img = null;
+    this.userId = null;
+    this.router.navigateByUrl('/login');
+  }
+
   onConfirmationEvent(confirm: boolean) {
     if (confirm) {
-      this.userService.deleteUser(this.userId)
+      this.userService.deleteUser(this.userId!)
         .pipe(catchError(err => {
           const title: string = err.error?.errorMessage;
           let message: string = 'Failed t delete user';
@@ -48,7 +57,7 @@ export class HeaderComponent implements OnInit {
         })).subscribe(response => {
           if (response) {
             this.toastr.success('Successfully deleted user', 'Success');
-            this.router.navigateByUrl('/');
+            this.logout();
           }
         });
     }

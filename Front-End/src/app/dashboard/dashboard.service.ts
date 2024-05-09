@@ -56,4 +56,12 @@ export class DashboardService {
       liabilities: this.liabilityService.getLiabilities()
     });
   }
+
+  get user() {
+    return { userName: localStorage.getItem('user_name'), profile_img: localStorage.getItem('profile_img') };
+  }
+
+  userLoggedIn() {
+    return !!localStorage.getItem('user_id');
+  }
 }

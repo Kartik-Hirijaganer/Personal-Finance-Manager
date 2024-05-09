@@ -4,5 +4,6 @@ export const environment = {
   income_port: 3200,
   liability_port: 3250,
   user_port: 3300,
-  auth_port: 3350
+  auth_port: 3350,
+  account_port: 3000
 };

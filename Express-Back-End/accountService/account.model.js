@@ -15,6 +15,17 @@ const AccountSchema = new Schema({
     type: String,
     required: true
   },
+  accountNo: {
+    type: Number,
+    required: true
+  },
+  accountSource: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String
+  },
   incomes: {
     type: [IncomeSchema]
   },

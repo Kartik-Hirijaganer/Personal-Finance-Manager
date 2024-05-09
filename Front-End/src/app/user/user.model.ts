@@ -1,5 +1,4 @@
 export class User {
-  public userid: string;
   public fname: string;
   public mname: string;
   public lname: string;
@@ -20,7 +19,6 @@ export class User {
   }];
 
   constructor(
-    userid: string, 
     password: string, 
     fname: string, 
     mname: string, 
@@ -40,7 +38,6 @@ export class User {
       severity: string
     }]
   ) {
-    this.userid = userid;
     this.password = password;
     this.fname = fname;
     this.mname = mname;

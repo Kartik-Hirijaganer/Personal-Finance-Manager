@@ -37,7 +37,7 @@ const addNewUser = async (req, res) => {
     await new_user.save();
   } catch (err) {
     const error = new DatabaseError(err.message);
-    return res.status(400).send({ errorMessage: 'Failed to save user data', error });
+    return res.status(200).send({ errorMessage: 'Failed to save user data', error });
   }
   return res.status(200).send({ userId: req.body?.userId });
 }

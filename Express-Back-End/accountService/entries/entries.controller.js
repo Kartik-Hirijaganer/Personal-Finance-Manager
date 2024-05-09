@@ -1,7 +1,7 @@
 'use strict';
 
 const util = require('../../shared/util');
-const Account = require('../models/account.model');
+const Account = require('../account.model');
 const { DatabaseError, RecordNotFoundError } = require('../../shared/errors');
 
 const getEntries = async (req, res) => {
