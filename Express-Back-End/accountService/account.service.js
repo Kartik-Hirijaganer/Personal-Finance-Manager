@@ -40,7 +40,7 @@ const getAccount = async (req, res) => {
     const dbError = new DatabaseError(error.message);
     return res.status(400).send({ errorMessage, dbError });
   }
-  return res.status(200).send({ account });
+  return res.status(200).send(account);
 }
 
 const addAccount = async (req, res) => {

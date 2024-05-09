@@ -14,7 +14,7 @@ const getEntries = async (req, res) => {
     }
   } catch (error) {
     const dbError = new DatabaseError(error.message);
-    return res.status(400).send({ errorMessage: `Failed to update ${category} data`, dbError });
+    return res.status(400).send({ errorMessage: `Failed to update ${category} data`, error: dbError });
   }
   return res.status(200).send({ entries });
 }
@@ -38,7 +38,7 @@ const addEntry = async (req, res) => {
       return res.status(400).send({ errorMessage, error });
     }
     const dbError = new DatabaseError(error.message);
-    return res.status(400).send({ errorMessage, dbError });
+    return res.status(400).send({ errorMessage, error: dbError });
   }
   return res.status(200).send({ [`${category}Id`]: payload.id });
 }
@@ -68,7 +68,7 @@ const updateEntry = async (req, res) => {
       return res.status(400).send({ errorMessage, error });
     }
     const dbError = new DatabaseError(error.message);
-    return res.status(400).send({ errorMessage, dbError });
+    return res.status(400).send({ errorMessage, error: dbError });
   }
   return res.status(200).send({ [`${category}Id`]: id });
 }
@@ -87,9 +87,9 @@ const deleteEntry = async (req, res) => {
     await Account.findOneAndReplace({ accountId }, account);
   } catch (error) {
     const dbError = new DatabaseError(error.message);
-    return res.status(400).send({ errorMessage: 'Failed to delete income data', dbError });
+    return res.status(400).send({ errorMessage: 'Failed to delete income data', error: dbError });
   }
-  return res.status(200).send({ [`${category}`]: id });
+  return res.status(200).send({ [`${category}Id`]: id });
 }
 
 module.exports = {
