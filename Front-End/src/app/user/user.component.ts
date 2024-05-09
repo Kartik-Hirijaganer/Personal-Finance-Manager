@@ -72,6 +72,7 @@ export class UserComponent implements OnInit {
       });
     } else {
       this.userForm.addControl('repass', new FormControl('', Validators.required));
+      this.userService.profile_img = 'https://www.w3schools.com/howto/img_avatar.png';
     }
     this.formLoaded = true;
   }
@@ -112,7 +113,7 @@ export class UserComponent implements OnInit {
   }
 
   onCancel() {
-    if (this.userId === 'null' || this.userId === null) {
+    if (this.userId === 'null' || !this.userId) {
       this.router.navigateByUrl('/login');
     } else {
       this.router.navigateByUrl(`/dashboard/${this.userId}`);

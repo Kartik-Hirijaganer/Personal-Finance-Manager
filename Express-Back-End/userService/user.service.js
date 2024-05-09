@@ -65,15 +65,15 @@ const updateUser = async (req, res) => {
 }
 
 const deleteUser = async (req, res) => {
-  const id = req?.params?.id;
-  const query = { userId: id };
+  const userId = req?.params?.userId;
+  const query = { userId };
   try {
     await User.findOneAndDelete(query);
   } catch (err) {
     const error = new DatabaseError(err.message);
     return res.status(200).send({ errorMessage: 'Failed to delete user data', error });
   }
-  return res.status(200).send({ userId: id });
+  return res.status(200).send({ userId });
 }
 
 module.exports = {

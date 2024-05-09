@@ -88,8 +88,6 @@ export class DashboardComponent implements OnInit {
         return this.accountService.getAccountDetails(this.accountId);
       })
     ).subscribe((res: any) => {
-      console.log(res);
-
       if (!res) {
         this.noAccountExist = true;
         this.toastr.error('Not account found. Please add an account.');
