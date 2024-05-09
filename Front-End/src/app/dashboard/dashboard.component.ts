@@ -71,9 +71,9 @@ export class DashboardComponent implements OnInit {
       this.currentBalance -= expenseAmount;
     })
     this.route.queryParamMap.pipe(
-      switchMap((params: any) => {
+      switchMap(({ params }: any) => {
         this.userId = params['userId'];
-        this.accountId = params['account_id'];
+        this.accountId = params['accountId'];
         return this.userService.getUser(this.accountId);
       }),
       switchMap((res: any) => {
@@ -91,7 +91,7 @@ export class DashboardComponent implements OnInit {
       if (!res) {
         this.noAccountExist = true;
         this.toastr.error('Not account found. Please add an account.');
-      }      
+      }
     });
   }
 

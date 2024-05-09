@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 
@@ -25,13 +25,16 @@ export class HeaderComponent implements OnInit {
     public authService: AuthService,
     public dashboardService: DashboardService,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      this.userId = params['userId'] || '';
+    });
     this.userName = localStorage.getItem('user_name');
     this.profile_img = localStorage.getItem('profile_img');
-    this.userId = localStorage.getItem('user_id');
   }
 
   onDelete() {

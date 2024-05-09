@@ -47,10 +47,10 @@ const UserSchema = new Schema({
   },
   accounts: {
     type: [String]
-  },
-  reminders: {
-    type: [ReminderSchema]
   }
+  // reminders: {
+  //   type: [ReminderSchema]
+  // }
 });
 
 const User = mongoose.model('user', UserSchema);
