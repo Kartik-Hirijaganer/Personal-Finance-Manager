@@ -13,11 +13,11 @@ import { AccountComponent } from "./account/account.component";
 const appRoutes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: AuthComponent },
-  { path: 'dashboard/:userId', component: DashboardComponent },
+  { path: 'dashboard', component: DashboardComponent },
   { path: 'incomes', component: IncomeComponent },
   { path: 'expenses', component: ExpenseComponent },
   { path: 'liabilities', component: LiabilityComponent},
-  { path: 'user/:userId', component: UserComponent },
+  { path: 'user', component: UserComponent },
   { path: 'accounts', component: AccountComponent }
 ]
 

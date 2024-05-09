@@ -37,9 +37,9 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.url.pipe(
-      switchMap((event: UrlSegment[]) => {
-        this.userId = event[1].path;
+    this.route.queryParamMap.pipe(
+      switchMap((params: any) => {
+        this.userId = params['userId'];;
         if (this.userId === 'null' || !this.userId) {
           return of(null);
         }
@@ -52,7 +52,6 @@ export class UserComponent implements OnInit {
         const user = response.user;
         if (user) {
           this.showEditBtn = true;
-          user?.profile_img && (this.userService.profile_img = user.profile_img);
           this.userService.userEvent.next({ user_fname: user.fname, profile_img: user.profile_img, userId: user.userId })
         }
         this.setUserForm(user);
@@ -87,7 +86,6 @@ export class UserComponent implements OnInit {
       phone: new FormControl<string>('', [Validators.required, Validators.pattern(/^[0-9+]+$/)]),
       email: new FormControl<string>('', [Validators.required, Validators.email]),
       password: new FormControl<string>('', Validators.required),
-      userId: new FormControl<string>('', Validators.required),
       profile_img: new FormControl<File | null>(null)
     });
   }
@@ -108,7 +106,6 @@ export class UserComponent implements OnInit {
       reader.readAsDataURL(file);
       reader.onload = (event: any) => {
         this.userForm.patchValue({ profile_img: event.target.result });
-        this.userService.profile_img = event.target.result
       }
     }
   }
@@ -128,7 +125,7 @@ export class UserComponent implements OnInit {
       return;
     }
     if (!payload.profile_img) {
-      payload.profile_img = this.userService.profile_img || 'https://www.w3schools.com/howto/img_avatar.png';
+      payload.profile_img = 'https://www.w3schools.com/howto/img_avatar.png';
     }
     if (this.editMode) {
       this.userService.updateUser(payload)
@@ -155,11 +152,9 @@ export class UserComponent implements OnInit {
         }))
         .subscribe(response => {
           if (response) {
-            this.authService.setToken(response.token);
-            this.userService.userEvent.next({ user_fname: payload.fname, profile_img: payload.profile_img, userId: response.userId });
+            this.authService.setUser({ ...response, profile_img: payload.profile_img});
             this.toastr.success('Registeration successfull', 'Success');
-            this.router.navigateByUrl(`/dashboard/${response.userId}`);
-            // this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId }})
+            this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId }})
           }
         })
     }

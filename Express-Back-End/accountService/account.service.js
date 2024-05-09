@@ -2,7 +2,7 @@
 
 const { v4 } = require('uuid');
 
-const { RecordNotFoundError } = require('../shared/errors');
+const { RecordNotFoundError, DatabaseError } = require('../shared/errors');
 const Account = require('./account.model');
 
 const getAccounts = async (req, res) => {

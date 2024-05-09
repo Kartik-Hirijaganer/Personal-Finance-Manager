@@ -24,7 +24,7 @@
         <button type="submit" class="btn btn-primary me-2 mb-3" style="background-color: #102C57;">Submit</button>
         <a class="ms-2" style="color: #102C57;">Rest password</a>
         <br>
-        <a class="ms-2" [routerLink]="['../', 'user', null]" style="color: #102C57;">New user? Click here to register</a>
+        <a class="ms-2" [routerLink]="['../', 'user']" [queryParams]="{userId: 'null'}" style="color: #102C57;">New user? Click here to register</a>
       </form>
     </div>
   </div>

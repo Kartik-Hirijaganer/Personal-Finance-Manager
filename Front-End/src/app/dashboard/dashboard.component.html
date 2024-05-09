@@ -29,6 +29,7 @@
   </div>
   <div class="row ps-2">
     <div class="col col-lg-12 mb-2 mt-5">
+      <div *ngIf="noAccountExist" class="fs-4 text-danger">Please add account. No linked account found.</div>
       <button type="button" class="btn btn-info" style="text-align: center;" (click)="downloadPdf()">Download Cash Flow</button>
     </div>
   </div>
@@ -36,8 +37,8 @@
     <div class="col col-lg-9 border bg-white me-2 dashboard-hover" style="max-width: 916px;">
       <ag-charts-angular [options]="chartOptions"></ag-charts-angular>
     </div>
-    <div class="col col-lg-3 border bg-white p-3 dashboard-hover" style="text-align: center; max-width: 300px;">
-      <div class="fs-3 font-monospace" (click)="onAddManageAccount()">Add/Manage Accounts</div>
+    <div class="col col-lg-3 border bg-white p-3 dashboard-hover" (click)="onAddManageAccount()" style="text-align: center; max-width: 300px;">
+      <div class="fs-3 font-monospace">Add/Manage Accounts</div>
       <hr>
       <div><img class="account-logo" src="../../assets/imgs/account.svg"></div>
     </div>

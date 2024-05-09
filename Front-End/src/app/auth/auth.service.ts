@@ -21,7 +21,7 @@ export class AuthService {
   ) { }
 
   login(payload: { email: string, password: string }): void {
-    this.http.post<{ token: string, userId: string }>(`${environment.URL}:${environment.auth_port}/login`, payload, { headers: { 'Content-Type': 'application/json', type: 'email' } })
+    this.http.post<{ token: string, userId: string, accountId: string, user: string, profile_img: string }>(`${environment.URL}:${environment.auth_port}/login`, payload, { headers: { 'Content-Type': 'application/json', type: 'email' } })
       .pipe(
         catchError(err => {
           this.toastr.error(err?.error?.errorMessage || 'Invalid email or password', 'Failed to login');
@@ -30,27 +30,27 @@ export class AuthService {
       )
       .subscribe(response => {
         if (response) {
-          this.setToken(response.token);
-          this.router.navigateByUrl(`/dashboard/${response.userId}`);
+          this.setUser(response);
+          this.toastr.success('Login successfull', 'Success');
+          this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId, accountId: response.accountId } });
         }
       });
   }
 
   register(payload: User): Observable<any> {
-    return this.http.post(`${environment.URL}:${environment.auth_port}/register`, payload);
+    return this.http.post<{ userId: string, token: string, accountId: string }>(`${environment.URL}:${environment.auth_port}/register`, payload);
   }
 
-  public setToken(token: string): void {
-    this.token = token;
-    this.isLoginMode = !this.isLoginMode;
+  public setUser(response: {token: string, userId: string, accountId: string, user: string, profile_img: string}): void {
+    localStorage.setItem("token", response.token);
+    localStorage.setItem("user_id", response.userId);
+    localStorage.setItem("account_id", response.accountId);
+    localStorage.setItem("user_name", response.user);
+    localStorage.setItem("profile_img", response.profile_img);
   }
 
   public getToken(): string {
-    return this.token;
+    return localStorage.getItem("token") || "";
   }
 
-  public logout(): void {
-    this.setToken('');
-    this.router.navigateByUrl('/');
-  }
 }

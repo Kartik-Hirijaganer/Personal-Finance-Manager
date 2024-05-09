@@ -1,7 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { AgChartOptions, PixelSize, AgChartTheme } from "ag-charts-community";
-import { ActivatedRoute, UrlSegment } from "@angular/router";
-import { switchMap } from "rxjs";
+import { ActivatedRoute, Route, Router, UrlSegment } from "@angular/router";
+import { switchMap, of } from "rxjs";
+import { ToastrService } from 'ngx-toastr';
 
 import { ExpenseService } from "../expense/expense.service";
 import { IncomeService } from "../income/income.service";
@@ -10,6 +11,8 @@ import { DashboardService } from "./dashboard.service";
 import { DownloadService } from "../shared/download.service";
 import { UserService } from "../user/user.service";
 import { AuthService } from "../auth/auth.service";
+import { User } from "../user/user.model";
+import { AccountService } from "../account/account.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -21,6 +24,9 @@ export class DashboardComponent implements OnInit {
   public chartOptions: AgChartOptions;
   public showShadow: boolean = false;
   public currentBalance: number = 0;
+  public noAccountExist: boolean = false;
+  private userId: string = '';
+  private accountId: string = '';
 
   constructor(
     public expenseService: ExpenseService,
@@ -29,8 +35,10 @@ export class DashboardComponent implements OnInit {
     private dashboardService: DashboardService,
     private downloadService: DownloadService,
     private route: ActivatedRoute,
+    private router: Router,
     private userService: UserService,
-    private authService: AuthService
+    private accountService: AccountService,
+    private toastr: ToastrService
   ) {
     this.chartOptions = {
       theme: {
@@ -62,24 +70,28 @@ export class DashboardComponent implements OnInit {
     this.expenseService.monthlyExpenseEvent.subscribe((expenseAmount: number) => {
       this.currentBalance -= expenseAmount;
     })
-
-    this.route.url.pipe(
-      switchMap((event: UrlSegment[]) => {
-        const userId = event[1]?.path;
-        this.userService.userId = userId;
-        return this.userService.getUser(userId);
+    this.route.queryParamMap.pipe(
+      switchMap((params: any) => {
+        this.userId = params['userId'];
+        this.accountId = params['account_id'];
+        return this.userService.getUser(this.accountId);
+      }),
+      switchMap((res: any) => {
+        if (res.user) {
+          this.userService.userEvent.next({ user_fname: res.user.fname, profile_img: res.user.profile_img, userId: res.user.userId })
+          this.userService.user_fname = res.user?.fname;
+          this.userService.profile_img = res.user?.profile_img;
+        }
+        if (!this.accountId) {
+          return of(null);
+        }
+        return this.accountService.getAccountDetails(this.accountId);
       })
     ).subscribe((res: any) => {
-      if (res.user) {
-        this.userService.userEvent.next({ user_fname: res.user.fname, profile_img: res.user.profile_img, userId: res.user.userId })
-        this.userService.user_fname = res.user?.fname;
-        this.userService.profile_img = res.user?.profile_img;
-      }
-    })
-
-    this.dashboardService.getChartData().subscribe(({ incomes, expenses, liabilities }) => {
-      const data = this.dashboardService.constructChartData(incomes, expenses, liabilities);
-      this.setChartOptions({ data });
+      if (!res) {
+        this.noAccountExist = true;
+        this.toastr.error('Not account found. Please add an account.');
+      }      
     });
   }
 
@@ -97,7 +109,6 @@ export class DashboardComponent implements OnInit {
   }
 
   onAddManageAccount() {
-    console.log('here');
-    
+    this.router.navigate(['../accounts'], { queryParams: { accountId: this.accountId, userId: this.userId } });
   }
 }
