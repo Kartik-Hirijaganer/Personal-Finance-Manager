@@ -26,26 +26,36 @@ export class LiabilityService {
     this.getLiabilities().subscribe(() => { });
   }
 
-  addLiability(liability: Liability): Observable<Liability[]> {
-    return this.http.post(`${environment.URL}:${environment.liability_port}/liability/add`, liability, { headers: this.headers })
-      .pipe(switchMap(() => {
-        return this.getLiabilities();
-      }));
+  addLiability(liability: Liability): Observable<{liabilityId: string}> {
+    return this.http.post<{liabilityId: string}>(
+      `${environment.URL}:${environment.account_port}/liability/add`, 
+      liability, 
+      {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token') || '' }),  
+        params: { 'category': 'liability', 'accountId': localStorage.getItem('account_id') || '' }
+      });
   }
 
-  deleteLiability(id: string): Observable<Liability[]> {
-    return this.http.delete(`${environment.URL}:${environment.liability_port}/liability/delete/${id}`, { headers: this.headers })
-      .pipe(switchMap(() => {
-        return this.getLiabilities();
-      }))
+  deleteLiability(id: string): Observable<{liabilityId: string}> {
+    return this.http.delete<{liabilityId: string}>(
+      `${environment.URL}:${environment.account_port}/liability/delete/${id}`, 
+      {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token') || '' }), 
+        params: { 'category': 'liability', 'accountId': localStorage.getItem('account_id') || '' }
+      });
   }
 
-  updateLiability(liability: Liability): Observable<any> {
-    return this.http.put<{ liabilityId: string }>(`${environment.URL}:${environment.liability_port}/liability/update/${liability.id}`, liability, { headers: this.headers });
+  updateLiability(liability: Liability): Observable<{ liabilityId: string }> {
+    return this.http.put<{ liabilityId: string }>(
+      `${environment.URL}:${environment.account_port}/liability/update/${liability.id}`, 
+      liability, 
+      { headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token') || ''}),
+        params: {'category': 'liability', 'accountId': localStorage.getItem('account_id') || ''}
+      });
   }
 
   // getLiabilities(): Observable<Liability[]> {
-  //   return this.http.get<{ liabilities: Liability[] }>(`${environment.URL}:${environment.liability_port}/liability`, { headers: this.headers })
+  //   return this.http.get<{ liabilities: Liability[] }>(`${environment.URL}:${environment.account_port}/liability`, { headers: this.headers })
   //     .pipe(map(({ liabilities }) => {
   //       this.monthlyLiability = this.util.calculateTotalAmount(liabilities);
   //       this.monthlyLiabilityEvent.next(this.monthlyLiability);
@@ -54,7 +64,7 @@ export class LiabilityService {
   // }
 
   getLiabilities(): Observable<any> {
-    return this.http.get<{ liabilities: Liability[] }>(`${environment.URL}:${environment.liability_port}/liability`, { headers: this.headers })
+    return this.http.get<{ liabilities: Liability[] }>(`${environment.URL}:${environment.account_port}/liability`, { headers: this.headers })
       .pipe(map(({ liabilities }) => {
         this.monthlyLiability = this.util.calculateTotalAmount(liabilities);
         this.monthlyLiabilityEvent.next(this.monthlyLiability);

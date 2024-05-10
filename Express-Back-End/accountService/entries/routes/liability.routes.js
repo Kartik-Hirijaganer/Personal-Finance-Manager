@@ -5,12 +5,12 @@ const router = express.Router();
 
 const { getEntries, addEntry, updateEntry, deleteEntry } = require('../entries.controller');
 
-router.get('/liability', getEntries);
+router.get('/', getEntries);
 
-router.post('/liability/add', addEntry);
+router.post('/add', addEntry);
 
-router.put('/liability/update/:id', updateEntry);
+router.put('/update/:id', updateEntry);
 
-router.delete('/liability/delete/:id', deleteEntry);
+router.delete('/delete/:id', deleteEntry);
 
 module.exports = router;

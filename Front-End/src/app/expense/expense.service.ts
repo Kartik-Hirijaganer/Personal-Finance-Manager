@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject, map, switchMap } from 'rxjs';
+import { Observable, Subject, map } from 'rxjs';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 
 import { Expense } from './expense.model';
@@ -10,9 +10,6 @@ import { environment } from '../../environments/environment.dev';
   providedIn: 'root'
 })
 export class ExpenseService {
-  private headers: HttpHeaders = new HttpHeaders({
-    'Content-Type': 'application/json'
-  })
   public monthlyExpense: number = 0;
   public monthlyExpenseEvent: Subject<number> = new Subject<number>();
   public expenseEvent: Subject<Expense[]> = new Subject<Expense[]>();
@@ -21,41 +18,45 @@ export class ExpenseService {
   constructor(
     private util: UtilService,
     private http: HttpClient
-  ) {
-    this.getExpenses().subscribe(() => { });
+  ) { }
+
+  addExpense(expense: Expense): Observable<{ expenseId: string }> {
+    return this.http.post<{ expenseId: string }>(
+      `${environment.URL}:${environment.expense_port}/expense/add`, 
+      expense, 
+      { 
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token') || ''
+        }),
+        params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
+      }
+    );
   }
 
-  addExpense(expense: Expense): Observable<Expense[]> {
-    return this.http.post<{ expenseId: string }>(`${environment.URL}:${environment.expense_port}/expense/add`, expense, { headers: this.headers })
-      .pipe(
-        switchMap(postResponse => {
-          return this.getExpenses();
-        })
-      )
+  deleteExpense(id: string): Observable<{ expenseId: string }> {
+    return this.http.delete<{ expenseId: string }>(
+      `${environment.URL}:${environment.account_port}/expense/delete/${id}`,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token') || ''
+        }),
+        params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
+      });
   }
 
-  deleteExpense(id: string): Observable<Expense[]> {
-    return this.http.delete(`${environment.URL}:${environment.expense_port}/expense/delete/${id}`, { headers: this.headers })
-      .pipe(switchMap(() => {
-        return this.getExpenses();
-      }))
+  updateExpense(expense: Expense): Observable<{ expenseId: string }> {
+    return this.http.put<{ expenseId: string }>(
+      `${environment.URL}:${environment.expense_port}/expense/update/${expense.id}`, 
+      expense, 
+      { headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token') || ''}),
+        params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
+      });
   }
-
-  updateExpense(expense: Expense): Observable<any> {
-    return this.http.put<{ expenseId: string }>(`${environment.URL}:${environment.expense_port}/expense/update/${expense.id}`, expense, { headers: this.headers });
-  }
-
-  // getExpenses(): Observable<Expense[]> {
-  //   return this.http.get<{ expenses: Expense[] }>(`${environment.URL}:${environment.expense_port}/expense`, { headers: this.headers })
-  //     .pipe(map(({ expenses }) => {
-  //       this.monthlyExpense = this.util.calculateTotalAmount(expenses);
-  //       this.monthlyExpenseEvent.next(this.monthlyExpense);
-  //       return expenses;
-  //     }));
-  // }
 
   getExpenses(): Observable<any> {
-    return this.http.get<{ expenses: Expense[] }>(`${environment.URL}:${environment.expense_port}/expense`, { headers: this.headers })
+    return this.http.get<{ expenses: Expense[] }>(`${environment.URL}:${environment.expense_port}/expense`, { headers: {'Content-Type': 'application/json'} })
       .pipe(map(({ expenses }) => {
         this.monthlyExpense = this.util.calculateTotalAmount(expenses);
         this.monthlyExpenseEvent.next(this.monthlyExpense);

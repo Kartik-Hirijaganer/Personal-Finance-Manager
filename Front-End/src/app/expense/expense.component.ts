@@ -8,6 +8,7 @@ import { ExpenseService } from './expense.service';
 import { UtilService } from '../shared/util.service';
 import { Expense } from './expense.model';
 import { ActionComponent } from '../shared/action/action.component';
+import { AccountService } from '../account/account.service';
 
 @Component({
   selector: 'app-expense',
@@ -33,7 +34,14 @@ export class ExpenseComponent implements OnInit, OnDestroy {
       field: 'action',
       headerName: 'Action',
       editable: false,
-      cellRenderer: ActionComponent
+      cellRenderer: ActionComponent,
+      cellRendererParams: {
+        actions : {
+          'delete': true,
+          'edit': true,
+          'select': false
+        }
+      }
     }
   ]
   expenseRowData: Expense[] = [];
@@ -53,7 +61,8 @@ export class ExpenseComponent implements OnInit, OnDestroy {
 
   constructor(
     public expenseService: ExpenseService,
-    public util: UtilService
+    public util: UtilService,
+    public accountService: AccountService
   ) {
     const date = new Date();
     this.bsConfig = Object.assign({}, {
@@ -66,11 +75,9 @@ export class ExpenseComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initializeForm();
-    this.getExpenseSubscription = this.expenseService.getExpenses().subscribe((expenses: Expense[]) => {
-      this.expenseRowData = expenses;
-    });
-    this.expenseSubscription = this.expenseService.expenseEvent.subscribe((updatedExpense: Expense[]) => {
-      this.expenseRowData = updatedExpense;
+    const accountId: string = localStorage.getItem('account_id') || '';
+    this.accountService.getAccountDetails(accountId).subscribe(account => {
+      this.expenseRowData = account.expenses || [];
     });
     this.expenseRowSubscription = this.expenseService.expenseEditEvent.subscribe((event) => {
       this.handleExpenseEvent(event.action, event.idx, event?.payload);
@@ -109,8 +116,10 @@ export class ExpenseComponent implements OnInit, OnDestroy {
         break;
       case 'delete':
         const { id } = payload as Expense;
-        this.expenseService.deleteExpense(id).subscribe(expenses => {
-          this.expenseRowData = expenses;
+        this.expenseService.deleteExpense(id).subscribe(res => {
+          this.gridApi?.applyTransaction({ remove: [payload] });
+          const tableData = this.util.getAllRows(this.gridApi);
+          this.expenseService.monthlyExpense = this.util.calculateTotalAmount(tableData);
         });
         break;
       default:
@@ -121,11 +130,14 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     const payload = this.expenseForm.getRawValue();
     payload.date = payload.date.toLocaleDateString();
-    this.addExpenseSubscription = this.expenseService.addExpense(payload).subscribe((expenses: Expense[]) => {
-      this.expenseRowData = expenses;
+    this.addExpenseSubscription = this.expenseService.addExpense(payload).subscribe(({ expenseId }) => {
+      const newExpense = { ...payload, id: expenseId };
+      this.gridApi.applyTransaction({ add: [newExpense] });
+      const tableData = this.util.getAllRows(this.gridApi);
+      this.expenseService.monthlyExpense = this.util.calculateTotalAmount(tableData);
+      this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
+      this.initializeForm();
     });
-    this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
-    this.initializeForm();
   }
 
   ngOnDestroy(): void {
