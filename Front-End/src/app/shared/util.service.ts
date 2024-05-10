@@ -33,6 +33,7 @@ export class UtilService {
         total += entry.amount;
       }
     }
+    
     return total;
   }
 

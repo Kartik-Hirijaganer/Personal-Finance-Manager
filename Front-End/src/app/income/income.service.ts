@@ -36,7 +36,7 @@ export class IncomeService {
   }
 
   deleteIncome(id: string): Observable<{incomeId: string}> {
-    return this.http.delete <{ incomeId: string }>(
+    return this.http.delete<{ incomeId: string }>(
       `${environment.URL}:${environment.account_port}/income/delete/${id}`, 
       {
         headers: new HttpHeaders({

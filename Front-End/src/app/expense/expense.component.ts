@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ColDef, GridOptions, GridApi, GridReadyEvent } from 'ag-grid-community';
-import { Subscription } from 'rxjs';
+import { Subscription, catchError, of } from 'rxjs';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import { ToastrService } from 'ngx-toastr';
 
 import { ExpenseService } from './expense.service';
 import { UtilService } from '../shared/util.service';
@@ -45,10 +46,11 @@ export class ExpenseComponent implements OnInit, OnDestroy {
     }
   ]
   expenseRowData: Expense[] = [];
-  private expenseSubscription: Subscription = new Subscription;
+  private accountSubscription: Subscription = new Subscription;
   private expenseRowSubscription: Subscription = new Subscription;
-  private getExpenseSubscription: Subscription = new Subscription;
   private addExpenseSubscription: Subscription = new Subscription;
+  private editExpenseSubscription: Subscription = new Subscription;
+  private deleteExpenseSubscription: Subscription = new Subscription;
 
   bsConfig?: Partial<BsDatepickerConfig>;
   agGridOptions: GridOptions = {
@@ -62,7 +64,8 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   constructor(
     public expenseService: ExpenseService,
     public util: UtilService,
-    public accountService: AccountService
+    public accountService: AccountService,
+    private toastr: ToastrService
   ) {
     const date = new Date();
     this.bsConfig = Object.assign({}, {
@@ -76,8 +79,17 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeForm();
     const accountId: string = localStorage.getItem('account_id') || '';
-    this.accountService.getAccountDetails(accountId).subscribe(account => {
-      this.expenseRowData = account.expenses || [];
+    this.accountSubscription = this.accountService.getAccountDetails(accountId)
+    .pipe(catchError(err => {
+      const errorMessage: string = err?.error?.error?.errorMessage;
+      this.toastr.error(errorMessage, 'Failed fetch data');
+      return of(null);
+    }))
+    .subscribe(account => {
+      if (account) {
+        this.expenseRowData = account.expenses || [];
+        this.expenseService.monthlyExpense = this.util.calculateTotalAmount(account.expenses);
+      }
     });
     this.expenseRowSubscription = this.expenseService.expenseEditEvent.subscribe((event) => {
       this.handleExpenseEvent(event.action, event.idx, event?.payload);
@@ -109,17 +121,33 @@ export class ExpenseComponent implements OnInit, OnDestroy {
         break;
       case 'save':
         this.gridApi.stopEditing();
-        this.expenseService.updateExpense(payload as Expense).subscribe(res => {
-          const tableData = this.util.getAllRows(this.gridApi);
-          this.expenseService.monthlyExpense = this.util.calculateTotalAmount(tableData);
+        this.editExpenseSubscription = this.expenseService.updateExpense(payload as Expense)
+        .pipe(catchError(err => {
+          const errorMessage: string = err?.error?.error?.errorMessage;
+          this.toastr.error(errorMessage, 'Failed to update expense');
+          return of(null);
+        }))
+        .subscribe(res => {
+          if (res) {
+            const tableData = this.util.getAllRows(this.gridApi);
+            this.expenseService.monthlyExpense = this.util.calculateTotalAmount(tableData);
+          }
         });
         break;
       case 'delete':
         const { id } = payload as Expense;
-        this.expenseService.deleteExpense(id).subscribe(res => {
-          this.gridApi?.applyTransaction({ remove: [payload] });
-          const tableData = this.util.getAllRows(this.gridApi);
-          this.expenseService.monthlyExpense = this.util.calculateTotalAmount(tableData);
+        this.deleteExpenseSubscription = this.expenseService.deleteExpense(id)
+        .pipe(catchError(err => {
+          const errorMessage: string = err?.error?.error?.errorMessage;
+          this.toastr.error(errorMessage, 'Failed to delete expense');
+          return of(null);
+        }))
+        .subscribe(res => {
+          if (res) {
+            this.gridApi?.applyTransaction({ remove: [payload] });
+            const tableData = this.util.getAllRows(this.gridApi);
+            this.expenseService.monthlyExpense = this.util.calculateTotalAmount(tableData);
+          }
         });
         break;
       default:
@@ -130,20 +158,29 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     const payload = this.expenseForm.getRawValue();
     payload.date = payload.date.toLocaleDateString();
-    this.addExpenseSubscription = this.expenseService.addExpense(payload).subscribe(({ expenseId }) => {
-      const newExpense = { ...payload, id: expenseId };
-      this.gridApi.applyTransaction({ add: [newExpense] });
-      const tableData = this.util.getAllRows(this.gridApi);
-      this.expenseService.monthlyExpense = this.util.calculateTotalAmount(tableData);
-      this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
-      this.initializeForm();
+    this.addExpenseSubscription = this.expenseService.addExpense(payload)
+    .pipe(catchError(err => {
+      const errorMessage: string = err?.error?.error?.errorMessage;
+      this.toastr.error(errorMessage, 'Failed to add expense');
+      return of(null);
+    }))
+    .subscribe((response) => {
+      if (response?.expenseId) {
+        const newExpense = { ...payload, id: response.expenseId };
+        this.gridApi.applyTransaction({ add: [newExpense] });
+        const tableData = this.util.getAllRows(this.gridApi);
+        this.expenseService.monthlyExpense = this.util.calculateTotalAmount(tableData);
+        this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
+        this.initializeForm();
+      }
     });
   }
 
   ngOnDestroy(): void {
-    this.expenseSubscription.unsubscribe();
+    this.accountSubscription.unsubscribe();
     this.expenseRowSubscription.unsubscribe();
-    this.getExpenseSubscription.unsubscribe();
     this.addExpenseSubscription.unsubscribe();
+    this.editExpenseSubscription.unsubscribe();
+    this.deleteExpenseSubscription.unsubscribe();
   }
 }
