@@ -139,6 +139,7 @@ export class IncomeComponent implements OnInit, OnDestroy {
       const tableData = this.util.getAllRows(this.gridApi);
       this.incomeService.monthlyIncome = this.util.calculateTotalAmount(tableData);
       this.hideIncomeForm = this.util.toggle(this.hideIncomeForm);
+      this.initializeForm();
     });
   }
 

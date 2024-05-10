@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Subject, switchMap } from "rxjs";
+import { Subject } from "rxjs";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
@@ -20,9 +20,7 @@ export class IncomeService {
   constructor(
     private util: UtilService,
     private http: HttpClient
-  ) {
-    this.getIncomes().subscribe(() => { });
-  }
+  ) { }
 
   addIncome(income: Income): Observable<{incomeId: string}> {
     return this.http.post<{incomeId: string}>(
