@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { ColDef, GridReadyEvent, GridOptions, GridApi } from "ag-grid-community";
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { Subscription } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
+import { Subscription, catchError, of } from 'rxjs';
 
 import { IncomeService } from './income.service';
 import { Income } from './income.model';
@@ -56,16 +57,18 @@ export class IncomeComponent implements OnInit, OnDestroy {
   public hideIncomeForm: boolean = true;
   private gridApi!: GridApi;
   bsConfig?: Partial<BsDatepickerConfig>;
-
-  private incomeListSubscription: Subscription = new Subscription;
+  
+  private accountSubscription: Subscription = new Subscription;
   private incomeRowSubscription: Subscription = new Subscription;
   private addIncomeSubscription: Subscription = new Subscription;
-  private getIncomeSubscription: Subscription = new Subscription;
+  private updateIncomeSubscription: Subscription = new Subscription;
+  private deleteIncomeSubscription: Subscription = new Subscription;
 
   constructor(
     public incomeService: IncomeService,
     private util: UtilService,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private toastr: ToastrService
   ) {
     const date = new Date();
     this.bsConfig = Object.assign({}, {
@@ -79,8 +82,17 @@ export class IncomeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initializeForm();
     const accountId = localStorage.getItem('account_id') || '';
-    this.accountService.getAccountDetails(accountId).subscribe(account => {
-      this.incomeRowData = account.incomes || [];
+    this.accountSubscription = this.accountService.getAccountDetails(accountId)
+    .pipe(catchError(err => {
+      const errorMessage: string = err?.error?.error?.errorMessage;
+      this.toastr.error(errorMessage, 'Failed fetch data');
+      return of(null);
+    }))
+    .subscribe(account => {
+      if (account) {
+        this.incomeRowData = account.incomes || [];
+        this.incomeService.monthlyIncome = this.util.calculateTotalAmount(account.incomes);
+      }
     });
     this.incomeRowSubscription = this.incomeService.incomeEditEvent.subscribe((event) => {
       this.handleIncomeEvent(event.action, event.idx, event?.payload);
@@ -104,17 +116,33 @@ export class IncomeComponent implements OnInit, OnDestroy {
         break;
       case 'save':
         this.gridApi.stopEditing();
-        this.incomeService.updateIncome(payload as Income).subscribe(res => {
-          const tableData = this.util.getAllRows(this.gridApi);
-          this.incomeService.monthlyIncome = this.util.calculateTotalAmount(tableData);
+        this.updateIncomeSubscription = this.incomeService.updateIncome(payload as Income)
+        .pipe(catchError(err => {
+          const errorMessage: string = err?.error?.error?.errorMessage;
+          this.toastr.error(errorMessage, 'Failed to update income');
+          return of(null);
+        }))
+        .subscribe(res => {
+          if (res) {
+            const tableData = this.util.getAllRows(this.gridApi);
+            this.incomeService.monthlyIncome = this.util.calculateTotalAmount(tableData);
+          }
         });
         break;
       case 'delete':
         const { id } = payload as Income;
-        this.incomeService.deleteIncome(id).subscribe(res => {
-          this.gridApi?.applyTransaction({ remove: [payload] });
-          const tableData = this.util.getAllRows(this.gridApi);
-          this.incomeService.monthlyIncome = this.util.calculateTotalAmount(tableData);
+        this.deleteIncomeSubscription = this.incomeService.deleteIncome(id)
+        .pipe(catchError(err => {
+          const errorMessage: string = err?.error?.error?.errorMessage;
+          this.toastr.error(errorMessage, 'Failed to delete income');
+          return of(null);
+        }))
+        .subscribe(res => {
+          if (res) {
+            this.gridApi?.applyTransaction({ remove: [payload] });
+            const tableData = this.util.getAllRows(this.gridApi);
+            this.incomeService.monthlyIncome = this.util.calculateTotalAmount(tableData);
+          }
         });
         break;
       default:
@@ -133,20 +161,29 @@ export class IncomeComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     const payload = this.incomeForm.getRawValue();
     payload.date = payload.date.toLocaleDateString();
-    this.addIncomeSubscription = this.incomeService.addIncome(payload).subscribe(({incomeId}) => {
-      const newIncome = { ...payload, id: incomeId };
-      this.gridApi.applyTransaction({ add: [newIncome] });
-      const tableData = this.util.getAllRows(this.gridApi);
-      this.incomeService.monthlyIncome = this.util.calculateTotalAmount(tableData);
-      this.hideIncomeForm = this.util.toggle(this.hideIncomeForm);
-      this.initializeForm();
+    this.addIncomeSubscription = this.incomeService.addIncome(payload)
+    .pipe(catchError(err => {
+      const errorMessage: string = err?.error?.error?.errorMessage;
+      this.toastr.error(errorMessage, 'Failed to add income');
+      return of(null);
+    }))
+    .subscribe(response => {
+      if (response?.incomeId) {
+        const newIncome = { ...payload, id: response.incomeId };
+        this.gridApi.applyTransaction({ add: [newIncome] });
+        const tableData = this.util.getAllRows(this.gridApi);
+        this.incomeService.monthlyIncome = this.util.calculateTotalAmount(tableData);
+        this.hideIncomeForm = this.util.toggle(this.hideIncomeForm);
+        this.initializeForm();
+      }
     });
   }
 
   ngOnDestroy(): void {
-    this.incomeListSubscription.unsubscribe();
+    this.accountSubscription.unsubscribe();
     this.incomeRowSubscription.unsubscribe();
     this.addIncomeSubscription.unsubscribe();
-    this.getIncomeSubscription.unsubscribe();
+    this.updateIncomeSubscription.unsubscribe();
+    this.deleteIncomeSubscription.unsubscribe();
   }
 }
