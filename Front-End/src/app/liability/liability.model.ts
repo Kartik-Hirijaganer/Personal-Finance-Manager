@@ -4,10 +4,10 @@ export class Liability {
   public amount: number;
   public due_date: string;
   public description: string;
-  public month: { type: string, name: string, id: number };
+  public month: { name: string, monthId: number };
 
   constructor(id: string, name: string, amount: number, description: string, due_date: string,
-    month: { type: string, name: string, id: number }
+    month: { name: string, monthId: number }
   ) {
     this.id = id;
     this.name = name;

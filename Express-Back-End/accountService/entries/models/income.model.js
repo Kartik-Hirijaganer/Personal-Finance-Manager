@@ -20,6 +20,16 @@ const IncomeSchema = new Schema({
   },
   description: {
     type: String
+  },
+  month: {
+    name: {
+      type: String,
+      required: true
+    },
+    monthId: {
+      type: Number,
+      required: true
+    }
   }
 });
 

@@ -27,20 +27,20 @@ const getAccounts = async (req, res) => {
 
 const getAccount = async (req, res) => {
   const accountId = req.params.accountId;
-  let account = {};
+  let accounts = {};
   try {
-    account = await Account.findOne({ accountId });
-    if (!account) {
+    accounts = await Account.findOne({ accountId });
+    if (!accounts) {
       throw new RecordNotFoundError(`No record for account ${accountId} was found`);
     }
   } catch (error) {
     if (error instanceof RecordNotFoundError) {
-      return res.status(400).send({ account });
+      return res.status(400).send({ error });
     }
     const dbError = new DatabaseError(error.message);
-    return res.status(400).send({ errorMessage, dbError });
+    return res.status(400).send({ errorMessage, error: dbError });
   }
-  return res.status(200).send(account);
+  return res.status(200).send(accounts);
 }
 
 const addAccount = async (req, res) => {

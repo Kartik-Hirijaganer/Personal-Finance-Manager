@@ -9,6 +9,7 @@ import { Income } from '../income/income.model';
   providedIn: 'root'
 })
 export class UtilService {
+  public monthNames: Array<string> = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jly", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   toggle(state: boolean): boolean {
     return !state;
@@ -33,8 +34,15 @@ export class UtilService {
         total += entry.amount;
       }
     }
-    
     return total;
+  }
+
+  getMonthPayload(date: string) {
+    const month: number = new Date(date).getMonth();
+    return {
+      name: this.monthNames[month],
+      monthId: month + 1
+    }
   }
 
   public data = [

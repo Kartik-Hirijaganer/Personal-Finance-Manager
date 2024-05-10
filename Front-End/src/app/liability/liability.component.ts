@@ -82,7 +82,7 @@ export class LiabilityComponent implements OnInit, OnDestroy {
     this.accountSubscription = this.accountService.getAccountDetails(accountId)
     .pipe(catchError(err => {
       const errorMessage: string = err?.error?.error?.errorMessage;
-      this.toastr.error(errorMessage, 'Failed fetch data');
+      this.toastr.error(errorMessage, 'Failed to fetch data');
       return of(null);
     }))
     .subscribe(account => {
