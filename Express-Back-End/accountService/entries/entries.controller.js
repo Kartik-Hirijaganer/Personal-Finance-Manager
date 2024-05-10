@@ -20,13 +20,16 @@ const getEntries = async (req, res) => {
 }
 
 const addEntry = async (req, res) => {
-  const { category, accountId } = req?.query;
+  let { category, accountId } = req?.query;
+  if (category === 'liability') {
+    category = 'liabilitie';
+  }
   const input = req.body?.from || req.body?.to || req.body?.name;
   const payload = { ...req.body, id: util.generateID(input) };
 
   try {
     let account = await Account.findOne({ accountId });
-    if (account.incomes || account.expenses || account.liabilities) {
+    if (account[`${category}s`]) {
       account[`${category}s`].push(payload);
     } else {
       account[`${category}s`] = [payload];
@@ -40,18 +43,24 @@ const addEntry = async (req, res) => {
     const dbError = new DatabaseError(error.message);
     return res.status(400).send({ errorMessage, error: dbError });
   }
+  if (category === 'liabilitie') {
+    category = 'liability';
+  }
   return res.status(200).send({ [`${category}Id`]: payload.id });
 }
 
 const updateEntry = async (req, res) => {
-  const { category, accountId } = req?.query;
-  const id = req?.params?.id;
+  let { category, accountId } = req?.query;
+  if (category === 'liability') {
+    category = 'liabilitie';
+  }
+  const id = req.params?.id;
   const payload = req.body;
   try {
     let account = await Account.findOne({ accountId });
     const entries = account[`${category}s`];
     if (!entries) {
-      throw new RecordNotFoundError(`${category} record with id: ${id} not found`);
+      throw new RecordNotFoundError(`${category} record with id: ${accountId} not found`);
     }
 
     account[`${category}s`] = entries.map(entry => {
@@ -70,11 +79,17 @@ const updateEntry = async (req, res) => {
     const dbError = new DatabaseError(error.message);
     return res.status(400).send({ errorMessage, error: dbError });
   }
+  if (category === 'liabilitie') {
+    category = 'liability';
+  }
   return res.status(200).send({ [`${category}Id`]: id });
 }
 
 const deleteEntry = async (req, res) => {
-  const { category, accountId } = req?.query;
+  let { category, accountId } = req?.query;
+  if (category === 'liability') {
+    category = 'liabilitie';
+  }
   const id = req?.params?.id;
   try {
     let account = await Account.findOne({ accountId });
@@ -88,6 +103,9 @@ const deleteEntry = async (req, res) => {
   } catch (error) {
     const dbError = new DatabaseError(error.message);
     return res.status(400).send({ errorMessage: 'Failed to delete income data', error: dbError });
+  }
+  if (category === 'liabilitie') {
+    category = 'liability';
   }
   return res.status(200).send({ [`${category}Id`]: id });
 }

@@ -8,6 +8,7 @@ import { LiabilityService } from './liability.service';
 import { UtilService } from '../shared/util.service';
 import { Liability } from './liability.model';
 import { ActionComponent } from '../shared/action/action.component';
+import { AccountService } from '../account/account.service';
 
 @Component({
   selector: 'app-liability',
@@ -32,7 +33,14 @@ export class LiabilityComponent implements OnInit, OnDestroy {
       field: 'action',
       headerName: 'Action',
       editable: false,
-      cellRenderer: ActionComponent
+      cellRenderer: ActionComponent,
+      cellRendererParams: {
+        actions: {
+          'delete': true,
+          'edit': true,
+          'select': false
+        }
+      }
     }
   ]
   liabilityRowData: Liability[] = [];
@@ -53,7 +61,8 @@ export class LiabilityComponent implements OnInit, OnDestroy {
 
   constructor(
     public liabilityService: LiabilityService,
-    public util: UtilService
+    public util: UtilService,
+    private accountService: AccountService
   ) {
     const date = new Date();
     this.bsConfig = Object.assign({}, {
@@ -66,12 +75,9 @@ export class LiabilityComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initializeForm();
-    this.liabilityService.getLiabilities().subscribe((liabilities: Liability[]) => {
-      this.liabilityRowData = liabilities;
-    });
-
-    this.liabilityListSubscription = this.liabilityService.liabilityListEvent.subscribe((updatedLiabilityList: Liability[]) => {
-      this.liabilityRowData = updatedLiabilityList;
+    const accountId: string = localStorage.getItem('account_id') || '';
+    this.accountService.getAccountDetails(accountId).subscribe(account => {
+      this.liabilityRowData = account.liabilities || [];
     });
     this.liabilityRowSubscription = this.liabilityService.liabilityEditEvent.subscribe((event) => {
       this.handleLiabilityEvent(event.action, event.idx, event?.payload);
@@ -111,8 +117,10 @@ export class LiabilityComponent implements OnInit, OnDestroy {
         break;
       case 'delete':
         const { id } = payload as Liability;
-        this.liabilityService.deleteLiability(id).subscribe(liabilities => {
-          this.liabilityRowData = liabilities;
+        this.liabilityService.deleteLiability(id).subscribe(res => {
+          this.gridApi?.applyTransaction({ remove: [payload] });
+          const tableData = this.util.getAllRows(this.gridApi);
+          this.liabilityService.monthlyLiability = this.util.calculateTotalAmount(tableData);
         });
         break;
       default:
@@ -123,10 +131,15 @@ export class LiabilityComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     const payload = this.liabilityForm.getRawValue();
     payload.due_date = payload.due_date.toLocaleDateString();
-    this.addIncomeSubscription = this.liabilityService.addLiability(payload).subscribe((incomes: Liability[]) => {
-      this.liabilityRowData = incomes;
-    });;
-    this.hideLiabilityForm = this.util.toggle(this.hideLiabilityForm);
+    this.addIncomeSubscription = this.liabilityService.addLiability(payload).subscribe(({liabilityId}) => {
+      const newLiability = { ...payload, id: liabilityId };
+      this.gridApi.applyTransaction({ add: [newLiability] });
+      const tableData = this.util.getAllRows(this.gridApi);
+      this.liabilityService.monthlyLiability = this.util.calculateTotalAmount(tableData);
+      this.hideLiabilityForm = this.util.toggle(this.hideLiabilityForm);
+      this.initializeForm();
+      this.hideLiabilityForm = this.util.toggle(this.hideLiabilityForm);
+    });
   }
 
   ngOnDestroy(): void {
