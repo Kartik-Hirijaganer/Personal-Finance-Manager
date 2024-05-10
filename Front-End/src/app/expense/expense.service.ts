@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject, map } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 
 import { Expense } from './expense.model';
@@ -15,15 +15,12 @@ export class ExpenseService {
   public expenseEvent: Subject<Expense[]> = new Subject<Expense[]>();
   public expenseEditEvent: Subject<{ action: string, idx: number, payload?: Expense }> = new Subject<{ action: string, idx: number, payload?: Expense }>();
 
-  constructor(
-    private util: UtilService,
-    private http: HttpClient
-  ) { }
+  constructor ( private util: UtilService, private http: HttpClient ) { }
 
   addExpense(expense: Expense): Observable<{ expenseId: string }> {
     return this.http.post<{ expenseId: string }>(
       `${environment.URL}:${environment.expense_port}/expense/add`, 
-      expense, 
+      { ...expense, month: this.util.getMonthPayload(expense.date) },
       { 
         headers: new HttpHeaders({
           'Content-Type': 'application/json',
@@ -49,19 +46,9 @@ export class ExpenseService {
   updateExpense(expense: Expense): Observable<{ expenseId: string }> {
     return this.http.put<{ expenseId: string }>(
       `${environment.URL}:${environment.expense_port}/expense/update/${expense.id}`, 
-      expense, 
+      { ...expense, month: this.util.getMonthPayload(expense.date) },
       { headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token') || ''}),
         params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
       });
   }
-
-  getExpenses(): Observable<any> {
-    return this.http.get<{ expenses: Expense[] }>(`${environment.URL}:${environment.expense_port}/expense`, { headers: {'Content-Type': 'application/json'} })
-      .pipe(map(({ expenses }) => {
-        this.monthlyExpense = this.util.calculateTotalAmount(expenses);
-        this.monthlyExpenseEvent.next(this.monthlyExpense);
-        return this.util.data;
-      }));
-  }
-
 }

@@ -4,7 +4,7 @@ export class Expense {
   public date: string;
   public amount: number;
   public description: string;
-  public month: { type: string, name: string, id: number }
+  public month: { name: string, monthId: number }
 
   constructor(
     id: string,
@@ -12,7 +12,7 @@ export class Expense {
     date: string,
     amount: number,
     description: string,
-    month: { type: string, name: string, id: number }
+    month: { name: string, monthId: number }
   ) {
     this.id = id;
     this.to = to;

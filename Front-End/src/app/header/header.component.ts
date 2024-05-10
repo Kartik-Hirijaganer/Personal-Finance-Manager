@@ -51,10 +51,11 @@ export class HeaderComponent implements OnInit {
 
   onConfirmationEvent(confirm: boolean) {
     if (confirm) {
-      this.userService.deleteUser(this.userId!)
+      const userId: string = localStorage.getItem('user_id') || '';
+      this.userService.deleteUser(userId)
         .pipe(catchError(err => {
           const title: string = err.error?.errorMessage;
-          let message: string = 'Failed t delete user';
+          let message: string = 'Failed to delete user';
           this.toastr.error(message, title);
           return of(null);
         })).subscribe(response => {

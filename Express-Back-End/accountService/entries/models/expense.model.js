@@ -22,6 +22,16 @@ const ExpenseSchema = new Schema({
   description: {
     type: String,
     required: false
+  },
+  month: {
+    name: {
+      type: String,
+      required: true
+    },
+    monthId: {
+      type: Number,
+      required: true
+    }
   }
 });
 

@@ -6,25 +6,25 @@
       <br>
       Current Balance
       <br>
-      <span class="text-success">{{currentBalance | currency: 'USD'}}</span>
+      <span class="text-success">{{ currentBalance | currency: 'USD' }}</span>
     </div>
     <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/incomes"
       style="text-align: center; max-width: 300px;">
       <span><img class="dashboard-logo" src="../../assets/imgs/dashboard_income.svg"></span>
       <br>Month's Income<br>
-      <span class="text-success">{{ incomeService.monthlyIncome | currency: 'USD' }}</span>
+      <span class="text-success">{{ monthlyIncome | currency: 'USD' }}</span>
     </div>
     <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/expenses"
       style="text-align: center; max-width: 300px;">
       <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-expense.svg"></span>
       <br>Month's Expense<br>
-      <span class="text-danger">{{ expenseService.monthlyExpense | currency: 'USD' }}</span>
+      <span class="text-danger">{{ monthlyExpense | currency: 'USD' }}</span>
     </div>
     <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/liabilities"
       style="text-align: center; max-width: 300px;">
       <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-liabilities.svg"></span>
       <br>Liabilities<br>
-      <span class="text-danger">{{ liabilityService.monthlyLiability | currency: 'USD' }}</span>
+      <span class="text-danger">{{ monthlyLiability | currency: 'USD' }}</span>
     </div>
   </div>
   <div class="row ps-2">

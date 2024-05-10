@@ -21,6 +21,16 @@ const LiabilitySchema = new Schema({
   description: {
     type: String,
     required: true
+  },
+  month: {
+    name: {
+      type: String,
+      required: true
+    },
+    monthId: {
+      type: Number,
+      required: true
+    }
   }
 })
 
