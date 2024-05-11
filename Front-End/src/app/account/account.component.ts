@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ColDef, GridOptions, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, of } from 'rxjs';
+import { Subscription, catchError, of } from 'rxjs';
 
 import { ActionComponent } from '../shared/action/action.component';
 import { Account } from './account.model';
@@ -13,7 +13,7 @@ import { AccountService } from './account.service';
   templateUrl: './account.component.html',
   styleUrls: ['../shared/custom.styles.css']
 })
-export class AccountComponent implements OnInit {
+export class AccountComponent implements OnInit, OnDestroy {
   public accountForm: FormGroup = new FormGroup({});
   public enableForm: boolean = false;
   accountColDef: ColDef[] = [
@@ -43,6 +43,7 @@ export class AccountComponent implements OnInit {
       autoHeight: true
     }
   }
+  private accountEvent: Subscription = new Subscription;
   constructor(private accountService: AccountService, private toastr: ToastrService) { }
 
   ngOnInit(): void {
@@ -52,7 +53,7 @@ export class AccountComponent implements OnInit {
       description: new FormControl<string | null>('')
     })
     this.getAccountRowData();
-    this.accountService.accountSelectEvent.subscribe(event => {
+    this.accountEvent = this.accountService.accountSelectEvent.subscribe(event => {
       this.gridApi.forEachNode(node => {
         if (node.data?.selected) {
           node.setData({ ...node.data, selected: false });
@@ -123,5 +124,9 @@ export class AccountComponent implements OnInit {
         this.toggleForm();
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.accountEvent.unsubscribe();
   }
 }

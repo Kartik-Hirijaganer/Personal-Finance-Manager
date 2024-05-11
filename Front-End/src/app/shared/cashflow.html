@@ -28,19 +28,19 @@
       <div class="title mt-3">Current Month Summary</div>
       <table class="tableBorder tdRightSpace">
         <tr>
-          <th width="37%" class="tdbr label">Total Monthly Income</th>
+          <th width="37%" class="tdbr label">Monthly Income</th>
           <td width="63%" class="tdbr value">{{symbolHelper (seperator summary.income) '$'}}</td>
         </tr>
         <tr>
-          <th width="37%" class="tdbr label">Total Monthly Expense</th>
+          <th width="37%" class="tdbr label">Monthly Expense</th>
           <td width="63%" class="tdbr value">{{symbolHelper (seperator summary.expense) '$'}}</td>
         </tr>
         <tr>
-          <th width="37%" class="tdbr label">Total Monthly Liability</th>
+          <th width="37%" class="tdbr label">Monthly Liability</th>
           <td width="63%" class="tdbr value">{{symbolHelper (seperator summary.liability) '$'}}</td>
         </tr>
         <tr class="lastRow label" style="background-color: #666;">
-          <th class="tdbr label" style="color:#fff;background-color:#666">Current Balance</th>
+          <th class="tdbr label" style="color:#fff;background-color:#666">Monthly Balance</th>
           <td class="tdbr last value" style="color:#fff">{{symbolHelper (seperator summary.current) '$'}}</td>
         </tr>
       </table>
@@ -73,7 +73,7 @@
         </tr>
         {{/each}}
         <tr class="lastRow label" style="background-color: #666;">
-          <td class="tdbr label" style="color:#fff">Total</td>
+          <td class="tdbr label" style="color:#fff">Balance</td>
           {{#each totals}}
           <td class="tdbr last value" style="color:#fff">{{symbolHelper (seperator this) '$'}}</td>
           {{/each}}

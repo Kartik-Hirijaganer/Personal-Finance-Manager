@@ -40,12 +40,11 @@ export class HeaderComponent implements OnInit {
     this.popup.openModal('danger', 'Are you sure, you want to delete your profile?');
   }
 
-  logout(): void {
-    localStorage.clear();
+  onLogout(): void {
     this.userName = null;
     this.profile_img = null;
     this.userId = null;
-    this.router.navigateByUrl('/login');
+    this.authService.logout();
   }
 
   onConfirmationEvent(confirm: boolean) {
@@ -60,7 +59,7 @@ export class HeaderComponent implements OnInit {
         })).subscribe(response => {
           if (response) {
             this.toastr.success('Successfully deleted user', 'Success');
-            this.logout();
+            this.onLogout();
           }
         });
     }

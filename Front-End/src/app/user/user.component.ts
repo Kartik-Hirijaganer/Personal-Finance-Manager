@@ -37,13 +37,12 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userId = localStorage.getItem('user_id') || 'null';
+    this.userId = localStorage.getItem('user_id');
+    if (!this.userId) {
+      this.setUserForm(null);
+      return;
+    }
     this.userService.getUser(this.userId).subscribe((response) => {
-      debugger
-      if (!response) {
-        this.setUserForm(null);
-        return;
-      }
       const user = response.user;
       if (user) {
         this.showEditBtn = true;

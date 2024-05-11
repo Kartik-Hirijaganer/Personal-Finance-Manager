@@ -37,6 +37,11 @@ export class AuthService {
       });
   }
 
+  logout(): void {
+    localStorage.clear();
+    this.router.navigateByUrl('/login');
+  }
+
   register(payload: User): Observable<any> {
     return this.http.post<{ userId: string, token: string, accountId: string }>(`${environment.URL}:${environment.auth_port}/register`, payload);
   }
