@@ -10,6 +10,7 @@ import { UtilService } from '../shared/util.service';
 import { Liability } from './liability.model';
 import { ActionComponent } from '../shared/action/action.component';
 import { AccountService } from '../account/account.service';
+import { DatePickerComponent } from '../shared/date-picker/date-picker.component';
 
 @Component({
   selector: 'app-liability',
@@ -28,7 +29,12 @@ export class LiabilityComponent implements OnInit, OnDestroy {
       valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$'),
       editable: true
     },
-    { field: 'due_date', headerName: 'Due Date', editable: true },
+    { field: 'due_date', 
+      headerName: 'Due Date', 
+      editable: true,
+      cellRenderer: DatePickerComponent,
+      cellRendererParams: { data: { theme: 'red' } }
+    },
     { field: 'description', headerName: 'Description', editable: true },
     {
       field: 'action',
@@ -171,7 +177,6 @@ export class LiabilityComponent implements OnInit, OnDestroy {
         this.gridApi.applyTransaction({ add: [newLiability] });
         const tableData = this.util.getAllRows(this.gridApi);
         this.liabilityService.monthlyLiability = this.util.calculateTotalAmount(tableData);
-        this.hideLiabilityForm = this.util.toggle(this.hideLiabilityForm);
         this.initializeForm();
         this.hideLiabilityForm = this.util.toggle(this.hideLiabilityForm);
       }

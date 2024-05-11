@@ -10,6 +10,7 @@ import { Income } from './income.model';
 import { ActionComponent } from '../shared/action/action.component';
 import { UtilService } from '../shared/util.service'
 import { AccountService } from '../account/account.service';
+import { DatePickerComponent } from '../shared/date-picker/date-picker.component';
 
 @Component({
   selector: 'app-income',
@@ -31,7 +32,12 @@ export class IncomeComponent implements OnInit, OnDestroy {
       valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$'),
       editable: true
     },
-    { field: "date", headerName: "Date", editable: true },
+    { field: "date", 
+      headerName: "Date", 
+      editable: true,
+      cellRenderer: DatePickerComponent,
+      cellRendererParams: { data: { theme: 'green' } }
+    },
     { field: "description", headerName: "Description", editable: true },
     {
       field: "Action",

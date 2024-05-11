@@ -37,25 +37,19 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.queryParamMap.pipe(
-      switchMap((params: any) => {
-        this.userId = params['userId'];;
-        if (this.userId === 'null' || !this.userId) {
-          return of(null);
-        }
-        return this.userService.getUser(this.userId);
-      })).subscribe((response) => {
-        if (!response) {
-          this.setUserForm(null);
-          return;
-        }
-        const user = response.user;
-        if (user) {
-          this.showEditBtn = true;
-          this.userService.userEvent.next({ user_fname: user.fname, profile_img: user.profile_img, userId: user.userId })
-        }
-        this.setUserForm(user);
-      });
+    this.userId = localStorage.getItem('user_id') || '';
+    this.userService.getUser(this.userId).subscribe((response) => {
+      if (!response) {
+        this.setUserForm(null);
+        return;
+      }
+      const user = response.user;
+      if (user) {
+        this.showEditBtn = true;
+        this.userService.userEvent.next({ user_fname: user.fname, profile_img: user.profile_img, userId: user.userId })
+      }
+      this.setUserForm(user);
+    });
     // this.setUserForm(null); // uncomment if new register form doesn't open
   }
 
@@ -155,9 +149,9 @@ export class UserComponent implements OnInit {
         }))
         .subscribe(response => {
           if (response) {
-            this.authService.setUser({ ...response, profile_img: payload.profile_img});
+            this.authService.setUser({ ...response, profile_img: payload.profile_img });
             this.toastr.success('Registeration successfull', 'Success');
-            this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId }})
+            this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId } })
           }
         })
     }

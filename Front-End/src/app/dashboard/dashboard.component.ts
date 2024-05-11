@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { AgChartOptions, AgChartTheme } from "ag-charts-community";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import { switchMap, of, catchError } from "rxjs";
 import { ToastrService } from 'ngx-toastr';
 
@@ -32,7 +32,6 @@ export class DashboardComponent implements OnInit {
   constructor(
     private dashboardService: DashboardService,
     private downloadService: DownloadService,
-    private route: ActivatedRoute,
     private router: Router,
     private userService: UserService,
     private accountService: AccountService,
@@ -59,12 +58,9 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.queryParamMap.pipe(
-      switchMap(({ params }: any) => {
-        this.userId = params['userId'];
-        this.accountId = params['accountId'];
-        return this.userService.getUser(this.userId);
-      }),
+    this.userId = localStorage.getItem('user_id') || '';
+    this.accountId = localStorage.getItem('account_id') || '';
+    this.userService.getUser(this.userId).pipe(
       switchMap((res: any) => {
         if (res.user) {
           this.userService.userEvent.next({ user_fname: res.user.fname, profile_img: res.user.profile_img, userId: res.user.userId })
@@ -117,6 +113,6 @@ export class DashboardComponent implements OnInit {
   }
 
   onAddManageAccount() {
-    this.router.navigate(['../accounts'], { queryParams: { accountId: this.accountId, userId: this.userId } });
+    this.router.navigate(['../accounts']);
   }
 }

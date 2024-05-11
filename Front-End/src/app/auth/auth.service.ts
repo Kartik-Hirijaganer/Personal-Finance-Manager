@@ -32,7 +32,7 @@ export class AuthService {
         if (response) {
           this.setUser(response);
           this.toastr.success('Login successfull', 'Success');
-          this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId, accountId: response.accountId } });
+          this.router.navigate(['/dashboard']);
         }
       });
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ColDef, GridOptions, GridApi, GridReadyEvent, SelectionChangedEvent } from 'ag-grid-community';
+import { ColDef, GridOptions, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, of } from 'rxjs';
@@ -57,8 +57,9 @@ export class AccountComponent implements OnInit {
         if (node.data?.selected) {
           node.setData({ ...node.data, selected: false });
         }
-        if (node.data?.accountNo === event.accountNo) {
+        if (node.data?.accountNo && node.data?.accountNo === event.accountNo) {
           node.setData({ ...node.data, selected: true });
+          localStorage.setItem('account_id', event.accountId);
         }
       })
     })

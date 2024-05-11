@@ -7,7 +7,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
-        <li class="nav-item" routerLinkActive="active-link" routerLink="/dashboard">
+        <li class="nav-item" routerLinkActive="active-link" [routerLink]="['/dashboard']">
           <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;" aria-current="page"
             routerLinkActive="active-link">
             <img class="navbar-link-logo" src="../../assets/imgs/transaction.svg"><span>Transactions</span>
@@ -42,8 +42,8 @@
             {{dashboardService.user.userName}}&nbsp;<span><img [src]="dashboardService.user.profile_img" class="navbar-user-logo"></span>
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" [routerLink]="['user', userId]">Profile</a></li>
-            <li><a class="dropdown-item" href="#">Accounts</a></li>
+            <li><a class="dropdown-item" [routerLink]="['user']">Profile</a></li>
+            <li><a class="dropdown-item" routerLink="/accounts">Accounts</a></li>
             <li><a class="dropdown-item" (click)="onDelete()">Delete Profile</a></li>
             <li>
               <hr class="dropdown-divider">

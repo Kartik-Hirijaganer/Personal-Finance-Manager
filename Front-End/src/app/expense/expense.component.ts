@@ -10,6 +10,7 @@ import { UtilService } from '../shared/util.service';
 import { Expense } from './expense.model';
 import { ActionComponent } from '../shared/action/action.component';
 import { AccountService } from '../account/account.service';
+import { DatePickerComponent } from '../shared/date-picker/date-picker.component';
 
 @Component({
   selector: 'app-expense',
@@ -29,7 +30,12 @@ export class ExpenseComponent implements OnInit, OnDestroy {
       valueFormatter: params => this.util.currencyFormatter(params.data.amount, '$'),
       editable: true
     },
-    { field: 'date', headerName: 'Date', editable: true },
+    { field: 'date', 
+      headerName: 'Date', 
+      editable: true,
+      cellRenderer: DatePickerComponent,
+      cellRendererParams: { data: { theme: 'red' } }
+    },
     { field: 'description', headerName: 'Description', editable: true },
     {
       field: 'action',
