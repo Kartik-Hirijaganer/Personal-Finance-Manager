@@ -66,4 +66,30 @@ export class DashboardService {
   userLoggedIn() {
     return !!localStorage.getItem('user_id');
   }
+
+  generateEntriesMap(entries: Income[] | Expense[] | Liability[]): Map<number, number> {
+    const map: Map<number, number> = new Map<number, number>();
+    entries?.forEach(entry => {
+      map.set(entry?.month?.monthId, ((map.get(entry?.month?.monthId) || 0) + (entry?.amount || 0)));
+    });
+    return map;
+  }
+
+  generateChartData(incomes: Income[], expenses: Expense[], liabilities: Liability[]):
+    [{ income: number, expense: number, liability: number, month: string }] {
+    const incomeMap = this.generateEntriesMap(incomes);
+    const expenseMap = this.generateEntriesMap(expenses);
+    const liabilityMap = this.generateEntriesMap(liabilities);
+
+    const payload = [];
+    for (let start = (new Date().getMonth() + 1 <= 6) ? 1 : 7, end = start + 6; start < end; start++) {
+      payload.push({
+        income: incomeMap.get(start) || '',
+        expense: expenseMap.get(start) || '',
+        liability: liabilityMap.get(start) || '',
+        month: this.util.monthNames[start - 1]
+      });
+    }
+    return payload as [{ income: number, expense: number, liability: number, month: string }];
+  }
 }

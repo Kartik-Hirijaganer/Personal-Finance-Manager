@@ -17,6 +17,7 @@ export class AuthComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+    localStorage.clear();
   }
 
   initializeForm() {

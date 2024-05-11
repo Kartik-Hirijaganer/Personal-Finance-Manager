@@ -11,7 +11,6 @@
     <div *ngIf="enableSelect" class="col-lg-3 me-3">
       <button (click)="onSelect()" class="btn btn-success btn-sm"
       [ngClass]="{'btn': true, 'btn-success': isSelected, 'btn-outline-secondary': !isSelected}"
-      
       >{{isSelected ? 'Selected' : 'Select'}}</button>
     </div>
     <div *ngIf="enableDelete" class="col-lg-3">

@@ -22,6 +22,7 @@ import { AuthComponent } from './auth/auth.component';
 import { FooterComponent } from './footer/footer.component';
 import { ConfirmationPopupComponent } from './shared/confirmation-modal/confirmation-modal-component';
 import { AccountComponent } from './account/account.component';
+import { DatePickerComponent } from './shared/date-picker/date-picker.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { AccountComponent } from './account/account.component';
     AuthComponent,
     FooterComponent,
     ConfirmationPopupComponent,
-    AccountComponent
+    AccountComponent,
+    DatePickerComponent
   ],
   imports: [
     BrowserModule,

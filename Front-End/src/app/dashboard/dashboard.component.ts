@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { AgChartOptions, AgChartTheme } from "ag-charts-community";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import { switchMap, of, catchError } from "rxjs";
 import { ToastrService } from 'ngx-toastr';
 
@@ -11,6 +11,7 @@ import { AccountService } from "../account/account.service";
 import { Expense } from "../expense/expense.model";
 import { Liability } from "../liability/liability.model";
 import { Income } from "../income/income.model";
+import { AuthService } from "../auth/auth.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -28,15 +29,17 @@ export class DashboardComponent implements OnInit {
   public monthlyIncome: number = 0;
   public monthlyExpense: number = 0;
   public monthlyLiability: number = 0;
+  private accountNo: number = 0;
+  private userFullName: string = '';
 
   constructor(
     private dashboardService: DashboardService,
     private downloadService: DownloadService,
-    private route: ActivatedRoute,
     private router: Router,
     private userService: UserService,
     private accountService: AccountService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private authService: AuthService
   ) {
     this.chartOptions = {
       theme: {
@@ -59,14 +62,12 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.queryParamMap.pipe(
-      switchMap(({ params }: any) => {
-        this.userId = params['userId'];
-        this.accountId = params['accountId'];
-        return this.userService.getUser(this.userId);
-      }),
+    this.userId = localStorage.getItem('user_id') || '';
+    this.accountId = localStorage.getItem('account_id') || '';
+    this.userService.getUser(this.userId).pipe(
       switchMap((res: any) => {
         if (res.user) {
+          this.userFullName = `${res.user?.fname} ${res.user?.lname}`;
           this.userService.userEvent.next({ user_fname: res.user.fname, profile_img: res.user.profile_img, userId: res.user.userId })
           this.userService.user_fname = res.user?.fname;
           this.userService.profile_img = res.user?.profile_img;
@@ -77,6 +78,10 @@ export class DashboardComponent implements OnInit {
         return this.accountService.getAccountDetails(this.accountId);
       }),
       catchError(err => {
+        if (err.status === 403) {
+          this.authService.logout();
+          return of({error: 'session expired'});
+        }
         const errorMessage: string = err?.error?.error?.errorMessage;
         this.toastr.error(errorMessage || 'Failed to fetch data', 'Unknown error');
         return of({ error: null });
@@ -88,6 +93,7 @@ export class DashboardComponent implements OnInit {
       }
 
       if (!res?.error) {
+        this.accountNo = res.accountNo;
         this.setDashboardData(res.incomes, res.expenses, res.liabilities);
       }
     });
@@ -99,24 +105,17 @@ export class DashboardComponent implements OnInit {
     this.monthlyLiability = this.dashboardService.calculateMonthlyTotal(liabilities);
     this.currentBalance = this.monthlyIncome - (this.monthlyExpense + this.monthlyLiability);
 
-    const data = this.dashboardService.constructChartData(incomes, expenses, liabilities);
-    this.setChartOptions({ data });
-  }
-
-  setChartOptions(currentOptions: any) {
     this.chartOptions = {
       ...this.chartOptions,
-      ...currentOptions
+      data: this.dashboardService.generateChartData(incomes, expenses, liabilities)
     }
   }
 
   downloadPdf() {
-    // this.dashboardService.getChartData().subscribe((response) => {
-    //   this.downloadService.generatePdf(response);
-    // });
+    this.downloadService.generatePdf(this.chartOptions.data, this.monthlyIncome, this.monthlyExpense, this.monthlyLiability, {userName: this.userFullName, accountNo: this.accountNo});
   }
 
   onAddManageAccount() {
-    this.router.navigate(['../accounts'], { queryParams: { accountId: this.accountId, userId: this.userId } });
+    this.router.navigate(['../accounts']);
   }
 }

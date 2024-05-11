@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 
@@ -18,6 +18,7 @@ export class HeaderComponent implements OnInit {
   public profile_img: string | null = null;
   public userId: string | null = null;
   public showConfirmationPopup: boolean = false;
+  public accountId: string = '';
   @ViewChild(ConfirmationPopupComponent) popup!: ConfirmationPopupComponent
 
   constructor(
@@ -25,28 +26,25 @@ export class HeaderComponent implements OnInit {
     public authService: AuthService,
     public dashboardService: DashboardService,
     private toastr: ToastrService,
-    private router: Router,
-    private route: ActivatedRoute
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      this.userId = params['userId'] || '';
-    });
+    this.userId = localStorage.getItem('user_id') || '';
     this.userName = localStorage.getItem('user_name');
     this.profile_img = localStorage.getItem('profile_img');
+    this.accountId = localStorage.getItem('account_id') || '';    
   }
 
   onDelete() {
     this.popup.openModal('danger', 'Are you sure, you want to delete your profile?');
   }
 
-  logout(): void {
-    localStorage.clear();
+  onLogout(): void {
     this.userName = null;
     this.profile_img = null;
     this.userId = null;
-    this.router.navigateByUrl('/login');
+    this.authService.logout();
   }
 
   onConfirmationEvent(confirm: boolean) {
@@ -61,7 +59,7 @@ export class HeaderComponent implements OnInit {
         })).subscribe(response => {
           if (response) {
             this.toastr.success('Successfully deleted user', 'Success');
-            this.logout();
+            this.onLogout();
           }
         });
     }

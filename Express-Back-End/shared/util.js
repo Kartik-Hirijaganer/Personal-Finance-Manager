@@ -26,6 +26,9 @@ const generateID = (input) => {
 
 const hbRegister = () => {
   Handlebars.registerHelper('symbolHelper', (value, symbol) => {
+    if (value === '') {
+      return value;
+    }
     return `${symbol}${value}`
   });
   Handlebars.registerHelper('seperator', (value) => {
