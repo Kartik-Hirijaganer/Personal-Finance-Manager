@@ -37,8 +37,9 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userId = localStorage.getItem('user_id') || '';
+    this.userId = localStorage.getItem('user_id') || 'null';
     this.userService.getUser(this.userId).subscribe((response) => {
+      debugger
       if (!response) {
         this.setUserForm(null);
         return;

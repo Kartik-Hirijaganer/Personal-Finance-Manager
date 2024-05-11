@@ -1,6 +1,7 @@
 'use strict';
 
 const User = require('./user.model');
+const Account = require('../accountService/account.model');
 const { DatabaseError, RecordNotFoundError, ValidationError } = require('../shared/errors');
 
 const getUser = async (req, res) => {
@@ -68,6 +69,7 @@ const deleteUser = async (req, res) => {
   const userId = req?.params?.userId;
   const query = { userId };
   try {
+    await Account.findOneAndDelete(query);
     await User.findOneAndDelete(query);
   } catch (err) {
     const error = new DatabaseError(err.message);
