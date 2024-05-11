@@ -37,7 +37,7 @@
         <li *ngIf="dashboardService.userLoggedIn()" class="nav-item dropdown mt-3"
           [ngStyle]="{ 'margin-left': '500px;', pointerEvents: !!dashboardService.userLoggedIn() ? 'auto' : 'not-allowed', cursor: !!dashboardService.userLoggedIn() ? 'pointer' : 'not-allowed' }"
           style="margin-left: 500px;">
-          <a class="nav-link dropdown-toggle" style="color: #ffff;" href="#" role="button" data-bs-toggle="dropdown"
+          <a class="nav-link" style="color: #ffff;" href="#" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">
             {{dashboardService.user.userName}}&nbsp;<span><img [src]="dashboardService.user.profile_img" class="navbar-user-logo"></span>
           </a>

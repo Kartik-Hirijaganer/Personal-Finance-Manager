@@ -28,9 +28,14 @@
     </div>
   </div>
   <div class="row ps-2">
-    <div class="col col-lg-12 mb-2 mt-5">
+    <div class="col col-lg-12 mb-2 mt-3">
       <div *ngIf="noAccountExist" class="fs-4 text-danger">Please add account. No linked account found.</div>
-      <button type="button" class="btn btn-info" style="text-align: center;" (click)="downloadPdf()">Download Cash Flow</button>
+      <div class="row">
+        <div class="col-lg-8"></div>
+        <div class="col-lg-3">
+          <button type="button" class="btn ps-3 pe-3 dashboard-hover" style="text-align: center; border-radius: 0%;background-color: #54607e;color: #FFF;width: 80px;" (click)="downloadPdf()">PDF</button>
+        </div>
+      </div>
     </div>
   </div>
   <div class="row pb-3 ms-2">
