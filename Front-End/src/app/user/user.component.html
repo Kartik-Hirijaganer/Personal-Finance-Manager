@@ -126,9 +126,9 @@
     <div class="col-lg-4" *ngIf="!editMode && showEditBtn">
     </div>
     <div class="col-lg-4">
-      <img *ngIf="!showPassword" (click)="showHidePassword()" style="margin-top: 40px;"
+      <img *ngIf="editMode && !showPassword" (click)="showHidePassword()" style="margin-top: 40px; cursor: pointer;"
         src="../../assets/imgs/eye-show.svg" alt="Show password" width="20" height="20">
-      <img *ngIf="showPassword" (click)="showHidePassword()" style="margin-top: 40px;"
+      <img *ngIf="editMode && showPassword" (click)="showHidePassword()" style="margin-top: 40px; cursor: pointer;"
         src="../../assets/imgs/eye-hide.svg" alt="Hide password" width="20" height="20">
     </div>
     <!-- <div class="col-lg-4" *ngIf="!editMode"></div> -->

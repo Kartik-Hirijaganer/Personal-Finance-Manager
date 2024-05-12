@@ -48,7 +48,8 @@ export class UserComponent implements OnInit {
         this.showEditBtn = true;
         this.userService.userEvent.next({ user_fname: user.fname, profile_img: user.profile_img, userId: user.userId })
       }
-      this.setUserForm(user);
+      const {password, ...rest} = user;
+      this.setUserForm(rest);
     });
     // this.setUserForm(null); // uncomment if new register form doesn't open
   }
@@ -110,7 +111,7 @@ export class UserComponent implements OnInit {
     if (this.userId === 'null' || !this.userId) {
       this.router.navigateByUrl('/login');
     } else {
-      this.router.navigateByUrl(`/dashboard/${this.userId}`);
+      this.router.navigateByUrl('/dashboard');
     }
   }
 

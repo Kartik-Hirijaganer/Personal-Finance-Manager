@@ -1,6 +1,7 @@
 {
   "name": "front-end",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "author": "Kartik R. Hirijaganer",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
