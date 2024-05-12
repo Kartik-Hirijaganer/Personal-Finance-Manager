@@ -1,6 +1,6 @@
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 
 import { AuthService } from './auth.service';
 
@@ -14,6 +14,11 @@ export class AuthInterceptorService implements HttpInterceptor {
     const modifiedReqeust = req.clone( { 
       headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.authService.token}` })
     });
-    return next.handle(modifiedReqeust);
+    return next.handle(modifiedReqeust).pipe(catchError(err => {
+      if (err.status === 403) {
+        this.authService.logout();
+      }
+      return of(err);
+    }));
   }
 }

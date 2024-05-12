@@ -56,8 +56,6 @@ export class AuthComponent implements OnInit {
   }
   
   onLogin() {
-    console.log('here');
-    
     if (!this.loginForm.valid) {
       this.toastr.error('Kindly enter email and password to proceed', 'Invalid credentails');
       return;

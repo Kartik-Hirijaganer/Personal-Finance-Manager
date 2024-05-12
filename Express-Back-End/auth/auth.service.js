@@ -34,7 +34,7 @@ const login = async (req, res) => {
   }
 
   // Generate token
-  const token = jwt.sign({ userId: user.userId }, process.env.SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ userId: user.userId }, process.env.SECRET, { expiresIn: process.env.EXPIRE });
   return res.status(200).send({ token, userId: user.userId, accountId: user?.accounts[0] || '', profile_img: user.profile_img, user: user.fname });
 }
 
@@ -55,7 +55,7 @@ const register = async (req, res) => {
     const error = new UnknownError(err.message);
     return res.status(400).send({ errorMessage: 'Unknown error', error });
   }
-  const token = jwt.sign({ userId }, process.env.SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ userId }, process.env.SECRET, { expiresIn: process.env.EXPIRE });
   return res.status(200).send({ userId, token, accountId: '', user });
 }
 
