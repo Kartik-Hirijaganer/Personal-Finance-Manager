@@ -66,7 +66,6 @@ export class AuthComponent implements OnInit {
 
   onReset() {
     const payload = this.resetForm.getRawValue();
-    console.log(payload);
     
     if (payload.pass !== payload.repass) {
       this.passwordMismatch = true;

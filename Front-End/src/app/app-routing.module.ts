@@ -9,16 +9,17 @@ import { LiabilityComponent } from "./liability/liability.component";
 import { UserComponent } from "./user/user.component";
 import { AuthComponent } from "./auth/auth.component";
 import { AccountComponent } from "./account/account.component";
+import { AuthGuard } from './auth/auth-gaurd';
 
 const appRoutes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: AuthComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'incomes', component: IncomeComponent },
-  { path: 'expenses', component: ExpenseComponent },
-  { path: 'liabilities', component: LiabilityComponent},
-  { path: 'user', component: UserComponent },
-  { path: 'accounts', component: AccountComponent }
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'incomes', component: IncomeComponent, canActivate: [AuthGuard] },
+  { path: 'expenses', component: ExpenseComponent, canActivate: [AuthGuard] },
+  { path: 'liabilities', component: LiabilityComponent, canActivate: [AuthGuard] },
+  { path: 'user', component: UserComponent, canActivate: [AuthGuard] },
+  { path: 'accounts', component: AccountComponent, canActivate: [AuthGuard] }
 ]
 
 @NgModule({

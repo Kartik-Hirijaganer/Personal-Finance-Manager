@@ -7,12 +7,11 @@ const { RecordNotFoundError, DatabaseError } = require('../shared/errors');
 const Account = require('./account.model');
 
 const getAccounts = async (req, res) => {
-  const userId = req.query.userId;
-  const isNewUser = req.headers['user-type'] === 'new';
+const {userId, userType } = req.query;
   let accounts = [];
   try {
     accounts = await Account.find({ userId });
-    if (!isNewUser && accounts.length < 1) {
+    if ((userType !== 'new') && accounts.length < 1) {
       throw new RecordNotFoundError(`No record with user id ${userId} was found`);
     }
   } catch (error) {
@@ -46,7 +45,8 @@ const getAccount = async (req, res) => {
 const addAccount = async (req, res) => {
   const payload = { ...req.body, accountId: v4(), incomes: [], expenses: [], liabilities: [] };
   const account = new Account(payload);
-  const headers = { 'authorization': req.headers['authorization'], 'Content-Type': 'application/json' }
+  const token = req.headers['authorization'].split(' ')[1];
+  const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
   try {
     await account.save();
     const user = await axios.get(`http://localhost:3300/user/${payload.userId}`, { headers });

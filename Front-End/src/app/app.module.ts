@@ -6,7 +6,7 @@ import { AgGridModule } from 'ag-grid-angular';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { ToastrModule } from 'ngx-toastr';
 import { AgChartsAngular } from 'ag-charts-angular';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -23,6 +23,7 @@ import { FooterComponent } from './footer/footer.component';
 import { ConfirmationPopupComponent } from './shared/confirmation-modal/confirmation-modal-component';
 import { AccountComponent } from './account/account.component';
 import { DatePickerComponent } from './shared/date-picker/date-picker.component';
+import { AuthInterceptorService } from './auth/auth-interceptor';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,7 @@ import { DatePickerComponent } from './shared/date-picker/date-picker.component'
     AgChartsAngular,
     HttpClientModule
   ],
-  providers: [],
+  providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

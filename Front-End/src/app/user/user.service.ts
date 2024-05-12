@@ -21,18 +21,17 @@ export class UserService {
 
   updateUser(payload: any): Observable<any> {
     const { repass, ...newUser } = payload;
-    //localstorage
     this.profile_img = payload.profile_img;
     this.user_fname = payload.fname;
-    return this.http.put<{ userId: string, token: string }>(`${environment.URL}:${environment.user_port}/user/update/${payload.userId}`, newUser, { headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': this.authService.getToken() }) });
+    return this.http.put<{ userId: string, token: string }>(`${environment.URL}:${environment.user_port}/user/update/${payload.userId}`, newUser);
   }
 
   getUser(userId: string): Observable<any> {
-    return this.http.get(`${environment.URL}:${environment.user_port}/user/${userId}`, { headers: { 'Content-Type': 'application/json', 'Authorization': this.authService.getToken() } });
+    return this.http.get(`${environment.URL}:${environment.user_port}/user/${userId}`);
   }
 
   deleteUser(userId: string): Observable<any> {
-    return this.http.delete(`${environment.URL}:${environment.user_port}/user/delete/${userId}`, { headers: { 'Content-Type': 'application/json', 'Authorization': this.authService.getToken() } });
+    return this.http.delete(`${environment.URL}:${environment.user_port}/user/delete/${userId}`);
   }
 
   validatePassword(pass: string, repass: string): boolean {

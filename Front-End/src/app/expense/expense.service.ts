@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 
 import { Expense } from './expense.model';
 import { UtilService } from '../shared/util.service';
@@ -21,11 +21,7 @@ export class ExpenseService {
     return this.http.post<{ expenseId: string }>(
       `${environment.URL}:${environment.expense_port}/expense/add`, 
       { ...expense, month: this.util.getMonthPayload(expense.date) },
-      { 
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token') || ''
-        }),
+      {
         params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
       }
     );
@@ -35,10 +31,6 @@ export class ExpenseService {
     return this.http.delete<{ expenseId: string }>(
       `${environment.URL}:${environment.account_port}/expense/delete/${id}`,
       {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token') || ''
-        }),
         params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
       });
   }
@@ -47,7 +39,7 @@ export class ExpenseService {
     return this.http.put<{ expenseId: string }>(
       `${environment.URL}:${environment.expense_port}/expense/update/${expense.id}`, 
       { ...expense, month: this.util.getMonthPayload(expense.date) },
-      { headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token') || ''}),
+      {
         params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
       });
   }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, of, switchMap } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
@@ -21,10 +21,11 @@ export class AuthService {
   ) { }
 
   login(payload: { email: string, password: string }): void {
+    const params = new HttpParams({ fromObject: { type: 'email' } });
     this.http.post<{ token: string, userId: string, accountId: string, user: string, profile_img: string }>(
-      `${environment.URL}:${environment.auth_port}/login`, 
-      payload, 
-      { headers: { 'Content-Type': 'application/json', type: 'email' } })
+      `${environment.URL}:${environment.auth_port}/login`,
+      payload,
+      { params })
       .pipe(
         catchError(err => {
           this.toastr.error(err?.error?.errorMessage || 'Invalid email or password', 'Failed to login');
@@ -49,7 +50,7 @@ export class AuthService {
     return this.http.post<{ userId: string, token: string, accountId: string }>(`${environment.URL}:${environment.auth_port}/register`, payload);
   }
 
-  public setUser(response: {token: string, userId: string, accountId: string, user: string, profile_img: string}): void {
+  public setUser(response: { token: string, userId: string, accountId: string, user: string, profile_img: string }): void {
     localStorage.setItem("token", response.token);
     localStorage.setItem("user_id", response.userId);
     localStorage.setItem("account_id", response.accountId);
@@ -57,25 +58,34 @@ export class AuthService {
     localStorage.setItem("profile_img", response.profile_img);
   }
 
-  public getToken(): string {
+  get token(): string {
     return localStorage.getItem("token") || "";
   }
 
-  resetUserPassword(payload: {email: string, pass: string}) {
-    this.http.get<{user: any}>(
+  get userId() {
+    return localStorage.getItem('user_id') || '';
+  }
+
+  set token(token: string) {
+    localStorage.setItem('token', token);
+  }
+
+  resetUserPassword(payload: { email: string, pass: string }) {
+    const params = new HttpParams({ fromObject: { type: 'email', reset: 'true' } });
+    this.http.get<{ user: any }>(
       `${environment.URL}:${environment.user_port}/user/${payload.email}`,
-      { headers: { 'Content-Type': 'application/json', type: 'email', 'reset': 'true' } }
+      { params }
     ).pipe(
       switchMap((res: any) => {
         if (!res?.user) {
           this.toastr.error(`User with email ${payload.email} does not exists.`, 'Error');
           return of(null);
         }
-        const updatedUser = {...res.user, password: payload.pass};
-        return this.http.put<{userId: string}>(
+        const updatedUser = { ...res.user, password: payload.pass };
+        this.token = res?.token;
+        return this.http.put<{ userId: string }>(
           `${environment.URL}:${environment.user_port}/user/update/${updatedUser.userId}`,
-          updatedUser,
-          { headers: { 'Content-Type': 'application/json', 'Authorization': res.token || '' } }
+          updatedUser
         )
       }),
       catchError(err => {
@@ -89,5 +99,4 @@ export class AuthService {
       }
     })
   }
-
 }

@@ -78,10 +78,6 @@ export class DashboardComponent implements OnInit {
         return this.accountService.getAccountDetails(this.accountId);
       }),
       catchError(err => {
-        if (err.status === 403) {
-          this.authService.logout();
-          return of({error: 'session expired'});
-        }
         const errorMessage: string = err?.error?.error?.errorMessage;
         this.toastr.error(errorMessage || 'Failed to fetch data', 'Unknown error');
         return of({ error: null });
