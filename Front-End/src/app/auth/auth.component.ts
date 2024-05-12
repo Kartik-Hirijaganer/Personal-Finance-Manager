@@ -11,9 +11,13 @@ import { AuthService } from './auth.service';
 })
 export class AuthComponent implements OnInit {
   loginForm: FormGroup = new FormGroup({});
+  resetForm: FormGroup = new FormGroup({});
   public userId: string | null = null;
+  public hide: boolean = false;
+  public passwordType: string = 'password'
+  public passwordMismatch: boolean = false;
 
-  constructor(private authService: AuthService, private toastr: ToastrService ) { }
+  constructor(public authService: AuthService, private toastr: ToastrService ) { }
 
   ngOnInit(): void {
     this.initializeForm();
@@ -25,14 +29,50 @@ export class AuthComponent implements OnInit {
       email: new FormControl<String>('', [Validators.required, Validators.email]),
       password: new FormControl<String>('', Validators.required)
     })
+    this.resetForm = new FormGroup({
+      email: new FormControl<string>('', [Validators.required, Validators.email]),
+      pass: new FormControl<string>('', Validators.required),
+      repass: new FormControl<string>('', Validators.required)
+    })
+  }
+
+  hidePassword(type: string) {
+    this.hide = !this.hide;
+    this.passwordType = type;
+  }
+
+  onResetPassword() {
+    this.authService.showLoginPage = false;
+    this.loginForm.reset();
+  }
+
+  onRegister() {
+    this.loginForm.reset();
+  }
+
+  onCancel() {
+    this.authService.showLoginPage = true;
+    this.resetForm.reset();
   }
   
-  onSubmit() {
+  onLogin() {
     if (!this.loginForm.valid) {
       this.toastr.error('Kindly enter email and password to proceed', 'Invalid credentails');
       return;
     }
     const userCredentials = this.loginForm.getRawValue();
     this.authService.login(userCredentials);
+  }
+
+  onReset() {
+    const payload = this.resetForm.getRawValue();
+    console.log(payload);
+    
+    if (payload.pass !== payload.repass) {
+      this.passwordMismatch = true;
+      return;
+    }
+    this.authService.
+    resetUserPassword(payload);
   }
 }

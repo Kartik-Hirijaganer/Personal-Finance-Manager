@@ -111,7 +111,7 @@
       </div>
     </div>
     <div class="col-lg-3" *ngIf="editMode || !showEditBtn">
-      <label for="repass" class="form-label">Re-Enter Password<sup class="text-danger">*</sup></label>
+      <label for="repass" class="form-label">Confirm Password<sup class="text-danger">*</sup></label>
       <input [type]="showPassword ? 'text' : 'password'"
         [ngClass]="{'form-control': true, 'is-invalid': (!userForm.get('repass')?.valid && (userForm.get('repass')?.touched || userForm.get('repass')?.dirty))}"
         id="repass" formControlName="repass">
