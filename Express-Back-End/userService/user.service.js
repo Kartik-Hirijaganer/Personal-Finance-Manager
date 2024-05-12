@@ -1,12 +1,15 @@
 'use strict';
 
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+
 const User = require('./user.model');
 const Account = require('../accountService/account.model');
 const { DatabaseError, RecordNotFoundError, ValidationError } = require('../shared/errors');
 
 const getUser = async (req, res) => {
   let email, userId, user;
-  const type = req?.headers?.type;
+  const {type, reset} = req?.headers;
   if (type === 'email') {
     email = req?.params?.userId;
   } else {
@@ -29,7 +32,12 @@ const getUser = async (req, res) => {
     const error = new DatabaseError(err.message);
     return res.status(200).send({ errorMessage: 'Failed to get user data', error });
   }
-  return res.status(200).send({ user });
+  const token = jwt.sign({ userId }, process.env.SECRET, { expiresIn: '1h' });
+  const response = {
+    user,
+    ...(reset === 'true' && { token })
+  }
+  return res.status(200).send(response);
 }
 
 const addNewUser = async (req, res) => {
@@ -47,7 +55,8 @@ const addNewUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const userId = req?.params?.userId;
   const query = { userId };
-  const updatedUser = { ...req.body };
+  const encryptedPassword = bcrypt.hashSync(req.body.password, 10);
+  const updatedUser = { ...req.body, password: encryptedPassword };
   try {
     const user = await User.findOne(query);
     if (!user) {
