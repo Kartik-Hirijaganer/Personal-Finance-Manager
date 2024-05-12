@@ -9,7 +9,7 @@ const { DatabaseError, RecordNotFoundError, ValidationError } = require('../shar
 
 const getUser = async (req, res) => {
   let email, userId, user;
-  const {type, reset} = req?.headers;
+  const {type, reset} = req?.query;
   if (type === 'email') {
     email = req?.params?.userId;
   } else {

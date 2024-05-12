@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Liability } from './liability.model';
 import { UtilService } from '../shared/util.service';
@@ -21,8 +21,7 @@ export class LiabilityService {
     return this.http.post<{liabilityId: string}>(
       `${environment.URL}:${environment.account_port}/liability/add`, 
       { ...liability, month: this.util.getMonthPayload(liability.due_date) }, 
-      {
-        headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token') || '' }),  
+      {  
         params: { 'category': 'liability', 'accountId': localStorage.getItem('account_id') || '' }
       });
   }
@@ -30,8 +29,7 @@ export class LiabilityService {
   deleteLiability(id: string): Observable<{liabilityId: string}> {
     return this.http.delete<{liabilityId: string}>(
       `${environment.URL}:${environment.account_port}/liability/delete/${id}`, 
-      {
-        headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token') || '' }), 
+      { 
         params: { 'category': 'liability', 'accountId': localStorage.getItem('account_id') || '' }
       });
   }
@@ -40,7 +38,7 @@ export class LiabilityService {
     return this.http.put<{ liabilityId: string }>(
       `${environment.URL}:${environment.account_port}/liability/update/${liability.id}`, 
       { ...liability, month: this.util.getMonthPayload(liability.due_date) }, 
-      { headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token') || ''}),
+      { 
         params: {'category': 'liability', 'accountId': localStorage.getItem('account_id') || ''}
       });
   }

@@ -56,7 +56,7 @@ export class DownloadService {
   }
 
   showPdf(data: any, fileName: string = 'cashflow', letter_data: any) {
-    this.http.post(`${environment.URL}:${environment.user_port}/user/generate-pdf`, { data, payload: letter_data }, { headers: { 'Content-Type': 'application/json', 'Authorization': this.authService.getToken() }, responseType: 'blob' })
+    this.http.post(`${environment.URL}:${environment.user_port}/user/generate-pdf`, { data, payload: letter_data }, { responseType: 'blob' })
       .pipe(
         catchError((err) => {
           const errorMessage: string = err?.error?.error?.errorMessage;

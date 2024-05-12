@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Income } from "./income.model";
@@ -21,10 +21,6 @@ export class IncomeService {
       `${environment.URL}:${environment.account_port}/income/add`, 
       { ...income, month: this.util.getMonthPayload(income.date) }, 
       {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token') || ''
-        }),
         params: { 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' }
       });
   }
@@ -33,10 +29,6 @@ export class IncomeService {
     return this.http.delete<{ incomeId: string }>(
       `${environment.URL}:${environment.account_port}/income/delete/${id}`, 
       {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token') || ''
-        }),
         params: { 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' } 
       });
   }
@@ -45,7 +37,7 @@ export class IncomeService {
     return this.http.put<{ incomeId: string }>(
       `${environment.URL}:${environment.account_port}/income/update/${income.id}`, 
       { ...income, month: this.util.getMonthPayload(income.date) }, 
-      { headers: new HttpHeaders({ 'Authorization': localStorage.getItem('token') || '', 'Content-Type': 'application/json' }),
+      {
         params: { 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' }
       }
     )

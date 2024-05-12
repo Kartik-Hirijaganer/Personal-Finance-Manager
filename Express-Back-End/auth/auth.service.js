@@ -9,10 +9,10 @@ const { AuthenticationError, DatabaseError, UserNotFoundError, UnknownError } = 
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  const type = req.headers?.type;
+  const {type, reset=''} = req.query;
   let user;
   try {
-    const response = await axios.get(`http://localhost:${process.env.USER_PORT}/user/${email}`, { headers: { type }});
+    const response = await axios.get(`http://localhost:${process.env.USER_PORT}/user/${email}`, { params: { type, reset }});
     user = response.data?.user;
     if (!user) {
       throw new UserNotFoundError('User not found');
@@ -60,9 +60,9 @@ const register = async (req, res) => {
 }
 
 const authorize = async (req, res, next) => {
-  const token = req.headers['authorization'];
+  const token = req.headers['authorization'].split(' ')[1];
   if (!token) {
-    return res.status(401).send({ errorMessage: 'Token required' }); //  make custom error
+    return res.status(401).send({ errorMessage: 'Token required' });
   }
   jwt.verify(token, process.env.SECRET, (err, user) => {
     if (err) return res.status(403).send({ errorMessage: 'Invalid or expired token' });
