@@ -1,11 +1,21 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-lg-3">
-      <span (click)="onSubmit('delete')"><img style="max-width: 20px;max-height: 20px;" src="../../assets/imgs/delete-icon.svg" alt="delete"></span>
-    </div>
-    <div class="col-lg-3">
+    <div *ngIf="enableEdit && showEdit" class="col-lg-3">
       <span (click)="onSubmit('edit')"><img style="max-width: 20px;max-height: 20px;"
           src="../../assets/imgs/edit-icon.svg" alt="edit"></span>
+    </div>
+    <div *ngIf="enableEdit && !showEdit" class="col-lg-3">
+      <span (click)="onSubmit('save')"><img style="max-width: 34px;max-height: 34px;"
+          src="../../assets/imgs/tick-icon.svg" alt="save"></span>
+    </div>
+    <div *ngIf="enableSelect" class="col-lg-3 me-3">
+      <button (click)="onSelect()" class="btn btn-success btn-sm"
+      [ngClass]="{'btn': true, 'btn-success': isSelected, 'btn-outline-secondary': !isSelected}"
+      >{{isSelected ? 'Selected' : 'Select'}}</button>
+    </div>
+    <div *ngIf="enableDelete" class="col-lg-3">
+      <span (click)="onSubmit('delete')"><img style="max-width: 20px;max-height: 20px;"
+          src="../../assets/imgs/delete-icon.svg" alt="delete"></span>
     </div>
   </div>
 </div>

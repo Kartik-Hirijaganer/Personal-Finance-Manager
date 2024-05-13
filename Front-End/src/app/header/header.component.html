@@ -1,4 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light header">
+<nav *ngIf="dashboardService.userLoggedIn()" class="navbar navbar-expand-lg navbar-light bg-light header"
+  style="min-height: 30px;max-height: 40px;">
   <div class="container-fluid header">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -6,49 +7,53 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link navbar-link-style" aria-current="page" routerLink="/dashboard" routerLinkActive="active-link" style="background-color: #333948;">
-            <span class="navbar-link-logo"><img src="../../assets/imgs/transactions.svg"
-                class="navbar-link-logo"></span>
-            Transactions
+        <li class="nav-item" routerLinkActive="active-link" [routerLink]="['/dashboard']">
+          <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;" aria-current="page"
+            routerLinkActive="active-link">
+            <img class="navbar-link-logo" src="../../assets/imgs/transaction.svg" alt="dashboard"><span>Transactions</span>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link navbar-link-style" routerLink="/incomes" routerLinkActive="active-link">
-            <span><img src="../../assets/imgs/income.svg" class="navbar-link-logo"></span>
+        <li class="nav-item" routerLinkActive="active-link" routerLink="/incomes">
+          <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;"
+            routerLinkActive="active-link">
+            <span><img src="../../assets/imgs/income.svg" alt="monthly income" class="navbar-link-logo"></span>
             Incomes
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link navbar-link-style" routerLink="/expenses" routerLinkActive="active-link">
-            <span><img src="../../assets/imgs/expense.svg" class="navbar-link-logo"></span>
+        <li class="nav-item" routerLinkActive="active-link" routerLink="/expenses">
+          <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;"
+            routerLinkActive="active-link">
+            <span><img src="../../assets/imgs/expense.svg" alt="monthly expense" class="navbar-link-logo"></span>
             Expenses
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link navbar-link-style" routerLink="/liabilities" routerLinkActive="active-link">
-            <span><img src="../../assets/imgs/price-tag.svg" class="navbar-link-logo"></span>
+        <li class="nav-item" routerLinkActive="active-link" routerLink="/liabilities">
+          <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;"
+            routerLinkActive="active-link">
+            <span><img src="../../assets/imgs/price-tag.svg" alt="monthly liabilities" class="navbar-link-logo"></span>
             Liabilities
           </a>
         </li>
-      </ul>
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle navbar-link-style" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+        <li *ngIf="dashboardService.userLoggedIn()" class="nav-item dropdown mt-3"
+          [ngStyle]="{ 'margin-left': '500px;', pointerEvents: !!dashboardService.userLoggedIn() ? 'auto' : 'not-allowed', cursor: !!dashboardService.userLoggedIn() ? 'pointer' : 'not-allowed' }"
+          style="margin-left: 500px;">
+          <a class="nav-link" style="color: #ffff;" href="#" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">
-            Chris&nbsp;<span><img src="../../assets/imgs/person-white.png" class="navbar-user-logo"></span>
+            {{dashboardService.user.userName}}&nbsp;<span><img [src]="dashboardService.user.profile_img" class="navbar-user-logo" alt="user logo"></span>
           </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" [routerLink]="['user']">Profile</a></li>
+            <li><a class="dropdown-item" routerLink="/accounts">Accounts</a></li>
+            <li><a class="dropdown-item" (click)="onDelete()">Delete Profile</a></li>
             <li>
               <hr class="dropdown-divider">
             </li>
-            <li><a class="dropdown-item" href="#">Separated link</a></li>
+            <li><a class="dropdown-item" (click)="onLogout()">Logout</a></li>
           </ul>
         </li>
       </ul>
     </div>
   </div>
 </nav>
+
+<app-confirmation-popup (confirmationEvent)="onConfirmationEvent($event)"></app-confirmation-popup>

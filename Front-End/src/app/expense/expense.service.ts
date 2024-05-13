@@ -1,73 +1,46 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { HttpClient } from "@angular/common/http";
 
 import { Expense } from './expense.model';
 import { UtilService } from '../shared/util.service';
+import { environment } from '../../environments/environment.dev';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExpenseService {
-  private expenseList: Expense[] = [
-    {
-      id: 1,
-      to: 'John',
-      date: '20-4-2024',
-      amount: 10000,
-      description: 'Delivery'
-    },
-    {
-      id: 2,
-      to: 'Hie',
-      date: '6-4-2024',
-      amount: 10000,
-      description: 'Furniture'
-    },
-    {
-      id: 3,
-      to: 'Mayur',
-      date: '10-4-2024',
-      amount: 10000,
-      description: 'Laundry'
-    },
-    {
-      id: 4,
-      to: 'Alex',
-      date: '23-4-2024',
-      amount: 10000,
-      description: 'Food'
-    }
-  ]
   public monthlyExpense: number = 0;
+  public monthlyExpenseEvent: Subject<number> = new Subject<number>();
   public expenseEvent: Subject<Expense[]> = new Subject<Expense[]>();
+  public expenseEditEvent: Subject<{ action: string, idx: number, payload?: Expense }> = new Subject<{ action: string, idx: number, payload?: Expense }>();
 
-  constructor ( private util: UtilService ) {}
+  constructor ( private util: UtilService, private http: HttpClient ) { }
 
-  addExpense(expense: Expense): void {
-    const id: number = (this.expenseList[this.expenseList.length - 1]?.id || 0) + 1;
-    expense.id = id;
-    this.expenseList.push(expense);
-    this.monthlyExpense += expense?.amount;
-    this.expenseEvent.next(this.expenseList.slice(0));
+  addExpense(expense: Expense): Observable<{ expenseId: string }> {
+    return this.http.post<{ expenseId: string }>(
+      `${environment.URL}:${environment.account_port}/expense/add`, 
+      { ...expense, month: this.util.getMonthPayload(expense.date) },
+      {
+        params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
+      }
+    );
   }
 
-  deleteExpense(id: number): void {
-    const idx: number = this.expenseList.findIndex(expense => expense?.id === id);
-    this.monthlyExpense -= this.expenseList[idx]?.amount;
-    this.expenseList.splice(idx, 1);
-    this.expenseEvent.next(this.expenseList.slice(0));
+  deleteExpense(id: string): Observable<{ expenseId: string }> {
+    return this.http.delete<{ expenseId: string }>(
+      `${environment.URL}:${environment.account_port}/expense/delete/${id}`,
+      {
+        params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
+      });
   }
 
-  updateExpense(newExpense: Expense): void {
-    const id: number = newExpense.id;
-    const idx: number = this.expenseList.findIndex(expense => expense?.id === id);
-    this.expenseList = this.expenseList.splice(idx, 0, newExpense);
-    this.expenseEvent.next(this.expenseList.slice(0));
-    this.monthlyExpense = this.util.calculateMonthlyTotal(this.expenseList);
+  updateExpense(expense: Expense): Observable<{ expenseId: string }> {
+    return this.http.put<{ expenseId: string }>(
+      `${environment.URL}:${environment.account_port}/expense/update/${expense.id}`, 
+      { ...expense, month: this.util.getMonthPayload(expense.date) },
+      {
+        params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
+      });
   }
-
-  get expenses(): Expense[] {
-    return this.expenseList.slice(0);
-  }
-
 }

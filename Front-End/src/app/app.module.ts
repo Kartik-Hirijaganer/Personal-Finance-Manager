@@ -4,6 +4,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AgGridModule } from 'ag-grid-angular';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { ToastrModule } from 'ngx-toastr';
+import { AgChartsAngular } from 'ag-charts-angular';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -12,6 +16,14 @@ import { ExpenseComponent } from './expense/expense.component';
 import { IncomeComponent } from './income/income.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LiabilityComponent } from './liability/liability.component';
+import { ActionComponent } from './shared/action/action.component';
+import { UserComponent } from './user/user.component';
+import { AuthComponent } from './auth/auth.component';
+import { FooterComponent } from './footer/footer.component';
+import { ConfirmationPopupComponent } from './shared/confirmation-modal/confirmation-modal-component';
+import { AccountComponent } from './account/account.component';
+import { DatePickerComponent } from './shared/date-picker/date-picker.component';
+import { AuthInterceptorService } from './auth/auth-interceptor';
 
 @NgModule({
   declarations: [
@@ -20,7 +32,14 @@ import { LiabilityComponent } from './liability/liability.component';
     DashboardComponent,
     IncomeComponent,
     ExpenseComponent,
-    LiabilityComponent
+    LiabilityComponent,
+    ActionComponent,
+    UserComponent,
+    AuthComponent,
+    FooterComponent,
+    ConfirmationPopupComponent,
+    AccountComponent,
+    DatePickerComponent
   ],
   imports: [
     BrowserModule,
@@ -28,9 +47,13 @@ import { LiabilityComponent } from './liability/liability.component';
     AppRoutingModule,
     ReactiveFormsModule,
     AgGridModule,
-    BsDatepickerModule.forRoot()
+    BsDatepickerModule.forRoot(),
+    ToastrModule.forRoot(),
+    ModalModule.forRoot(),
+    AgChartsAngular,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

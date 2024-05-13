@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Six Months Cash Flow Pdf</title>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div class="pageWrap">
+    <div class="mlr-1">
+      <table class="tdRightSpace mt-2">
+        <tbody>
+          <tr class="rightSpace">
+            <td width="70%" class="tdbr">
+              <div class="title">Applicant: John Muller</div>
+            </td>
+            <td width="30%" class="tdbr">
+              <div class="title">Credit Presentation</div>
+              <div class="value"><span class="label">Prepared:&nbsp;</span>{{prepared}}<br><span
+                  class="label">Account number:&nbsp;</span>2049341332</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="title mt-3">Current Month Summary</div>
+      <table class="tableBorder tdRightSpace">
+        <tr>
+          <th width="37%" class="tdbr label">Monthly Income</th>
+          <td width="63%" class="tdbr value">{{symbolHelper (seperator summary.income) '$'}}</td>
+        </tr>
+        <tr>
+          <th width="37%" class="tdbr label">Monthly Expense</th>
+          <td width="63%" class="tdbr value">{{symbolHelper (seperator summary.expense) '$'}}</td>
+        </tr>
+        <tr>
+          <th width="37%" class="tdbr label">Monthly Liability</th>
+          <td width="63%" class="tdbr value">{{symbolHelper (seperator summary.liability) '$'}}</td>
+        </tr>
+        <tr class="lastRow label" style="background-color: #666;">
+          <th class="tdbr label" style="color:#fff;background-color:#666">Monthly Balance</th>
+          <td class="tdbr last value" style="color:#fff">{{symbolHelper (seperator summary.current) '$'}}</td>
+        </tr>
+      </table>
+      <div class="title mt-3">6 Months Cash Flow</div>
+      <table class="tableBorder tdRightSpace" #cashflow>
+        <tr style="height:20px!important">
+          <th class="tdbr"></th>
+          {{#if firstHalf}}
+          <th class="tdbr label">Jan</th>
+          <th class="tdbr label">Feb</th>
+          <th class="tdbr label">Mar</th>
+          <th class="tdbr label">Apr</th>
+          <th class="tdbr label">May</th>
+          <th class="tdbr label">Jun</th>
+          {{else}}
+          <th class="tdbr label">Jly</th>
+          <th class="tdbr label">Aug</th>
+          <th class="tdbr label">Sep</th>
+          <th class="tdbr label">Oct</th>
+          <th class="tdbr label">Nov</th>
+          <th class="tdbr label">Dec</th>
+          {{/if}}
+        </tr>
+        {{#each cash_flow}}
+        <tr>
+          <td class="tdbr label">{{name}}</td>
+          {{#each values}}
+          <td class="tdbr value">{{symbolHelper (seperator this) '$'}}</td>
+          {{/each}}
+        </tr>
+        {{/each}}
+        <tr class="lastRow label" style="background-color: #666;">
+          <td class="tdbr label" style="color:#fff">Balance</td>
+          {{#each totals}}
+          <td class="tdbr last value" style="color:#fff">{{symbolHelper (seperator this) '$'}}</td>
+          {{/each}}
+        </tr>
+      </table>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,13 @@
+<ng-template #confirmationPopup>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left fs-4">Please confirm!</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+    <p [ngClass]="{ 'fs-5': true, 'text-danger': type === 'danger' ? true : false, 'text-success': type === 'success' ? true : false}">{{message}}</p>
+    <button type="button" [ngClass]="{'btn': true, 'btn-danger': (type === 'danger' ? true : false), 'btn-success': type === 'success' ? true : false}" (click)="confirm()">Confirm</button>
+    <button type="button" class="btn btn-success ms-3" (click)="decline()">Cancel</button>
+  </div>
+</ng-template>

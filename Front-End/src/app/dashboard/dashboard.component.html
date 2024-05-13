@@ -1,39 +1,51 @@
-<div class="container overflow-hidden">
-  <div class="row gy-2">
-    <div class="col-12 d-flex flex-row-reverse">
-      <button type="button" class="btn btn-info">PDF</button>
+<div class="container-fluid">
+  <div class="row mb-2 mt-4 ms-2">
+    <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover"
+      style="text-align: center; max-width: 300px;">
+      <span><img class="dashboard-logo" src="../../assets/imgs/balance.svg" alt="current balance"></span>
+      <br>
+      Current Balance
+      <br>
+      <span class="text-success">{{ currentBalance | currency: 'USD' }}</span>
     </div>
-    <div class="col-3">
-      <div class="p-3 border bg-light" style="text-align: center;">
-        <span><img class="dashboard-logo" src="../../assets/imgs/balance.svg"></span>
-        <br>
-        Current Balance<br>
-        $ 80,000.00
+    <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/incomes"
+      style="text-align: center; max-width: 300px;">
+      <span><img class="dashboard-logo" src="../../assets/imgs/dashboard_income.svg" alt="monthly income"></span>
+      <br>Month's Income<br>
+      <span class="text-success">{{ monthlyIncome | currency: 'USD' }}</span>
+    </div>
+    <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/expenses"
+      style="text-align: center; max-width: 300px;">
+      <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-expense.svg" alt="monthly expense"></span>
+      <br>Month's Expense<br>
+      <span class="text-danger">{{ monthlyExpense | currency: 'USD' }}</span>
+    </div>
+    <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/liabilities"
+      style="text-align: center; max-width: 300px;">
+      <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-liabilities.svg" alt="monthly liabilities"></span>
+      <br>Liabilities<br>
+      <span class="text-danger">{{ monthlyLiability | currency: 'USD' }}</span>
+    </div>
+  </div>
+  <div class="row ps-2">
+    <div class="col col-lg-12 mb-2 mt-3">
+      <div *ngIf="noAccountExist" class="fs-4 text-danger">Account Not Linked: Please Add an Account.</div>
+      <div class="row">
+        <div class="col-lg-8"></div>
+        <div class="col-lg-3">
+          <button type="button" class="btn ps-3 pe-3 dashboard-hover" style="text-align: center; border-radius: 0%;background-color: #54607e;color: #FFF;width: 80px;" (click)="downloadPdf()">PDF</button>
+        </div>
       </div>
     </div>
-    <div class="col-3">
-      <div class="p-3 border bg-light"  style="text-align: center;">
-        <span><img class="dashboard-logo" src="../../assets/imgs/dashboard_income.svg"></span>
-        <br>Month's Income<br>
-        $ 50,000.00
-      </div>
+  </div>
+  <div class="row pb-3 ms-2">
+    <div class="col col-lg-9 border bg-white me-2 dashboard-hover" style="max-width: 916px;">
+      <ag-charts-angular [options]="chartOptions"></ag-charts-angular>
     </div>
-    <div class="col-3">
-      <div class="p-3 border bg-light"  style="text-align: center;">
-        <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-expense.svg"></span>
-        <br>Month's Expense<br>
-        $ 10,000.00
-      </div>
-    </div>
-    <div class="col-3">
-      <div class="p-3 border bg-light"  style="text-align: center;">
-        <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-liabilities.svg"></span>
-        <br>Liabilities<br>
-        $ 5,000.00
-      </div>
-    </div>
-    <div class="col-12">
-      <div class="p-3 border bg-light">Balance and Liabilities</div>
+    <div class="col col-lg-3 border bg-white p-3 dashboard-hover" (click)="onAddManageAccount()" style="text-align: center; max-width: 300px;">
+      <div class="fs-3 font-monospace">Add/Manage Accounts</div>
+      <hr>
+      <div><img class="account-logo" src="../../assets/imgs/account.svg" alt="accounts"></div>
     </div>
   </div>
 </div>

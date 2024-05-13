@@ -1,15 +1,15 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-lg-10">
-      <div class="p-3" style="text-align: center;">
-        <span><img class="dashboard-logo" src="../../assets/imgs/dashboard_income.svg"></span>
+      <div class="p-3 font-monospace" style="text-align: center;">
+        <span><img class="dashboard-logo" src="../../assets/imgs/dashboard_income.svg" alt="monthly income"></span>
         <br>
         Monthly Income<br>
-        $ {{incomeService.monthly_income}}
+        <span class="text-success">{{ incomeService.monthlyIncome | currency: 'USD' }}</span>
       </div>
     </div>
     <div class="col-lg-2 text-end mt-auto">
-      <button *ngIf="hideIncomeForm" class="btn btn-primary mt-2 mb-2 end-0" (click)="toggleIncomeForm()">Add
+      <button *ngIf="hideIncomeForm" class="btn btn-primary mt-2 mb-2 end-0" (click)="addIncome()">Add
         Income</button>
     </div>
   </div>
@@ -21,6 +21,9 @@
             <label for="received_from" class="form-label">Received From:</label>
             <input type="text" class="form-control" id="received_from" formControlName="from"
               placeholder="Enter source of income">
+            <span class="help-block text-danger"
+              *ngIf="!incomeForm.get('from')?.valid && (incomeForm.get('from')?.touched || incomeForm.get('from')?.dirty)">Please
+              enter a valid input</span>
           </div>
         </div>
       </div>
@@ -29,12 +32,20 @@
           <div class="mb-3">
             <label for="amount" class="form-label">Amount:</label>
             <input type="number" class="form-control" formControlName="amount" id="amount">
+            <span class="help-block text-danger"
+              *ngIf="!incomeForm.get('amount')?.valid && (incomeForm.get('amount')?.touched || incomeForm.get('amount')?.dirty)">Please
+              enter a valid amount</span>
           </div>
         </div>
         <div class="col-lg-3">
           <div class="mb-3">
             <label for="received_date" class="form-label">Received Date:</label>
-            <input type="text" class="form-control" id="received_date" formControlName="date" placeholder="TODO">
+            <input type="text" placeholder="mm-dd-yyyy" class="form-control" bsDatepicker [bsConfig]="bsConfig"
+              id="date" formControlName="date">
+            <br>
+            <span class="help-block text-danger"
+              *ngIf="!incomeForm.get('date')?.valid && (incomeForm.get('date')?.touched || incomeForm.get('date')?.dirty)">Please
+              enter a valid date</span>
           </div>
         </div>
       </div>
@@ -46,20 +57,13 @@
           </div>
         </div>
       </div>
-      <button type="submit" class="btn btn-success" [disabled]="!incomeForm.valid">Save</button>
+      <button type="submit" class="btn btn-success mb-3" [disabled]="!incomeForm.valid">Save</button>
+      <button type="button" class="btn btn-danger ms-3 mb-3" (click)="onCancel()">Cancel</button>
     </form>
   </div>
-  <p class="fw-light fst-italic">To edit an row just double click on it</p>
-  <ag-grid-angular 
-  class="ag-theme-quartz" 
-  style="height:100%; width: 100%;" 
-  [rowData]="incomeRowData" 
-  [columnDefs]="incomeColDefs"
-  [pagination]=true
-  [gridOptions]="agGridOptions"
-  editType="fullRow"
-  (rowValueChanged)="onRowValueChanged($event)"
-  >
+  <ag-grid-angular class="ag-theme-quartz" style="height: 300px; width: 100%;" [rowData]="incomeRowData"
+    [columnDefs]="incomeColDefs" [pagination]=true [gridOptions]="agGridOptions" editType="fullRow"
+    (gridReady)="onGridReady($event)" [suppressClickEdit]="true">
   </ag-grid-angular>
-  
+
 </div>

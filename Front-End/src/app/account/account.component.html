@@ -1,0 +1,46 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="p-3" style="text-align: center;">
+        <img class="dashboard-logo" src="../../assets/imgs/account.svg" alt="account logo">
+        <div class="mt-3 fs-4 font-monospace">Your Accounts!</div>
+      </div>
+    </div>
+  </div>
+  <button *ngIf="!enableForm" class="btn btn-primary mb-3" (click)="toggleForm()">Add Account</button>
+  <form *ngIf="enableForm" [formGroup]="accountForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <div class="col-lg-3">
+        <label for="accountNo" class="form-label">Account No<span class="text-danger">*</span></label>
+        <input type="string" id="accountNo" class="form-control" formControlName="accountNo" placeholder="Account Number"
+        [ngClass]="{'form-control': true, 'is-invalid': (!accountForm.get('accountNo')?.valid && (accountForm.get('accountNo')?.touched || accountForm.get('accountNo')?.dirty))}">
+        <div id="accountNo"
+          *ngIf="!accountForm.get('accountNo')?.valid && (accountForm.get('accountNo')?.touched || accountForm.get('accountNo')?.dirty)"
+          class="form-text invalid-feedback">Please enter valid account number</div>
+      </div>
+      <div class="col-lg-3">
+        <label for="accountSource" class="form-label">Bank Name<span class="text-danger">*</span></label>
+        <input type="text" id="accountSource" class="form-control" formControlName="accountSource"
+        [ngClass]="{'form-control': true, 'is-invalid': (!accountForm.get('accountSource')?.valid && (accountForm.get('accountSource')?.touched || accountForm.get('accountSource')?.dirty))}">
+        <div id="accountSource"accountSource
+        *ngIf="!accountForm.get('accountSource')?.valid && (accountForm.get('accountSource')?.touched || accountForm.get('accountSource')?.dirty)" 
+        class="form-text invalid-feedback">Account Source is required</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <label for="description" class="form-label">Description (Optional)</label>
+        <input type="text" id="description" class="form-control" formControlName="description">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-3 mt-3">
+        <button [disabled]="!accountForm.valid" type="submit" class="btn btn-success mb-3">Save</button>
+      </div>
+    </div>
+  </form>
+  <ag-grid-angular class="ag-theme-quartz" style="height: 300px; width: 100%;" [rowData]="accountRowData"
+    [columnDefs]="accountColDef" [pagination]=true [gridOptions]="agGridOptions" editType="fullRow"
+    (gridReady)="onGridReady($event)" [suppressClickEdit]="true">
+  </ag-grid-angular>
+</div>

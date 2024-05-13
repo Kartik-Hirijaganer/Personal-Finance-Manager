@@ -1,0 +1,79 @@
+<div class="header" style="height: 50px;margin: 0px;">
+  <span class="ms-5 p-5 fs-3 font-monospace" style="font-family: Arial, Helvetica, sans-serif;color: #FFFF;">Personal
+    Finance Manager</span>
+</div>
+<div class="container">
+  <div *ngIf="authService.showLoginPage;then login else reset"></div>
+</div>
+
+<ng-template #login>
+  <div class="row m-5 pt-5">
+    <div class="col-lg-12">
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        <div class="mb-3">
+          <label for="email" class="form-label">Email address</label>
+          <input type="email" formControlName="email" placeholder="abc@email.com" formControlName="email"
+            [ngClass]="{'form-control': true, 'is-invalid': (!loginForm.get('email')?.valid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty))}"
+            id="email" aria-describedby="email">
+          <div id="email"
+            *ngIf="!loginForm.get('email')?.valid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty)"
+            class="form-text invalid-feedback">Please enter a valid email address</div>
+        </div>
+        <div class="mb-5">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" formControlName="password" placeholder="**********"
+            [ngClass]="{'form-control': true, 'is-invalid': (!loginForm.get('password')?.valid && (loginForm.get('password')?.touched || loginForm.get('password')?.dirty))}"
+            id="password">
+          <div
+            *ngIf="!loginForm.get('password')?.valid && (loginForm.get('password')?.touched || loginForm.get('password')?.dirty)"
+            class="invalid-feedback">Password is required</div>
+        </div>
+        <button type="submit" class="btn btn-primary me-2 mb-3" style="background-color: #102C57;">Submit</button>
+        <a class="ms-2" style="color: #102C57; cursor: pointer;" (click)="onResetPassword()">Rest password</a>
+        <br>
+        <a class="ms-2" [routerLink]="['../', 'user']" [queryParams]="{userId: 'null'}" (click)="onRegister()" style="color: #102C57;">New
+          user?
+          Click here to register</a>
+      </form>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #reset>
+  <form [formGroup]="resetForm" (ngSubmit)="onReset()">
+    <div class="row mt-3">
+      <div class="row mt-3 ms-3 align-items-center">
+        <div class="col-auto col-lg-9 mb-2">
+          <label for="email" class="col-form-label">Email<sup class="text-danger">*</sup></label>
+          <input type="email" id="email" [ngClass]="{'form-control': true, 'is-invalid': (!resetForm.get('email')?.valid && (resetForm.get('email')?.touched || resetForm.get('email')?.dirty))}"
+          formControlName="email">
+          <div *ngIf="!resetForm.get('email')?.valid && (resetForm.get('email')?.touched || resetForm.get('dirty'))" 
+            class="invalid-feedback">Please enter your registered email address.</div>
+        </div>
+        <div class="col-auto col-lg-9 mb-2">
+          <label for="pass" class="col-form-label">New Password<sup class="text-danger">*</sup></label>
+          <input type="password" id="pass" formControlName="pass"
+            [ngClass]="{'form-control': true, 'is-invalid': (!resetForm.get('pass')?.valid && (resetForm.get('pass')?.touched || resetForm.get('pass')?.dirty))}">
+          <div *ngIf="!resetForm.get('pass')?.valid && (resetForm.get('pass')?.touched || resetForm.get('pass')?.dirty)" class="invalid-feedback">Please enter new password.</div>
+        </div>
+        <div class="col-auto col-lg-9">
+          <label for="repass" class="col-form-label">Confirm Password<sup class="text-danger">*</sup></label>
+          <input [type]="passwordType" id="repass" formControlName="repass"
+            [ngClass]="{'form-control': true, 'is-invalid': (passwordMismatch || (!resetForm.get('repass')?.valid && (resetForm.get('repass')?.touched || resetForm.get('repass')?.dirty)))}">
+          <div *ngIf="!resetForm.get('repass')?.valid && (resetForm.get('repass')?.touched || resetForm.get('repass')?.dirty)" class="invalid-feedback">Please re-enter password.</div>
+          <div *ngIf="passwordMismatch" class="invalid-feedback">Passwords does not match.</div>
+        </div>
+        <div [ngClass]="{'col-auto': true, 'col-lg-3': true, 
+          'mt-4': !(passwordMismatch || (!resetForm.get('repass')?.valid && (resetForm.get('repass')?.touched || resetForm.get('repass')?.dirty))), 
+          }">
+          <img *ngIf="!hide" style="cursor: pointer;" (click)="hidePassword('text')" src="../../assets/imgs/eye-show.svg" alt="Show password" width="20" height="20">
+          <img *ngIf="hide" style="cursor: pointer;" (click)="hidePassword('password')" src="../../assets/imgs/eye-hide.svg" alt="Hide password" width="20" height="20">
+        </div>
+        <div class="col-auto mt-4">
+          <button class="btn btn-success" [disabled]="!resetForm.valid">Reset</button>
+          <button class="btn btn-danger ms-3" (click)="onCancel()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-template>

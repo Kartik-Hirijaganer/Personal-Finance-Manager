@@ -5,42 +5,98 @@ import { ActivatedRoute } from '@angular/router';
 
 import { IncomeService } from '../../income/income.service';
 import { ExpenseService } from '../../expense/expense.service';
+import { LiabilityService } from '../../liability/liability.service';
+import { AccountService } from '../../account/account.service';
 
 @Component({
-  selector: 'action',
+  selector: 'app-action',
   templateUrl: './action.component.html',
   styleUrl: './action.component.css'
 })
 export class ActionComponent implements ICellRendererAngularComp {
   private rowData: any;
   private path: string = '';
+  public showEdit: boolean = true;
+  public enableDelete: boolean = false;
+  public enableEdit: boolean = false;
+  public enableSelect: boolean = false;
+  public isSelected: boolean = false;
 
-  constructor( 
+  constructor(
     private incomeService: IncomeService,
     private expenseService: ExpenseService,
-    private route: ActivatedRoute
-  ) {}
+    private liabilityService: LiabilityService,
+    private route: ActivatedRoute,
+    private accountService: AccountService
+  ) { }
 
-  agInit(params: ICellRendererParams): void {
-    this.rowData = params;  
+  agInit(params: any): void {
+    this.rowData = params;
+
+    this.enableDelete = params?.actions?.delete;
+    this.enableEdit = params?.actions?.edit;
+    this.enableSelect = params?.actions?.select;
+    if (this.enableSelect) {
+      this.isSelected = params?.data?.selected;
+    }
     this.route.url.subscribe((event) => {
       this.path = event[0].path;
-    })  
+    })
   }
 
   refresh(params: ICellRendererParams<any, any, any>): boolean {
     return false; // returning false  will make ag-grid re-create the component when required.
   }
 
-  onSubmit(action: string): void {
-    const { id, ...entry } = this.rowData?.data;
-    
+  handleExpenseEvent(action: string, idx: number, payload: any) {
     if (action === 'delete') {
-      if (this.path === 'expenses') {
-        this.expenseService.deleteExpense(id);
-      }
-      this.incomeService.deleteIncomeEntry(id, entry);
+      this.expenseService.expenseEditEvent.next({ action, idx, payload });
+    } else {
+      this.showEdit = !this.showEdit;
+      this.expenseService.expenseEditEvent.next({ action, idx, payload: this.rowData?.data });
     }
   }
 
+  handleIncomeEvent(action: string, idx: number, payload: any) {
+    if (action === 'delete') {
+      this.incomeService.incomeEditEvent.next({ action, idx, payload });
+    } else {
+      this.showEdit = !this.showEdit;
+      this.incomeService.incomeEditEvent.next({ action, idx, payload: this.rowData?.data });
+    }
+  }
+
+  handleLiabilityEvent(action: string, idx: number, payload: any) {
+    if (action === 'delete') {
+      this.liabilityService.liabilityEditEvent.next({ action, idx, payload });
+    } else {
+      this.showEdit = !this.showEdit;
+      this.liabilityService.liabilityEditEvent.next({ action, idx, payload: this.rowData?.data });
+    }
+  }
+
+  handleAccountEvent(action: string, idx: number, payload: any) {
+    this.accountService.accountEditEvent.next({ action, idx, payload });
+  }
+
+  onSelect() {
+    this.accountService.accountSelectEvent.next(this.rowData.data);
+  }
+
+  onSubmit(action: string): void {
+    switch (this.path) {
+      case 'expenses':
+        this.handleExpenseEvent(action, this.rowData?.rowIndex, this.rowData?.data);
+        break;
+      case 'incomes':
+        this.handleIncomeEvent(action, this.rowData?.rowIndex, this.rowData?.data);
+        break;
+      case 'liabilities':
+        this.handleLiabilityEvent(action, this.rowData?.rowIndex, this.rowData?.data);
+        break;
+      case 'accounts':
+        this.handleAccountEvent(action, this.rowData?.rowIndex, this.rowData?.data);
+        break;
+    }
+  }
 }
