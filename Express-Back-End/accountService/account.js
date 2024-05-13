@@ -21,7 +21,7 @@ const corsOptions = {
 }
 util.connectDB();
 
-/** Middleware */
+/** Middlewares */
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
