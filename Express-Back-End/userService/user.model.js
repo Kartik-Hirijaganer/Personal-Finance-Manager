@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const { ReminderSchema } = require('../shared/models/reminder.model');
-
 const UserSchema = new Schema({
   userId: {
     type: String,

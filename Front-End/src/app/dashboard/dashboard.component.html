@@ -2,7 +2,7 @@
   <div class="row mb-2 mt-4 ms-2">
     <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover"
       style="text-align: center; max-width: 300px;">
-      <span><img class="dashboard-logo" src="../../assets/imgs/balance.svg"></span>
+      <span><img class="dashboard-logo" src="../../assets/imgs/balance.svg" alt="current balance"></span>
       <br>
       Current Balance
       <br>
@@ -10,19 +10,19 @@
     </div>
     <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/incomes"
       style="text-align: center; max-width: 300px;">
-      <span><img class="dashboard-logo" src="../../assets/imgs/dashboard_income.svg"></span>
+      <span><img class="dashboard-logo" src="../../assets/imgs/dashboard_income.svg" alt="monthly income"></span>
       <br>Month's Income<br>
       <span class="text-success">{{ monthlyIncome | currency: 'USD' }}</span>
     </div>
     <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/expenses"
       style="text-align: center; max-width: 300px;">
-      <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-expense.svg"></span>
+      <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-expense.svg" alt="monthly expense"></span>
       <br>Month's Expense<br>
       <span class="text-danger">{{ monthlyExpense | currency: 'USD' }}</span>
     </div>
     <div class="col border col-lg-3 bg-white me-2 p-3 font-monospace dashboard-hover" routerLink="/liabilities"
       style="text-align: center; max-width: 300px;">
-      <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-liabilities.svg"></span>
+      <span><img class="dashboard-logo" src="../../assets/imgs/dashboard-liabilities.svg" alt="monthly liabilities"></span>
       <br>Liabilities<br>
       <span class="text-danger">{{ monthlyLiability | currency: 'USD' }}</span>
     </div>
@@ -45,7 +45,7 @@
     <div class="col col-lg-3 border bg-white p-3 dashboard-hover" (click)="onAddManageAccount()" style="text-align: center; max-width: 300px;">
       <div class="fs-3 font-monospace">Add/Manage Accounts</div>
       <hr>
-      <div><img class="account-logo" src="../../assets/imgs/account.svg"></div>
+      <div><img class="account-logo" src="../../assets/imgs/account.svg" alt="accounts"></div>
     </div>
   </div>
 </div>

@@ -16,7 +16,7 @@ const liability = require('./entries/routes/liability.routes');
 
 const corsOptions = {
   origin: process.env.FRONT_END_URL,
-  credentials: true,            //access-control-allow-credentials:true
+  credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200
 }
 util.connectDB();

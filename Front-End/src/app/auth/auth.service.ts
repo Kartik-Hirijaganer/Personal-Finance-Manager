@@ -45,9 +45,10 @@ export class AuthService {
     localStorage.clear();
     this.router.navigateByUrl('/login');
   }
+  // { userId, token, accountId: '', user }
 
-  register(payload: User): Observable<any> {
-    return this.http.post<{ userId: string, token: string, accountId: string }>(`${environment.URL}:${environment.auth_port}/register`, payload);
+  register(payload: User): Observable<{ userId: string, token: string, accountId: string, user: string }> {
+    return this.http.post<{ userId: string, token: string, accountId: string, user: string }>(`${environment.URL}:${environment.auth_port}/register`, payload);
   }
 
   public setUser(response: { token: string, userId: string, accountId: string, user: string, profile_img: string }): void {
@@ -72,11 +73,11 @@ export class AuthService {
 
   resetUserPassword(payload: { email: string, pass: string }) {
     const params = new HttpParams({ fromObject: { type: 'email', reset: 'true' } });
-    this.http.get<{ user: any }>(
+    this.http.get<{user: any, token: string}>(
       `${environment.URL}:${environment.user_port}/user/${payload.email}`,
       { params }
     ).pipe(
-      switchMap((res: any) => {
+      switchMap((res) => {
         if (!res?.user) {
           this.toastr.error(`User with email ${payload.email} does not exists.`, 'Error');
           return of(null);

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
-import { ICellRendererParams, GridApi, GridReadyEvent } from 'ag-grid-community';
+import { ICellRendererParams } from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
 
 import { IncomeService } from '../../income/income.service';
@@ -9,7 +9,7 @@ import { LiabilityService } from '../../liability/liability.service';
 import { AccountService } from '../../account/account.service';
 
 @Component({
-  selector: 'action',
+  selector: 'app-action',
   templateUrl: './action.component.html',
   styleUrl: './action.component.css'
 })
@@ -21,7 +21,6 @@ export class ActionComponent implements ICellRendererAngularComp {
   public enableEdit: boolean = false;
   public enableSelect: boolean = false;
   public isSelected: boolean = false;
-  private gridApi!: GridApi;
 
   constructor(
     private incomeService: IncomeService,

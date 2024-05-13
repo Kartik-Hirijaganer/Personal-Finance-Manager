@@ -37,7 +37,7 @@ const getAccount = async (req, res) => {
       return res.status(400).send({ error });
     }
     const dbError = new DatabaseError(error.message);
-    return res.status(400).send({ errorMessage, error: dbError });
+    return res.status(400).send({ errorMessage: 'Failed to fetch account.', error: dbError });
   }
   return res.status(200).send(accounts);
 }
@@ -68,7 +68,7 @@ const deleteAccount = async (req, res) => {
     await Account.findOneAndDelete({ accountId });
   } catch (error) {
     const dbError = new DatabaseError(error.message);
-    return res.status(400).send({ errorMessage, dbError });
+    return res.status(400).send({ errorMessage: 'Failed to delete account.', dbError });
   }
   return res.status(200).send({ accountId });
 }
@@ -80,7 +80,7 @@ const deleteAccounts = async (req, res) => {
     deleteCount = await Account.deleteMany({ userId });
   } catch (error) {
     const dbError = new DatabaseError(error.message);
-    return res.status(400).send({ errorMessage, dbError });
+    return res.status(400).send({ errorMessage: 'Failed to delete accounts associated with user.', dbError });
   }
   return res.status(200).send({ deleteCount });
 }

@@ -6,7 +6,8 @@ const { DatabaseError, RecordNotFoundError } = require('../../shared/errors');
 
 const getEntries = async (req, res) => {
   let entries = [];
-  const { accountId, category } = req?.query;
+  const accountId = req?.query?.accountId || '';
+  const category = req?.query?.category || '';
   try {
     const account = await Account.findOne({ accountId });
     if (account[`${category}s`]) {
@@ -20,7 +21,8 @@ const getEntries = async (req, res) => {
 }
 
 const addEntry = async (req, res) => {
-  let { category, accountId } = req?.query;
+  const accountId = req?.query?.accountId || '';
+  const category = req?.query?.category || '';
   if (category === 'liability') {
     category = 'liabilitie';
   }
@@ -50,7 +52,8 @@ const addEntry = async (req, res) => {
 }
 
 const updateEntry = async (req, res) => {
-  let { category, accountId } = req?.query;
+  const accountId = req?.query?.accountId || '';
+  const category = req?.query?.category || '';
   if (category === 'liability') {
     category = 'liabilitie';
   }
@@ -86,7 +89,8 @@ const updateEntry = async (req, res) => {
 }
 
 const deleteEntry = async (req, res) => {
-  let { category, accountId } = req?.query;
+  const accountId = req?.query?.accountId || '';
+  const category = req?.query?.category || '';
   if (category === 'liability') {
     category = 'liabilitie';
   }

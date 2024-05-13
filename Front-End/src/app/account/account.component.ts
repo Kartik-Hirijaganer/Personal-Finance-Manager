@@ -34,7 +34,7 @@ export class AccountComponent implements OnInit, OnDestroy {
       editable: false
     }
   ];
-  accountRowData: any[] = [];
+  accountRowData: Account[] = [];
   private gridApi!: GridApi;
   agGridOptions: GridOptions = {
     defaultColDef: {

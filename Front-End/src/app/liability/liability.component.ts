@@ -142,8 +142,7 @@ export class LiabilityComponent implements OnInit, OnDestroy {
         });
         break;
       case 'delete':
-        const { id } = payload as Liability;
-        this.deleteLiabilitySubscription = this.liabilityService.deleteLiability(id)
+        this.deleteLiabilitySubscription = this.liabilityService.deleteLiability(payload?.id || '')
         .pipe(catchError(err => {
           const errorMessage: string = err?.error?.error?.errorMessage;
           this.toastr.error(errorMessage, 'Failed to delete liability');

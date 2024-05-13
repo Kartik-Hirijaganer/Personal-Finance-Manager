@@ -65,7 +65,7 @@ export class DashboardComponent implements OnInit {
     this.userId = localStorage.getItem('user_id') || '';
     this.accountId = localStorage.getItem('account_id') || '';
     this.userService.getUser(this.userId).pipe(
-      switchMap((res: any) => {
+      switchMap((res) => {
         if (res.user) {
           this.userFullName = `${res.user?.fname} ${res.user?.lname}`;
           this.userService.userEvent.next({ user_fname: res.user.fname, profile_img: res.user.profile_img, userId: res.user.userId })

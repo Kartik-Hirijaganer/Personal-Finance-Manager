@@ -10,7 +10,7 @@ import { Account } from './account.model';
   providedIn: 'root'
 })
 export class AccountService {
-  public accountSelectEvent: Subject<any> = new Subject<any>();
+  public accountSelectEvent: Subject<{accountNo: number, accountSource: string, descrption: string, accountId: string}> = new Subject<{accountNo: number, accountSource: string, descrption: string, accountId: string}>();
 
   constructor(private http: HttpClient, private authService: AuthService) {
   }
@@ -29,7 +29,7 @@ export class AccountService {
     )
   }
 
-  addAccount(payload: Account): Observable<any> {
+  addAccount(payload: Account): Observable<{ accountId: string }> {
     return this.http.post<{accountId: string}>(`${environment.URL}:${environment.account_port}/account/add`,
      { ...payload, userId: this.authService.userId }
     )

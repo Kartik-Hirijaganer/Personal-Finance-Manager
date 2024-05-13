@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { Router, ActivatedRoute, UrlSegment } from '@angular/router';
-import { catchError, switchMap, of } from 'rxjs';
+import { Router, ActivatedRoute } from '@angular/router';
+import { catchError, of } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 
 import { UserService } from './user.service';
@@ -48,8 +48,8 @@ export class UserComponent implements OnInit {
         this.showEditBtn = true;
         this.userService.userEvent.next({ user_fname: user.fname, profile_img: user.profile_img, userId: user.userId })
       }
-      const {password, ...rest} = user;
-      this.setUserForm(rest);
+      delete user.password;
+      this.setUserForm(user);
     });
     // this.setUserForm(null); // uncomment if new register form doesn't open
   }
@@ -98,7 +98,7 @@ export class UserComponent implements OnInit {
   onUpload(event: any) {
     if (event?.target?.files) {
       const file = event.target.files[0];
-      let reader = new FileReader();
+      const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = (event: any) => {
         this.userForm.patchValue({ profile_img: event.target.result });
@@ -128,14 +128,12 @@ export class UserComponent implements OnInit {
     if (this.editMode) {
       this.userService.updateUser(payload)
         .pipe(catchError(err => {
-          const title: string = err.error?.errorMessage;
-          let message: string = 'Database error';
-          this.toastr.error(message, title);
+          this.toastr.error(err.error?.errorMessage || 'Unknown error', 'Database error');
           return of(null);
         }))
         .subscribe(response => {
           this.toastr.success('Successfully updated user details', 'Success');
-          return response.userId;
+          return response?.userId;
         })
     } else {
       this.authService.register(payload)
@@ -148,9 +146,9 @@ export class UserComponent implements OnInit {
           this.toastr.error(message, title);
           return of(null);
         }))
-        .subscribe(response => {
+        .subscribe((response) => {
           if (response) {
-            this.authService.setUser({ ...response, profile_img: payload.profile_img });
+            this.authService.setUser({ token: response.token, userId: response.userId, accountId: response.accountId, user: response.user, profile_img: payload.profile_img });
             this.toastr.success('Registeration successfull', 'Success');
             this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId } })
           }

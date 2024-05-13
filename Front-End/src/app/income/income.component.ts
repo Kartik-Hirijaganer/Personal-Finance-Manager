@@ -136,8 +136,7 @@ export class IncomeComponent implements OnInit, OnDestroy {
         });
         break;
       case 'delete':
-        const { id } = payload as Income;
-        this.deleteIncomeSubscription = this.incomeService.deleteIncome(id)
+        this.deleteIncomeSubscription = this.incomeService.deleteIncome(payload?.id || '')
         .pipe(catchError(err => {
           const errorMessage: string = err?.error?.error?.errorMessage;
           this.toastr.error(errorMessage, 'Failed to delete income');

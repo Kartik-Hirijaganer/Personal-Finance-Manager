@@ -66,9 +66,9 @@ export class DownloadService {
       )
       .subscribe(res => {
         if (res) {
-          let blob = new Blob([res], { type: 'application/pdf' });
-          let pdfUrl = window.URL.createObjectURL(blob);
-          var pdf_link = document.createElement('a');
+          const blob = new Blob([res], { type: 'application/pdf' });
+          const pdfUrl = window.URL.createObjectURL(blob);
+          const pdf_link = document.createElement('a');
           pdf_link.href = pdfUrl;
           pdf_link.download = fileName;
           pdf_link.click();

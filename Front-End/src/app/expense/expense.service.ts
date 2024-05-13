@@ -19,7 +19,7 @@ export class ExpenseService {
 
   addExpense(expense: Expense): Observable<{ expenseId: string }> {
     return this.http.post<{ expenseId: string }>(
-      `${environment.URL}:${environment.expense_port}/expense/add`, 
+      `${environment.URL}:${environment.account_port}/expense/add`, 
       { ...expense, month: this.util.getMonthPayload(expense.date) },
       {
         params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
@@ -37,7 +37,7 @@ export class ExpenseService {
 
   updateExpense(expense: Expense): Observable<{ expenseId: string }> {
     return this.http.put<{ expenseId: string }>(
-      `${environment.URL}:${environment.expense_port}/expense/update/${expense.id}`, 
+      `${environment.URL}:${environment.account_port}/expense/update/${expense.id}`, 
       { ...expense, month: this.util.getMonthPayload(expense.date) },
       {
         params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }

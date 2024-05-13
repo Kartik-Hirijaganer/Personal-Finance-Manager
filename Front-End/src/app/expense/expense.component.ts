@@ -141,8 +141,7 @@ export class ExpenseComponent implements OnInit, OnDestroy {
         });
         break;
       case 'delete':
-        const { id } = payload as Expense;
-        this.deleteExpenseSubscription = this.expenseService.deleteExpense(id)
+        this.deleteExpenseSubscription = this.expenseService.deleteExpense(payload?.id || '')
         .pipe(catchError(err => {
           const errorMessage: string = err?.error?.error?.errorMessage;
           this.toastr.error(errorMessage, 'Failed to delete expense');

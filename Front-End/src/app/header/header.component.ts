@@ -52,9 +52,7 @@ export class HeaderComponent implements OnInit {
       const userId: string = localStorage.getItem('user_id') || '';
       this.userService.deleteUser(userId)
         .pipe(catchError(err => {
-          const title: string = err.error?.errorMessage;
-          let message: string = 'Failed to delete user';
-          this.toastr.error(message, title);
+          this.toastr.error('Failed to delete user', err.error?.errorMessage || '');
           return of(null);
         })).subscribe(response => {
           if (response) {

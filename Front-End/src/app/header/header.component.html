@@ -10,27 +10,27 @@
         <li class="nav-item" routerLinkActive="active-link" [routerLink]="['/dashboard']">
           <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;" aria-current="page"
             routerLinkActive="active-link">
-            <img class="navbar-link-logo" src="../../assets/imgs/transaction.svg"><span>Transactions</span>
+            <img class="navbar-link-logo" src="../../assets/imgs/transaction.svg" alt="dashboard"><span>Transactions</span>
           </a>
         </li>
         <li class="nav-item" routerLinkActive="active-link" routerLink="/incomes">
           <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;"
             routerLinkActive="active-link">
-            <span><img src="../../assets/imgs/income.svg" class="navbar-link-logo"></span>
+            <span><img src="../../assets/imgs/income.svg" alt="monthly income" class="navbar-link-logo"></span>
             Incomes
           </a>
         </li>
         <li class="nav-item" routerLinkActive="active-link" routerLink="/expenses">
           <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;"
             routerLinkActive="active-link">
-            <span><img src="../../assets/imgs/expense.svg" class="navbar-link-logo"></span>
+            <span><img src="../../assets/imgs/expense.svg" alt="monthly expense" class="navbar-link-logo"></span>
             Expenses
           </a>
         </li>
         <li class="nav-item" routerLinkActive="active-link" routerLink="/liabilities">
           <a class="nav-link navbar-link-style" style="margin-top: 14px;padding-left: 12px;"
             routerLinkActive="active-link">
-            <span><img src="../../assets/imgs/price-tag.svg" class="navbar-link-logo"></span>
+            <span><img src="../../assets/imgs/price-tag.svg" alt="monthly liabilities" class="navbar-link-logo"></span>
             Liabilities
           </a>
         </li>
@@ -39,7 +39,7 @@
           style="margin-left: 500px;">
           <a class="nav-link" style="color: #ffff;" href="#" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">
-            {{dashboardService.user.userName}}&nbsp;<span><img [src]="dashboardService.user.profile_img" class="navbar-user-logo"></span>
+            {{dashboardService.user.userName}}&nbsp;<span><img [src]="dashboardService.user.profile_img" class="navbar-user-logo" alt="user logo"></span>
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" [routerLink]="['user']">Profile</a></li>
