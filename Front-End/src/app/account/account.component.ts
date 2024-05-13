@@ -44,14 +44,13 @@ export class AccountComponent implements OnInit, OnDestroy {
     }
   }
   private accountEvent: Subscription = new Subscription;
+  private accountRowSubscription: Subscription = new Subscription;
+  private deleteAccountSubscription: Subscription = new Subscription;
+
   constructor(private accountService: AccountService, private toastr: ToastrService) { }
 
   ngOnInit(): void {
-    this.accountForm = new FormGroup({
-      accountNo: new FormControl<string>('XXXXXXXXXX', [Validators.required, Validators.pattern(/^[0-9+]+$/)]),
-      accountSource: new FormControl<string>('', Validators.required),
-      description: new FormControl<string | null>('')
-    })
+    this.initializeForm();
     this.getAccountRowData();
     this.accountEvent = this.accountService.accountSelectEvent.subscribe(event => {
       this.gridApi.forEachNode(node => {
@@ -64,13 +63,45 @@ export class AccountComponent implements OnInit, OnDestroy {
         }
       })
     })
+    this.accountRowSubscription = this.accountService.accountEditEvent.subscribe(event => {
+      this.handleAccountEvent(event.action, event.idx, event.payload!);
+    });
   }
 
   onGridReady(params: GridReadyEvent): void {
     this.gridApi = params.api;
   }
 
+  handleAccountEvent(action: string, idx: number, payload: Account) {
+    switch (action) {
+      case 'delete':
+        this.deleteAccountSubscription = this.accountService.deleteAccount(payload.accountNo)
+          .pipe(catchError(err => {
+            const errorMessage: string = err?.error?.error?.errorMessage;
+            this.toastr.error(errorMessage, 'Failed to delete account');
+            return of(null);
+          }))
+          .subscribe(res => {
+            if (res) {
+              this.gridApi?.applyTransaction({ remove: [payload] });
+            }
+          });
+        break;
+      default:
+        break;
+    }
+  }
+
+  initializeForm(): void {
+    this.accountForm = new FormGroup({
+      accountNo: new FormControl<string>('XXXXXXXXXX', [Validators.required, Validators.pattern(/^[0-9+]+$/)]),
+      accountSource: new FormControl<string>('', Validators.required),
+      description: new FormControl<string | null>('')
+    })
+  }
+
   toggleForm() {
+    this.initializeForm();
     this.enableForm = !this.enableForm;
   }
 
@@ -128,5 +159,7 @@ export class AccountComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.accountEvent.unsubscribe();
+    this.deleteAccountSubscription.unsubscribe();
+    this.accountRowSubscription.unsubscribe();
   }
 }

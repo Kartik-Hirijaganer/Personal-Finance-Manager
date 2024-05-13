@@ -19,7 +19,7 @@
           class="form-text invalid-feedback">Please enter valid account number</div>
       </div>
       <div class="col-lg-3">
-        <label for="accountSource" class="form-label">Account Source<span class="text-danger">*</span></label>
+        <label for="accountSource" class="form-label">Bank Name<span class="text-danger">*</span></label>
         <input type="text" id="accountSource" class="form-control" formControlName="accountSource"
         [ngClass]="{'form-control': true, 'is-invalid': (!accountForm.get('accountSource')?.valid && (accountForm.get('accountSource')?.touched || accountForm.get('accountSource')?.dirty))}">
         <div id="accountSource"accountSource

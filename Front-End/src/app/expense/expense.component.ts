@@ -160,6 +160,10 @@ export class ExpenseComponent implements OnInit, OnDestroy {
     }
   }
 
+  onCancel() {
+    this.hideExpenseForm = this.util.toggle(this.hideExpenseForm);
+  }
+
   onSubmit(): void {
     const payload = this.expenseForm.getRawValue();
     payload.date = payload.date.toLocaleDateString();

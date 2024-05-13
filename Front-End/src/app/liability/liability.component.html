@@ -56,7 +56,8 @@
           </div>
         </div>
       </div>
-      <button type="submit" class="btn btn-success" [disabled]="!liabilityForm.valid">Save</button>
+      <button type="submit" class="btn btn-success mb-3" [disabled]="!liabilityForm.valid">Save</button>
+      <button type="button" class="btn btn-danger ms-3 mb-3" (click)="onCancel()">Cancel</button>
     </form>
   </div>
   <ag-grid-angular class="ag-theme-quartz" style="height: 300px; width: 100%;" [rowData]="liabilityRowData"

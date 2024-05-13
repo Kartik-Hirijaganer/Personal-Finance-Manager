@@ -32,7 +32,7 @@ export class ActionComponent implements ICellRendererAngularComp {
 
   agInit(params: any): void {
     this.rowData = params;
-    
+
     this.enableDelete = params?.actions?.delete;
     this.enableEdit = params?.actions?.edit;
     this.enableSelect = params?.actions?.select;
@@ -75,8 +75,12 @@ export class ActionComponent implements ICellRendererAngularComp {
     }
   }
 
+  handleAccountEvent(action: string, idx: number, payload: any) {
+    this.accountService.accountEditEvent.next({ action, idx, payload });
+  }
+
   onSelect() {
-    this.accountService.accountSelectEvent.next(this.rowData.data);    
+    this.accountService.accountSelectEvent.next(this.rowData.data);
   }
 
   onSubmit(action: string): void {
@@ -89,6 +93,9 @@ export class ActionComponent implements ICellRendererAngularComp {
         break;
       case 'liabilities':
         this.handleLiabilityEvent(action, this.rowData?.rowIndex, this.rowData?.data);
+        break;
+      case 'accounts':
+        this.handleAccountEvent(action, this.rowData?.rowIndex, this.rowData?.data);
         break;
     }
   }

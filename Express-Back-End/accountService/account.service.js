@@ -63,14 +63,14 @@ const addAccount = async (req, res) => {
 }
 
 const deleteAccount = async (req, res) => {
-  const accountId = req.params.accountId;
+  const accountNo = req.params.accountNo;
   try {
-    await Account.findOneAndDelete({ accountId });
+    await Account.findOneAndDelete({ accountNo });
   } catch (error) {
     const dbError = new DatabaseError(error.message);
-    return res.status(400).send({ errorMessage: 'Failed to delete account.', dbError });
+    return res.status(400).send({ errorMessage: 'Failed to delete account.', error: dbError });
   }
-  return res.status(200).send({ accountId });
+  return res.status(200).send({ accountNo });
 }
 
 const deleteAccounts = async (req, res) => {

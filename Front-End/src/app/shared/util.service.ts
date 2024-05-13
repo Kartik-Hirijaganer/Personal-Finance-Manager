@@ -16,7 +16,7 @@ export class UtilService {
   }
 
   currencyFormatter(currency: number, sign: string) {
-    const amount = currency.toFixed(0);
+    const amount = currency.toFixed(2);
     const formatted = amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return sign + `${formatted}`;
   }

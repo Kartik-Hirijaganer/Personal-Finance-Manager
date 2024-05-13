@@ -161,6 +161,10 @@ export class LiabilityComponent implements OnInit, OnDestroy {
     }
   }
 
+  onCancel() {
+    this.hideLiabilityForm = this.util.toggle(this.hideLiabilityForm);
+  }
+
   onSubmit(): void {
     const payload = this.liabilityForm.getRawValue();
     payload.due_date = payload.due_date.toLocaleDateString();

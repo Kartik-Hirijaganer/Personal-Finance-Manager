@@ -10,6 +10,7 @@
           <input type="file" accept="image/*" class="form-control" style="max-width: 300px;" id="profile_img"
             (change)="onUpload($event)">
         </div>
+        <p class="fst-italic text-muted ms-3 ps-4">Image size should be less than 1 MB.</p>
       </div>
     </div>
     <hr style="border-top: 2px solid #828282;">
@@ -95,7 +96,7 @@
         id="phone" formControlName="phone">
       <div *ngIf="!userForm.get('phone')?.valid && (userForm.get('phone')?.touched || userForm.get('phone')?.dirty)"
         id="phone" class="invalid-feedback">
-        Please enter valid phone number.
+        Please enter valid phone number with extention. Eg. +18948382848.
       </div>
     </div>
     <div class="col-lg-12"></div>
@@ -126,9 +127,9 @@
     <div class="col-lg-4" *ngIf="!editMode && showEditBtn">
     </div>
     <div class="col-lg-4">
-      <img *ngIf="editMode && !showPassword" (click)="showHidePassword()" style="margin-top: 40px; cursor: pointer;"
+      <img *ngIf="(editMode || !userId) && !showPassword" (click)="showHidePassword()" style="margin-top: 40px; cursor: pointer;"
         src="../../assets/imgs/eye-show.svg" alt="Show password" width="20" height="20">
-      <img *ngIf="editMode && showPassword" (click)="showHidePassword()" style="margin-top: 40px; cursor: pointer;"
+      <img *ngIf="(editMode || !userId) && showPassword" (click)="showHidePassword()" style="margin-top: 40px; cursor: pointer;"
         src="../../assets/imgs/eye-hide.svg" alt="Hide password" width="20" height="20">
     </div>
     <!-- <div class="col-lg-4" *ngIf="!editMode"></div> -->

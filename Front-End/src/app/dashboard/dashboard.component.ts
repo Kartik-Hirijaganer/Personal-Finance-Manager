@@ -89,8 +89,8 @@ export class DashboardComponent implements OnInit {
       }
 
       if (!res?.error) {
-        this.accountNo = res.accountNo;
-        this.setDashboardData(res.incomes, res.expenses, res.liabilities);
+        this.accountNo = res?.accountNo || '';
+        this.setDashboardData(res?.incomes, res?.expenses, res?.liabilities);
       }
     });
   }

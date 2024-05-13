@@ -39,7 +39,7 @@ app.get('/account/:accountId', getAccount);
 
 app.post('/account/add', addAccount);
 
-app.delete('/account/delete/:accountId', deleteAccount);
+app.delete('/account/delete/:accountNo', deleteAccount);
 app.delete('/accounts/delete', deleteAccounts);
 
 app.listen(process.env.ACCOUNT_PORT, () => {

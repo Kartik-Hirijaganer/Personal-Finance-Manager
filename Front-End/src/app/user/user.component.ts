@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 
@@ -20,12 +20,11 @@ export class UserComponent implements OnInit {
   public editMode: boolean = false;
   public showEditBtn: boolean = false;
   public formLoaded: boolean = false;
-  private userId: string | null = null;
+  public userId: string | null = null;
   bsConfig?: Partial<BsDatepickerConfig>;
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
     public userService: UserService,
     private toastr: ToastrService,
     private authService: AuthService
@@ -63,6 +62,9 @@ export class UserComponent implements OnInit {
     if (data) {
       Object.keys(this.userForm.controls).forEach(field => {
         this.userForm.get(field)?.setValue(data[field]);
+        if (field === 'profile_img') {
+          this.userService.profile_img = data[field];
+        }
         this.userForm.get(field)?.disable();
       });
     } else {
@@ -132,8 +134,10 @@ export class UserComponent implements OnInit {
           return of(null);
         }))
         .subscribe(response => {
-          this.toastr.success('Successfully updated user details', 'Success');
-          return response?.userId;
+          if (response) {
+            this.toastr.success('Successfully updated user details', 'Success');
+            this.router.navigate(['/dashboard'], { queryParams: { userId: response.userId } });
+          }
         })
     } else {
       this.authService.register(payload)

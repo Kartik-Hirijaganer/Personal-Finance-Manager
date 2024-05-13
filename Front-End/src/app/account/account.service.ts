@@ -11,6 +11,7 @@ import { Account } from './account.model';
 })
 export class AccountService {
   public accountSelectEvent: Subject<{accountNo: number, accountSource: string, descrption: string, accountId: string}> = new Subject<{accountNo: number, accountSource: string, descrption: string, accountId: string}>();
+  public accountEditEvent: Subject<{ action: string, idx: number, payload?: Account }> = new Subject<{ action: string, idx: number, payload?: Account }>();
 
   constructor(private http: HttpClient, private authService: AuthService) {
   }
@@ -32,6 +33,12 @@ export class AccountService {
   addAccount(payload: Account): Observable<{ accountId: string }> {
     return this.http.post<{accountId: string}>(`${environment.URL}:${environment.account_port}/account/add`,
      { ...payload, userId: this.authService.userId }
+    )
+  }
+
+  deleteAccount(accountNo: number) {
+    return this.http.delete<Account>(
+      `${environment.URL}:${environment.account_port}/account/delete/${accountNo}`
     )
   }
 }

@@ -56,8 +56,8 @@ const addNewUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const userId = req?.params?.userId;
   const query = { userId };
-  const encryptedPassword = bcrypt.hashSync(req.body.password, 10);
-  const updatedUser = { ...req.body, password: encryptedPassword };
+  const encryptedPassword = req.body?.password && bcrypt.hashSync(req.body.password, 10);
+  const updatedUser = { ...req.body, ...(encryptedPassword && { password: encryptedPassword }) };
   try {
     const user = await User.findOne(query);
     if (!user) {
@@ -67,10 +67,10 @@ const updateUser = async (req, res) => {
   } catch (err) {
     const errorMessage = 'Failed to update user data';
     if (err instanceof RecordNotFoundError) {
-      return res.status(200).send({ errorMessage, err });
+      return res.status(400).send({ errorMessage, err });
     }
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage, error });
+    return res.status(400).send({ errorMessage, error });
   }
   return res.status(200).send({ userId });
 }
@@ -83,7 +83,7 @@ const deleteUser = async (req, res) => {
     await User.findOneAndDelete(query);
   } catch (err) {
     const error = new DatabaseError(err.message);
-    return res.status(200).send({ errorMessage: 'Failed to delete user data', error });
+    return res.status(400).send({ errorMessage: 'Failed to delete user data', error });
   }
   return res.status(200).send({ userId });
 }

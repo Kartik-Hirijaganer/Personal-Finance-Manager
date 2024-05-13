@@ -17,9 +17,10 @@ const appRoutes: Routes = [
   { path: 'incomes', component: IncomeComponent, canActivate: [AuthGuard] },
   { path: 'expenses', component: ExpenseComponent, canActivate: [AuthGuard] },
   { path: 'liabilities', component: LiabilityComponent, canActivate: [AuthGuard] },
-  { path: 'user', component: UserComponent, canActivate: [AuthGuard] },
+  { path: 'user', component: UserComponent },
   { path: 'accounts', component: AccountComponent, canActivate: [AuthGuard] },
-  { path: '', redirectTo: 'login', pathMatch: 'full' }
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '**', redirectTo: 'login' }
 ]
 
 @NgModule({

@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment.dev';
 export class UserService {
   public profile_img: string = 'https://www.w3schools.com/howto/img_avatar.png';
   public user_fname: string = '';
-  public userId: string = '';
+  public userId: string = localStorage.getItem('user_id') || '';
   public userEvent: Subject<{ user_fname: string, profile_img: string, userId: string }> = new Subject<{ user_fname: string, profile_img: string, userId: string }>();
 
   constructor(
@@ -21,7 +21,7 @@ export class UserService {
     delete payload.repass;
     this.profile_img = payload.profile_img;
     this.user_fname = payload.fname;
-    return this.http.put<{ userId: string, token: string }>(`${environment.URL}:${environment.user_port}/user/update/${payload.userId}`, payload);
+    return this.http.put<{ userId: string, token: string }>(`${environment.URL}:${environment.user_port}/user/update/${this.userId}`, payload);
   }
 
   getUser(userId: string): Observable<any> {

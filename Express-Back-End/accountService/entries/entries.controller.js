@@ -22,7 +22,7 @@ const getEntries = async (req, res) => {
 
 const addEntry = async (req, res) => {
   const accountId = req?.query?.accountId || '';
-  const category = req?.query?.category || '';
+  let category = req?.query?.category || '';
   if (category === 'liability') {
     category = 'liabilitie';
   }

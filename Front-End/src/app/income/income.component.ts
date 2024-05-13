@@ -163,6 +163,10 @@ export class IncomeComponent implements OnInit, OnDestroy {
     this.gridApi = params.api;
   }
 
+  onCancel() {
+    this.hideIncomeForm = this.util.toggle(this.hideIncomeForm);
+  }
+
   onSubmit(): void {
     const payload = this.incomeForm.getRawValue();
     payload.date = payload.date.toLocaleDateString();
