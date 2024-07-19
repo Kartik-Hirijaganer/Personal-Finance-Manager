@@ -1,0 +1,21 @@
+{
+  "name": "user-lambda",
+  "version": "2.0.0",
+  "description": "User Lambda Service",
+  "author": "Kartik Hirijaganer",
+  "main": "user.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "handlebars": "^4.7.8",
+    "mongodb": "^6.5.0",
+    "mongoose": "^8.3.2",
+    "puppeteer": "^22.7.1",
+    "winston": "^3.13.1"
+  }
+}

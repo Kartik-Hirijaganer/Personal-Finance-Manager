@@ -1,0 +1,18 @@
+{
+  "name": "entries-lambda",
+  "version": "2.0.0",
+  "description": "Entries Lambda Service",
+  "author": "Kartik Hirijaganer",
+  "main": "entries.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "mongodb": "^6.5.0",
+    "mongoose": "^8.3.2",
+    "winston": "^3.13.1"
+  }
+}

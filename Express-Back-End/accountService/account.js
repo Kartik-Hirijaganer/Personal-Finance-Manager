@@ -1,47 +1,141 @@
-const express = require('express');
-const app = express();
-require('dotenv').config();
+'use strict';
 
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
-const cors = require('cors');
+const { v4 } = require('uuid');
 
-const util = require('../shared/util');
-const { getAccount, getAccounts, addAccount, deleteAccount, deleteAccounts } = require('./account.service');
-const { authorize } = require('../auth/auth.service');
+const AWS = require('aws-sdk');
+AWS.config.region = 'us-east-1';
+const lambda = new AWS.Lambda();
 
-const income = require('./entries/routes/income.routes');
-const expense = require('./entries/routes/expense.routes');
-const liability = require('./entries/routes/liability.routes');
+const { connectDB, logger, generateResponse } = require('./accountService');
+const Account = require('./models/account.model');
+const { RecordNotFoundError, DatabaseError } = require('./errors');
 
-const corsOptions = {
-  origin: process.env.FRONT_END_URL,
-  credentials: true, //access-control-allow-credentials:true
-  optionSuccessStatus: 200
+connectDB();
+
+exports.handler = async (event) => {
+  logger.log({ level: 'info', message: 'Input event', event: JSON.stringify(event) });
+  let userId = null;
+  let accountId = null;
+  let accountNo = null;
+  const { method, type } = event.queryStringParameters;
+  const { body, headers } = event;
+  if (event.pathParameters) {
+    (userId, accountId, accountNo) = event.pathParameters;
+  }
+  const payload = { userId, accountId, type, body, headers };
+
+  switch (method) {
+    case 'get_accounts':
+      return getAccounts(payload);
+    case 'get_account':
+      return getAccount(payload);
+    case 'add_account':
+      return addAccount(payload);
+    case 'delete_account':
+      return deleteAccount(payload);
+    case 'delete_accounts':
+      return deleteAccounts(payload);
+    default:
+      return generateResponse(200, 'Enter valid method', { method });
+  }
 }
-util.connectDB();
 
-/** Middlewares */
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(morgan('tiny'));
-app.use(cors(corsOptions));
-app.use(authorize);
+const getAccounts = async (payload) => {
+  const userId = payload?.userId;
+  let accounts = [];
+  try {
+    accounts = await Account.find({ userId });
+    if (accounts.length < 1) {
+      throw new RecordNotFoundError(`No record with user id ${userId} was found`);
+    }
+  } catch (error) {
+    if (error instanceof RecordNotFoundError) {
+      logger.log({ level: 'error', message: 'RecordNotFoundError', error: JSON.stringify(error) });
+      return generateResponse(400, 'RecordNotFoundError', { accounts });
+    }
+    const dbError = new DatabaseError(error.message);
+    logger.log({ level: 'error', message: `DatabaseError: ${error.message}`, error: JSON.stringify(dbError) });
+    return generateResponse(400, 'Failed to get user accounts', { errorMessage: 'Failed to get user accounts', error: dbError });
+  }
+  return generateResponse(200, 'Successfully fetched accounts', { accounts });
+}
 
-/** routes */
-app.use('/income', income);
-app.use('/expense', expense);
-app.use('/liability', liability);
+const getAccount = async (payload) => {
+  const accountId = payload?.accountId;
+  let account = {};
+  try {
+    account = await Account.findOne({ accountId });
+    if (!account) {
+      throw new RecordNotFoundError(`No record for account ${accountId} was found`);
+    }
+  } catch (error) {
+    if (error instanceof RecordNotFoundError) {
+      logger.log({ level: 'error', message: 'RecordNotFoundError', error: JSON.stringify(error) });
+      return generateResponse(400, 'RecordNotFoundError', { error });
+    }
+    const dbError = new DatabaseError(error.message);
+    logger.log({ level: 'error', message: `DatabaseError: ${error.message}`, error: JSON.stringify(dbError) });
+    return generateResponse(400, 'Failed to get user account', { errorMessage: 'Failed to get user account', error: dbError });
+  }
+  return generateResponse(200, 'Successfully fetched user account', { account });
+}
 
-/** APIs */
-app.get('/accounts', getAccounts);
-app.get('/account/:accountId', getAccount);
+const addAccount = async (payload) => {
+  const payload = { ...payload.body, accountId: v4(), incomes: [], expenses: [], liabilities: [] };
+  const account = new Account(payload);
+  const params = {
+    FunctionName: process.env.USER_LAMBDA_ARN,
+    InvocationType: 'RequestResponse',
+    LogType: 'Tail'
+  }
+  try {
+    await account.save();
+    params.Payload = `{ "userId": ${payload.userId}, "method": "get_user" }`;
+    const user = await lambda.invoke(params).promise();
+    const accounts = [...(user.accounts || []), payload.accountId];
+    params.Payload = `{ "userId": ${payload.userId}, "method": "update_user", "accounts": ${accounts} }`;
+    await lambda.invoke(params).promise();
+  } catch (error) {
+    if (error instanceof DatabaseError) {
+      logger.log({ level: 'error', message: `DatabaseError: ${error.message}`, error: JSON.stringify(error) });
+      return generateResponse(400, 'Failed to add account', { errorMessage: 'Failed to add account', error });
+    }
+    const dbError = new DatabaseError(error.message);
+    logger.log({ level: 'error', message: `DatabaseError: ${error.message}`, error: JSON.stringify(dbError) });
+    return generateResponse(400, 'Failed to add account', { errorMessage: 'Failed to add account', error: dbError });
+  }
+  return generateResponse(200, 'Successfully added account', { accountId: payload.accountId });
+}
 
-app.post('/account/add', addAccount);
+const deleteAccount = async (payload) => {
+  const accountNo = payload?.accountNo;
+  try {
+    await Account.findOneAndDelete({ accountNo });
+  } catch (error) {
+    const dbError = new DatabaseError(error.message);
+    logger.log({ level: 'error', message: `DatabaseError: ${error.message}`, error: JSON.stringify(dbError) });
+    return generateResponse(400, 'Failed to delete account', { errorMessage: 'Failed to delete account', error: dbError });
+  }
+  return generateResponse(200, 'Successfully deleted account', { accountNo });
+}
 
-app.delete('/account/delete/:accountNo', deleteAccount);
-app.delete('/accounts/delete', deleteAccounts);
+const deleteAccounts = async (payload) => {
+  const userId = payload?.userId;
+  let deleteCount = 0;
+  try {
+    deleteCount = await Account.deleteMany({ userId });
+  } catch (error) {
+    const dbError = new DatabaseError(error.message);
+    logger.log({ level: 'error', message: `DatabaseError: ${error.message}`, error: JSON.stringify(dbError) });
+    return generateResponse(400, 'Failed to delete accounts associated with user.', { errorMessage: 'Failed to delete accounts associated with user.', error: dbError });
+  }
+  return generateResponse(200, 'Successfully deleted accounts', { deleteCount });
+}
 
-app.listen(process.env.ACCOUNT_PORT, () => {
-  console.log('Account server running on port', process.env.ACCOUNT_PORT);
-})
+module.exports = {
+  getAccount,
+  getAccounts,
+  addAccount,
+  deleteAccount,
+  deleteAccounts
+}

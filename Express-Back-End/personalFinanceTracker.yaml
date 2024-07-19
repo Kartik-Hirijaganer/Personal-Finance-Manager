@@ -1,0 +1,475 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Personal Finance Tracker template version 1.0.0
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "API Configuration"
+        Parameters:
+          - StageName
+          - LambdaExecutionRole
+Parameters:
+  StageName:
+    Type: String
+    Default: "V0"
+    Description: Name of the API stage
+  LambdaExecutionRole:
+    Type: String
+    Description: ARN of the Lambda execution role
+
+Resources:
+  UserLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: user.handler
+      FunctionName: userService
+      Description: User service lambda function
+      MemorySize: 128
+      PackageType: Zip
+      Role: !Ref LambdaExecutionRole
+      Code:
+        S3Bucket: all-lambda-functions-v1
+        S3Key: userService.zip
+      Runtime: nodejs16.x
+      Timeout: 25
+      TracingConfig:
+        Mode: Active
+
+  UserLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UserLambdaFunction
+      Action: "lambda:InvokeFunction"
+      Principal: apigateway.amazonaws.com
+
+  # UserLambdaUrl:
+  #   Type: AWS::Lambda::Url
+  #   Properties:
+  #     AuthType: 'AWS_IAM'
+  #     InvokeMode: 'BUFFERED'
+  #     Qualifier: 'user-lambda-url'
+  #     TargetFunctionArn: !GetAtt UserLambdaFunction.Arn
+
+  AccountLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: account.handler
+      FunctionName: accountService
+      Description: Account service lambda function
+      MemorySize: 128
+      PackageType: Zip
+      Role: !Ref LambdaExecutionRole
+      Environment:
+        Variables: 
+          USER_LAMBDA_ARN: !GetAtt UserLambdaFunction.Arn
+      Code:
+        S3Bucket: all-lambda-functions-v1
+        S3Key: accountService.zip
+      Runtime: nodejs16.x
+      Timeout: 25
+      TracingConfig:
+        Mode: Active
+
+  AccountLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref AccountLambdaFunction
+      Action: "lambda:InvokeFunction"
+      Principal: apigateway.amazonaws.com
+
+  EntriesLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: entriesService.handler
+      FunctionName: entriesService
+      Description: Entries service lambda function
+      MemorySize: 128
+      PackageType: Zip
+      Role: !Ref LambdaExecutionRole
+      Code:
+        S3Bucket: all-lambda-functions-v1
+        S3Key: entriesService.zip
+      Runtime: nodejs16.x
+      Timeout: 25
+      TracingConfig:
+        Mode: Active
+
+  EntriesLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref EntriesLambdaFunction
+      Action: "lambda:InvokeFunction"
+      Principal: apigateway.amazonaws.com
+
+  ApiGatewayRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: PersonalFinanceTrackerAPI
+
+  UserResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: users
+      RestApiId: !Ref ApiGatewayRestApi
+
+  GetUserByIdResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref UserResource
+      PathPart: "{userId}"
+      RestApiId: !Ref ApiGatewayRestApi
+
+  AddUserResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref UserResource
+      PathPart: add
+      RestApiId: !Ref ApiGatewayRestApi
+
+  DeleteUserResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref UserResource
+      PathPart: delete
+      RestApiId: !Ref ApiGatewayRestApi
+
+  DeleteUserByIdResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref DeleteUserResource
+      PathPart: "{userId}"
+      RestApiId: !Ref ApiGatewayRestApi
+
+  UpdateUserResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref UserResource
+      PathPart: update
+      RestApiId: !Ref ApiGatewayRestApi
+
+  UpdateUserByIdResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref UpdateUserResource
+      PathPart: "{userId}"
+      RestApiId: !Ref ApiGatewayRestApi
+
+  UserPDFResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref UserResource
+      PathPart: generate-pdf
+      RestApiId: !Ref ApiGatewayRestApi
+
+  AccountResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: accounts
+      RestApiId: !Ref ApiGatewayRestApi
+
+  AccountByIdResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref AccountResource
+      PathPart: "{accountId}"
+      RestApiId: !Ref ApiGatewayRestApi
+
+  AccountAddResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref AccountResource
+      PathPart: add
+      RestApiId: !Ref ApiGatewayRestApi
+
+  AccountDeleteResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref AccountResource
+      PathPart: delete
+      RestApiId: !Ref ApiGatewayRestApi
+
+  AccountDeleteByNoResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref AccountDeleteResource
+      PathPart: "{accountNo}"
+      RestApiId: !Ref ApiGatewayRestApi
+
+  EntriesResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: entries
+      RestApiId: !Ref ApiGatewayRestApi
+
+  EntriesAddResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref EntriesResource
+      PathPart: add
+      RestApiId: !Ref ApiGatewayRestApi
+
+  EntriesUpdateResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref EntriesResource
+      PathPart: update
+      RestApiId: !Ref ApiGatewayRestApi
+
+  EntriesUpdateByIdResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref EntriesUpdateResource
+      PathPart: "{id}"
+      RestApiId: !Ref ApiGatewayRestApi
+
+  EntriesDeleteResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref EntriesResource
+      PathPart: delete
+      RestApiId: !Ref ApiGatewayRestApi
+
+  EntriesDeleteByIdResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref EntriesDeleteResource
+      PathPart: "{id}"
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Methods
+
+  GetUserByIdMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      ResourceId: !Ref GetUserByIdResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt UserLambdaFunction.Arn
+
+  GetUsersMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      ResourceId: !Ref UserResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt UserLambdaFunction.Arn
+
+  AddUserMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      ResourceId: !Ref UserResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt UserLambdaFunction.Arn
+
+  UpdateUserMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: PUT
+      ResourceId: !Ref UpdateUserResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt UserLambdaFunction.Arn
+
+  DeleteUserMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: DELETE
+      ResourceId: !Ref DeleteUserResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt UserLambdaFunction.Arn
+
+  GenerateUserPDFMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      ResourceId: !Ref UserPDFResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt UserLambdaFunction.Arn
+
+  GetAccountsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      ResourceId: !Ref AccountResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt AccountLambdaFunction.Arn
+
+  AccountByIdMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      ResourceId: !Ref AccountByIdResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt AccountLambdaFunction.Arn
+
+  AddAccountMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      ResourceId: !Ref AccountAddResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt AccountLambdaFunction.Arn
+
+  AccountDeleteMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: DELETE
+      ResourceId: !Ref AccountDeleteResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt AccountLambdaFunction.Arn
+
+  AccountDeleteByNoMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: DELETE
+      ResourceId: !Ref AccountDeleteByNoResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt AccountLambdaFunction.Arn
+
+  GetEntriesMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      ResourceId: !Ref EntriesResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt EntriesLambdaFunction.Arn
+
+  AddEntriesMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      ResourceId: !Ref EntriesAddResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt EntriesLambdaFunction.Arn
+
+  UpdateEntriesByIdMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: PUT
+      ResourceId: !Ref EntriesUpdateByIdResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt EntriesLambdaFunction.Arn
+
+  DeleteEntriesByIdMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: DELETE
+      ResourceId: !Ref EntriesDeleteByIdResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt EntriesLambdaFunction.Arn
+
+  ApiGatewayDeployment:
+    Type: "AWS::ApiGateway::Deployment"
+    DependsOn:
+      - "AccountByIdMethod"
+      - "AddAccountMethod"
+      - "AccountDeleteMethod"
+      - "AccountDeleteByNoMethod"
+      - "GetEntriesMethod"
+      - "AddEntriesMethod"
+      - "UpdateEntriesByIdMethod"
+      - "DeleteEntriesByIdMethod"
+      - "GetAccountsMethod"
+      - "GenerateUserPDFMethod"
+      - "DeleteUserMethod"
+      - "UpdateUserMethod"
+      - "AddUserMethod"
+      - "GetUsersMethod"
+      - "GetUserByIdMethod"
+
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      StageName: !Ref StageName

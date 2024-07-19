@@ -1,8 +1,9 @@
 'use strict';
 
-const { v4: uuidv4 } = require('uuid');
 const Handlebars = require('handlebars');
 const Puppeteer = require('puppeteer');
+const winston = require('winston');
+const { combine, timestamp, json } = winston.format;
 
 const { GeneratePdfError, HandlebarCompileError, BrowserLaunchError } = require('./errors');
 
@@ -18,10 +19,6 @@ const connectDB = async () => {
     console.log(error);
   }
   console.log('connected to DB');
-}
-
-const generateID = (input) => {
-  return (input + uuidv4().substring(0, 4)).toUpperCase();
 }
 
 const hbRegister = () => {
@@ -101,19 +98,34 @@ const generatePdf = async (req, res) => {
   } catch (error) {
     const errorMessage = 'Failed to generate pdf';
     if (error instanceof HandlebarCompileError) {
-      return res.status(200).send({ errorMessage, error });
+      return res(200, errorMessage, { errorMessage, error });
     }
     if (error instanceof BrowserLaunchError) {
-      return res.status(200).send({ errorMessage, error });
+      return res(200, errorMessage, { errorMessage, error });
     }
     const err = new GeneratePdfError(error.message);
-    return res.status(200).send({ errorMessage, err });
+    return res(200, errorMessage, { errorMessage, err });
   }
-  return res.status(200).contentType('application/pdf').send(pdf);
+  return res(200, 'Successfully generated pdf', pdf);
+}
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: combine(errors({ stack: true }), timestamp(), json()),
+  transports: [new winston.transports.Console()],
+});
+
+const generateResponse = (statusCode, message, responseBody) => {
+  logger.log({ level: 'info', message, response: JSON.stringify(responseBody) });
+  return {
+    statusCode,
+    body: { message, response: JSON.stringify(responseBody) }
+  }
 }
 
 module.exports = {
   connectDB,
-  generateID,
-  generatePdf
+  generatePdf,
+  logger,
+  generateResponse
 }
