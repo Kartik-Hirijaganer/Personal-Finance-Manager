@@ -22,7 +22,7 @@ exports.handler = async (event) => {
   if (event.pathParameters) {
     (userId, accountId, accountNo) = event.pathParameters;
   }
-  const payload = { userId, accountId, body, headers };
+  const payload = { userId, accountId, body: JSON.parse(body), headers };
 
   switch (method) {
     case 'get_accounts':
@@ -90,10 +90,10 @@ const addAccount = async (payload) => {
   }
   try {
     await account.save();
-    params.accountData = `{ "userId": ${accountData.userId}, "method": "get_user" }`;
+    params.Payload = `{ "userId": ${accountData.userId}, "method": "get_user" }`;
     const user = await lambda.invoke(params).promise();
     const accounts = [...(user.accounts || []), accountData.accountId];
-    params.accountData = `{ "userId": ${accountData.userId}, "method": "update_user", "accounts": ${accounts} }`;
+    params.Payload = `{ "userId": ${accountData.userId}, "method": "update_user", "accounts": ${accounts} }`;
     await lambda.invoke(params).promise();
   } catch (error) {
     if (error instanceof DatabaseError) {

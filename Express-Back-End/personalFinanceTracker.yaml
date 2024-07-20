@@ -42,14 +42,6 @@ Resources:
       Action: "lambda:InvokeFunction"
       Principal: apigateway.amazonaws.com
 
-  # UserLambdaUrl:
-  #   Type: AWS::Lambda::Url
-  #   Properties:
-  #     AuthType: 'AWS_IAM'
-  #     InvokeMode: 'BUFFERED'
-  #     Qualifier: 'user-lambda-url'
-  #     TargetFunctionArn: !GetAtt UserLambdaFunction.Arn
-
   AccountLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -101,10 +93,39 @@ Resources:
       Action: "lambda:InvokeFunction"
       Principal: apigateway.amazonaws.com
 
+  AuthorizerLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: auth.handler
+      FunctionName: AuthorizerLambdaFunction
+      Description: Authorizer service lambda function
+      MemorySize: 128
+      PackageType: Zip
+      Role: !Ref LambdaExecutionRole
+      Code:
+        S3Bucket: all-lambda-functions-v1
+        S3Key: authService.zip
+      Runtime: nodejs16.x
+      Timeout: 25
+      TracingConfig:
+        Mode: Active
+
   ApiGatewayRestApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
       Name: PersonalFinanceTrackerAPI
+
+  ApiGatewayAuthorizer:
+    Type: 'AWS::ApiGateway::Authorizer'
+    Properties:
+      Name: 'AuthorizerLambdaFunction'
+      Type: 'TOKEN'
+      AuthorizerUri: 
+        !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AuthorizerLambdaFunction}/invocations
+          - LambdaFunctionArn: !GetAtt AuthorizerLambdaFunction.Arn
+      IdentitySource: 'method.request.header.Authorization'
+      RestApiId: !Ref ApiGatewayRestApi
 
   UserResource:
     Type: AWS::ApiGateway::Resource
@@ -244,7 +265,8 @@ Resources:
   GetUserByIdMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: GET
       ResourceId: !Ref GetUserByIdResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -258,7 +280,8 @@ Resources:
   GetUsersMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: GET
       ResourceId: !Ref UserResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -272,7 +295,8 @@ Resources:
   AddUserMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: POST
       ResourceId: !Ref UserResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -286,7 +310,8 @@ Resources:
   UpdateUserMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: PUT
       ResourceId: !Ref UpdateUserResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -300,7 +325,8 @@ Resources:
   DeleteUserMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: DELETE
       ResourceId: !Ref DeleteUserResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -314,7 +340,8 @@ Resources:
   GenerateUserPDFMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: POST
       ResourceId: !Ref UserPDFResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -328,7 +355,8 @@ Resources:
   GetAccountsMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: GET
       ResourceId: !Ref AccountResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -342,7 +370,8 @@ Resources:
   AccountByIdMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: GET
       ResourceId: !Ref AccountByIdResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -356,7 +385,8 @@ Resources:
   AddAccountMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: POST
       ResourceId: !Ref AccountAddResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -370,7 +400,8 @@ Resources:
   AccountDeleteMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: DELETE
       ResourceId: !Ref AccountDeleteResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -384,7 +415,8 @@ Resources:
   AccountDeleteByNoMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: DELETE
       ResourceId: !Ref AccountDeleteByNoResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -398,7 +430,8 @@ Resources:
   GetEntriesMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: GET
       ResourceId: !Ref EntriesResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -412,7 +445,8 @@ Resources:
   AddEntriesMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: POST
       ResourceId: !Ref EntriesAddResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -426,7 +460,8 @@ Resources:
   UpdateEntriesByIdMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: PUT
       ResourceId: !Ref EntriesUpdateByIdResource
       RestApiId: !Ref ApiGatewayRestApi
@@ -440,7 +475,8 @@ Resources:
   DeleteEntriesByIdMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      AuthorizationType: 'CUSTOM'
+      AuthorizerId: !Ref ApiGatewayAuthorizer
       HttpMethod: DELETE
       ResourceId: !Ref EntriesDeleteByIdResource
       RestApiId: !Ref ApiGatewayRestApi

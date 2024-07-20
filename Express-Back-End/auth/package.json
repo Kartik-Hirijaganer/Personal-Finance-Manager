@@ -1,0 +1,18 @@
+{
+  "name": "auth-lambda",
+  "version": "2.0.0",
+  "description": "Custom Authorizer",
+  "author": "Kartik Hirijaganer",
+  "main": "auth.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1659.0",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "winston": "^3.13.1"
+  }
+}

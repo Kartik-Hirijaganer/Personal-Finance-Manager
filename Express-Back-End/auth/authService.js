@@ -1,25 +1,6 @@
 'use strict';
-const { v4 } = require('uuid');
 const winston = require('winston');
 const { combine, timestamp, json } = winston.format;
-
-const mongoose = require('mongoose');
-require('dotenv').config()
-
-const options = Object.freeze()
-
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.CONNECTION_URL, options);
-  } catch (error) {
-    console.log(error);
-  }
-  console.log('connected to DB');
-}
-
-const generateID = (input) => {
-  return (input.substring(0, 3) + v4().substring(0, 2)).toUpperCase();
-}
 
 const logger = winston.createLogger({
   level: 'info',
@@ -36,8 +17,6 @@ const generateResponse = (statusCode, message, responseBody) => {
 }
 
 module.exports = {
-  connectDB,
-  generateID,
   logger,
   generateResponse
 }

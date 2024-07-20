@@ -6,19 +6,21 @@ const { generatePdf, connectDB, logger, generateResponse } = require('./userServ
 
 const User = require('./models/user.model');
 const Account = require('./models/account.model');
-const { DatabaseError, RecordNotFoundError, ValidationError } = require('../shared/errors');
+const { DatabaseError, RecordNotFoundError, ValidationError } = require('./errors');
 
 connectDB();
 
 exports.handler = async (event) => {
   logger.log({level: 'info', message: 'Input event', event: JSON.stringify(event)});
   let userId = null;
-  const { method, type } = event.queryStringParameters;
-  const { body, headers } = event;
+  const method = event?.method || event?.queryStringParameters?.method;
+  const type = event?.type || event?.queryStringParameters?.type;
+
+  const { body, headers } = JSON.parse(event);
   if (event.pathParameters) {
     userId = event.pathParameters?.userId;
   } else {
-    userId = body?.userId;
+    userId = body?.userId || event.name;
   }
   event.pathParameters && (userId = event.pathParameters?.userId);
   const payload = { userId, type, body, headers };

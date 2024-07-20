@@ -9,7 +9,7 @@ connectDB();
 exports.handler = async(event) => {
   logger.log({ level: 'info', message: 'Input event', event: JSON.stringify(event) });
   const { accountId , category, method } = event.queryStringParameters;
-  const payload = { accountId, category, body: event.body, headers: event.headers };
+  const payload = { accountId, category, body: JSON.parse(event.body), headers: event.headers };
   if (event.pathParameters) {
     payload.id = event.pathParameters?.id;
   }
