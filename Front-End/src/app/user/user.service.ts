@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 
 import { environment } from '../../environments/environment.dev';
@@ -21,15 +21,18 @@ export class UserService {
     delete payload.repass;
     this.profile_img = payload.profile_img;
     this.user_fname = payload.fname;
-    return this.http.put<{ userId: string, token: string }>(`${environment.URL}:${environment.user_port}/user/update/${this.userId}`, payload);
+    const params = new HttpParams({ fromObject: { method: 'update_user' }});
+    return this.http.put<{ userId: string, token: string }>(`${environment.base_url}/${environment.version}/users/update/${this.userId}`, payload, { params });
   }
 
   getUser(userId: string): Observable<any> {
-    return this.http.get(`${environment.URL}:${environment.user_port}/user/${userId}`);
+    const params = new HttpParams({ fromObject: { method: 'get_user' } });
+    return this.http.get(`${environment.base_url}/${environment.version}/users/${userId}`, { params });
   }
 
   deleteUser(userId: string): Observable<any> {
-    return this.http.delete(`${environment.URL}:${environment.user_port}/user/delete/${userId}`);
+    const params = new HttpParams({ fromObject: { method: 'delete_user' } });
+    return this.http.delete(`${environment.base_url}/${environment.version}/users/delete/${userId}`, { params });
   }
 
   validatePassword(pass: string, repass: string): boolean {

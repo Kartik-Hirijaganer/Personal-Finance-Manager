@@ -17,12 +17,12 @@ exports.handler = async (event) => {
   let userId = null;
   let accountId = null;
   let accountNo = null;
-  const { method, type } = event.queryStringParameters;
+  const method = event?.queryStringParameters?.method;
   const { body, headers } = event;
   if (event.pathParameters) {
     (userId, accountId, accountNo) = event.pathParameters;
   }
-  const payload = { userId, accountId, type, body, headers };
+  const payload = { userId, accountId, body, headers };
 
   switch (method) {
     case 'get_accounts':
@@ -81,8 +81,8 @@ const getAccount = async (payload) => {
 }
 
 const addAccount = async (payload) => {
-  const payload = { ...payload.body, accountId: v4(), incomes: [], expenses: [], liabilities: [] };
-  const account = new Account(payload);
+  const accountData = { ...payload.body, accountId: v4(), incomes: [], expenses: [], liabilities: [] };
+  const account = new Account(accountData);
   const params = {
     FunctionName: process.env.USER_LAMBDA_ARN,
     InvocationType: 'RequestResponse',
@@ -90,10 +90,10 @@ const addAccount = async (payload) => {
   }
   try {
     await account.save();
-    params.Payload = `{ "userId": ${payload.userId}, "method": "get_user" }`;
+    params.accountData = `{ "userId": ${accountData.userId}, "method": "get_user" }`;
     const user = await lambda.invoke(params).promise();
-    const accounts = [...(user.accounts || []), payload.accountId];
-    params.Payload = `{ "userId": ${payload.userId}, "method": "update_user", "accounts": ${accounts} }`;
+    const accounts = [...(user.accounts || []), accountData.accountId];
+    params.accountData = `{ "userId": ${accountData.userId}, "method": "update_user", "accounts": ${accounts} }`;
     await lambda.invoke(params).promise();
   } catch (error) {
     if (error instanceof DatabaseError) {
@@ -104,7 +104,7 @@ const addAccount = async (payload) => {
     logger.log({ level: 'error', message: `DatabaseError: ${error.message}`, error: JSON.stringify(dbError) });
     return generateResponse(400, 'Failed to add account', { errorMessage: 'Failed to add account', error: dbError });
   }
-  return generateResponse(200, 'Successfully added account', { accountId: payload.accountId });
+  return generateResponse(200, 'Successfully added account', { accountId: accountData.accountId });
 }
 
 const deleteAccount = async (payload) => {

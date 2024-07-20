@@ -21,7 +21,7 @@ export class AuthService {
   ) { }
 
   login(payload: { email: string, password: string }): void {
-    const params = new HttpParams({ fromObject: { type: 'email' } });
+    const params = new HttpParams({ fromObject: { method: 'get_user', type: 'email' } });
     this.http.post<{ token: string, userId: string, accountId: string, user: string, profile_img: string }>(
       `${environment.URL}:${environment.auth_port}/login`,
       payload,

@@ -19,27 +19,27 @@ export class LiabilityService {
 
   addLiability(liability: Liability): Observable<{liabilityId: string}> {
     return this.http.post<{liabilityId: string}>(
-      `${environment.URL}:${environment.account_port}/liability/add`, 
+      `${environment.base_url}/${environment.version}/entries/add`, 
       { ...liability, month: this.util.getMonthPayload(liability.due_date) }, 
       {  
-        params: { 'category': 'liability', 'accountId': localStorage.getItem('account_id') || '' }
+        params: { method: 'add_entry', 'category': 'liability', 'accountId': localStorage.getItem('account_id') || '' }
       });
   }
 
   deleteLiability(id: string): Observable<{liabilityId: string}> {
     return this.http.delete<{liabilityId: string}>(
-      `${environment.URL}:${environment.account_port}/liability/delete/${id}`, 
+      `${environment.base_url}/${environment.version}/entries/delete/${id}`, 
       { 
-        params: { 'category': 'liability', 'accountId': localStorage.getItem('account_id') || '' }
+        params: { method: 'delete_entry', 'category': 'liability', 'accountId': localStorage.getItem('account_id') || '' }
       });
   }
 
   updateLiability(liability: Liability): Observable<{ liabilityId: string }> {
     return this.http.put<{ liabilityId: string }>(
-      `${environment.URL}:${environment.account_port}/liability/update/${liability.id}`, 
+      `${environment.base_url}/${environment.version}/entries/update/${liability.id}`, 
       { ...liability, month: this.util.getMonthPayload(liability.due_date) }, 
       { 
-        params: {'category': 'liability', 'accountId': localStorage.getItem('account_id') || ''}
+        params: { method: 'update_entry', 'category': 'liability', 'accountId': localStorage.getItem('account_id') || ''}
       });
   }
 }

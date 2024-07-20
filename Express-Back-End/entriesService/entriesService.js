@@ -17,6 +17,10 @@ const connectDB = async () => {
   console.log('connected to DB');
 }
 
+const generateID = (input) => {
+  return (input.substring(0, 3) + uuidv4().substring(0, 2)).toUpperCase();
+}
+
 const logger = winston.createLogger({
   level: 'info',
   format: combine(errors({ stack: true }), timestamp(), json()),
@@ -33,6 +37,7 @@ const generateResponse = (statusCode, message, responseBody) => {
 
 module.exports = {
   connectDB,
+  generateID,
   logger,
   generateResponse
 }

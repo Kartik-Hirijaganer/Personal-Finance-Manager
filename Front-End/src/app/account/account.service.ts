@@ -17,28 +17,34 @@ export class AccountService {
   }
 
   getAccountDetails(accountId: string): Observable<Account> {
+    const params = new HttpParams({ fromObject: { method: 'get_account' }});
     return this.http.get<Account>(
-      `${environment.URL}:${environment.account_port}/account/${accountId}`
+      `${environment.base_url}/${environment.version}/accounts/${accountId}`,
+      { params }
     )
   }
 
   getAccounts(): Observable<Account[]> {
-    const params = new HttpParams({ fromObject: { userId: this.authService.userId, userType: 'new' } });
+    const params = new HttpParams({ fromObject: { method: 'get_accounts' } });
     return this.http.get<Account[]>(
-      `${environment.URL}:${environment.account_port}/accounts`,
+      `${environment.base_url}/${environment.version}/accounts/${this.authService.userId}`,
       { params }
     )
   }
 
   addAccount(payload: Account): Observable<{ accountId: string }> {
-    return this.http.post<{accountId: string}>(`${environment.URL}:${environment.account_port}/account/add`,
-     { ...payload, userId: this.authService.userId }
+    const params = new HttpParams({ fromObject: { method: 'add_account' }});
+    return this.http.post<{ accountId: string }>(`${environment.base_url}/${environment.version}/accounts/add`,
+     { ...payload, userId: this.authService.userId },
+     { params }
     )
   }
 
   deleteAccount(accountNo: number) {
+    const params = new HttpParams({ fromObject: { method: 'delete_account'}})
     return this.http.delete<Account>(
-      `${environment.URL}:${environment.account_port}/account/delete/${accountNo}`
+      `${environment.base_url}/${environment.version}/accounts/delete/${accountNo}`,
+      { params }
     )
   }
 }

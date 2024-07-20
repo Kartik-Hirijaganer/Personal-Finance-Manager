@@ -19,28 +19,28 @@ export class ExpenseService {
 
   addExpense(expense: Expense): Observable<{ expenseId: string }> {
     return this.http.post<{ expenseId: string }>(
-      `${environment.URL}:${environment.account_port}/expense/add`, 
+      `${environment.base_url}/${environment.version}/entries/add`, 
       { ...expense, month: this.util.getMonthPayload(expense.date) },
       {
-        params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
+        params: { method: 'add_entry', 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
       }
     );
   }
 
   deleteExpense(id: string): Observable<{ expenseId: string }> {
     return this.http.delete<{ expenseId: string }>(
-      `${environment.URL}:${environment.account_port}/expense/delete/${id}`,
+      `${environment.base_url}/${environment.version}/entries/delete/${id}`,
       {
-        params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
+        params: { method: 'delete_entry', 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
       });
   }
 
   updateExpense(expense: Expense): Observable<{ expenseId: string }> {
     return this.http.put<{ expenseId: string }>(
-      `${environment.URL}:${environment.account_port}/expense/update/${expense.id}`, 
+      `${environment.base_url}/${environment.version}/entries/update/${expense.id}`, 
       { ...expense, month: this.util.getMonthPayload(expense.date) },
       {
-        params: { 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
+        params: { method: 'update_entry', 'category': 'expense', 'accountId': localStorage.getItem('account_id') || '' }
       });
   }
 }

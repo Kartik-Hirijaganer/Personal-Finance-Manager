@@ -18,27 +18,27 @@ export class IncomeService {
 
   addIncome(income: Income): Observable<{incomeId: string}> {
     return this.http.post<{incomeId: string}>(
-      `${environment.URL}:${environment.account_port}/income/add`, 
+      `${environment.base_url}/${environment.version}/entries/add`, 
       { ...income, month: this.util.getMonthPayload(income.date) }, 
       {
-        params: { 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' }
+        params: { method: 'add_entry', 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' }
       });
   }
 
   deleteIncome(id: string): Observable<{incomeId: string}> {
     return this.http.delete<{ incomeId: string }>(
-      `${environment.URL}:${environment.account_port}/income/delete/${id}`, 
+      `${environment.base_url}/${environment.version}/entries/delete/${id}`, 
       {
-        params: { 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' } 
+        params: { method: 'delete_entry', 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' } 
       });
   }
 
   updateIncome(income: Income): Observable<{incomeId: string}> {
     return this.http.put<{ incomeId: string }>(
-      `${environment.URL}:${environment.account_port}/income/update/${income.id}`, 
+      `${environment.base_url}/${environment.version}/entries/update/${income.id}`, 
       { ...income, month: this.util.getMonthPayload(income.date) }, 
       {
-        params: { 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' }
+        params: { method: 'update_entry', 'category': 'income', 'accountId': localStorage.getItem('account_id') || '' }
       }
     )
   }
