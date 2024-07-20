@@ -122,7 +122,7 @@ Resources:
       Type: 'TOKEN'
       AuthorizerUri: 
         !Sub
-          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AuthorizerLambdaFunction}/invocations
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
           - LambdaFunctionArn: !GetAtt AuthorizerLambdaFunction.Arn
       IdentitySource: 'method.request.header.Authorization'
       RestApiId: !Ref ApiGatewayRestApi
