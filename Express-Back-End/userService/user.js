@@ -16,14 +16,13 @@ exports.handler = async (event) => {
   const method = event?.method || event?.queryStringParameters?.method;
   const type = event?.type || event?.queryStringParameters?.type;
 
-  const { body, headers } = JSON.parse(event);
   if (event.pathParameters) {
     userId = event.pathParameters?.userId;
   } else {
     userId = body?.userId || event.name;
   }
   event.pathParameters && (userId = event.pathParameters?.userId);
-  const payload = { userId, type, body, headers };
+  const payload = { userId, type, body: JSON.parse(event.body), headers: event.headers };
 
   switch (method) {
     case 'get_user':

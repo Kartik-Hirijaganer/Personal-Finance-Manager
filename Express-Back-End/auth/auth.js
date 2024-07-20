@@ -8,7 +8,7 @@ const AWS = require('aws-sdk');
 AWS.config.region = 'us-east-1';
 const lambda = new AWS.Lambda();
 
-const { AuthenticationError, DatabaseError, UserNotFoundError, UnknownError } = require('./errors');
+const { AuthenticationError, DatabaseError, UserNotFoundError, UnknownError } = require('./error');
 const { logger, generateResponse } = require('./authService');
 
 
