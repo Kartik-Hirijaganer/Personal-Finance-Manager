@@ -93,6 +93,30 @@ Resources:
       Action: "lambda:InvokeFunction"
       Principal: apigateway.amazonaws.com
 
+  AuthLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: authService.handler
+      FunctionName: authService
+      Description: Auth service lambda function
+      MemorySize: 128
+      PackageType: Zip
+      Role: !Ref LambdaExecutionRole
+      Code:
+        S3Bucket: all-lambda-functions-v1
+        S3Key: authService.zip
+      Runtime: nodejs16.x
+      Timeout: 25
+      TracingConfig:
+        Mode: Active
+
+  AuthLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref AuthLambdaFunction
+      Action: "lambda:InvokeFunction"
+      Principal: apigateway.amazonaws.com
+
   AuthorizerLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -258,6 +282,34 @@ Resources:
     Properties:
       ParentId: !Ref EntriesDeleteResource
       PathPart: "{id}"
+      RestApiId: !Ref ApiGatewayRestApi
+
+  AuthResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: auth
+      RestApiId: !Ref ApiGatewayRestApi
+
+  AuthLoginResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref AuthResource
+      PathPart: login
+      RestApiId: !Ref ApiGatewayRestApi
+
+  AuthResetResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref AuthResource
+      PathPart: reset
+      RestApiId: !Ref ApiGatewayRestApi
+
+  AuthRegisterResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref AuthResource
+      PathPart: register
       RestApiId: !Ref ApiGatewayRestApi
 
   # Methods
@@ -486,6 +538,48 @@ Resources:
         Uri: !Sub
           - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
           - LambdaFunctionArn: !GetAtt EntriesLambdaFunction.Arn
+
+  AuthLoginMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: 'NONE'
+      HttpMethod: POST
+      ResourceId: !Ref AuthLoginResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt AuthLambdaFunction.Arn
+
+  AuthResetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: 'NONE'
+      HttpMethod: POST
+      ResourceId: !Ref AuthResetResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt AuthLambdaFunction.Arn
+
+  AuthRegisterMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: 'NONE'
+      HttpMethod: POST
+      ResourceId: !Ref AuthRegisterResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations
+          - LambdaFunctionArn: !GetAtt AuthLambdaFunction.Arn
 
   ApiGatewayDeployment:
     Type: "AWS::ApiGateway::Deployment"

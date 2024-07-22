@@ -21,12 +21,12 @@ export class AuthService {
   ) { }
 
   login(payload: { email: string, password: string }): void {
-    const params = new HttpParams({ fromObject: { method: 'get_user', type: 'email' } });
+    const params = new HttpParams({ fromObject: { method: 'login' }});
     this.http.post<{ token: string, userId: string, accountId: string, user: string, profile_img: string }>(
-      `${environment.URL}:${environment.auth_port}/login`,
+      `${environment.base_url}/${environment.version}/auth/login`,
       payload,
-      { params })
-      .pipe(
+      { params }
+    ).pipe(
         catchError(err => {
           this.toastr.error(err?.error?.errorMessage || 'Invalid email or password', 'Failed to login');
           return of(null);
@@ -48,7 +48,12 @@ export class AuthService {
   // { userId, token, accountId: '', user }
 
   register(payload: User): Observable<{ userId: string, token: string, accountId: string, user: string }> {
-    return this.http.post<{ userId: string, token: string, accountId: string, user: string }>(`${environment.URL}:${environment.auth_port}/register`, payload);
+    const params = new HttpParams({ fromObject: { method: 'register' }});
+    return this.http.post<{ userId: string, token: string, accountId: string, user: string }>(
+      `${environment.base_url}/${environment.version}/auth/register`, 
+      payload,
+      { params }
+    );
   }
 
   public setUser(response: { token: string, userId: string, accountId: string, user: string, profile_img: string }): void {
@@ -72,29 +77,18 @@ export class AuthService {
   }
 
   resetUserPassword(payload: { email: string, pass: string }) {
-    const params = new HttpParams({ fromObject: { type: 'email', reset: 'true' } });
-    this.http.get<{user: any, token: string}>(
-      `${environment.URL}:${environment.user_port}/user/${payload.email}`,
+    const params = new HttpParams({ fromObject: { method: 'reset' } });
+    return this.http.post<{ user: any, token: string }>(
+      `${environment.base_url}/${environment.version}/auth/reset`, 
+      payload,
       { params }
     ).pipe(
-      switchMap((res) => {
-        if (!res?.user) {
-          this.toastr.error(`User with email ${payload.email} does not exists.`, 'Error');
-          return of(null);
-        }
-        const updatedUser = { ...res.user, password: payload.pass };
-        this.token = res?.token;
-        return this.http.put<{ userId: string }>(
-          `${environment.URL}:${environment.user_port}/user/update/${updatedUser.userId}`,
-          updatedUser
-        )
-      }),
       catchError(err => {
         this.toastr.error(err?.error?.errorMessage || 'Failed to update password.', 'Unknown Error');
         return of(null);
       })
     ).subscribe(res => {
-      if (res?.userId) {
+      if (res?.user?.userId) {
         this.toastr.success('Password updated, kindly login with new password.', 'Success');
         this.showLoginPage = true;
       }

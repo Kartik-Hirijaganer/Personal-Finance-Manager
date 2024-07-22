@@ -13,14 +13,17 @@ const { logger, generateResponse } = require('./authService');
 
 
 exports.handler = async (event) => {
-  const { email, password } = JSON.parse(event.body);
   const method = event?.queryStringParameters?.method;
 
   switch (method) {
     case 'login':
+      const { email, password } = JSON.parse(event.body);
       return login(email, password);
     case 'register':
+      const payload = JSON.parse(event.body);
       return register(payload);
+    case 'reset':
+      return reset(event.body?.email, event.body?.password);
     case 'authorize':
       return authorize(event.authorizationToken);
   }
@@ -91,6 +94,51 @@ const register = async (payload) => {
   }
   const token = jwt.sign({ userId }, process.env.SECRET, { expiresIn: '1h' });
   return generateResponse(200, 'Successfully registered user', { userId, token, accountId: '', user });
+}
+
+const reset = async (email, password) => {
+  let updatedUser;
+  try {
+    const params = {
+      FunctionName: process.env.USER_LAMBDA_ARN,
+      InvocationType: 'RequestResponse',
+      LogType: 'Tail',
+      Payload: { "method": "get_user", "type": "email" }
+    }
+    const response = await lambda.invoke(params).promise();
+    updatedUser = { ...response.user, password };
+    this.token = response?.token;
+    if (!user) {
+      throw new UserNotFoundError('User not found');
+    }
+  } catch (error) {
+    if (error instanceof DatabaseError) {
+      logger.log({ level: 'error', message: `DatabaseError: ${error.message}`, error: JSON.stringify(error) });
+      return generateResponse(400, 'Failed to fetch user', { errorMessage: 'Failed to fetch user', error });
+    }
+    if (error instanceof UserNotFoundError) {
+      logger.log({ level: 'error', message: `User with email address ${email} does not exsits`, error: JSON.stringify(error) });
+      return generateResponse(400, `User with email address ${email} does not exsits`, { errorMessage: `User with email address ${email} does not exsits`, error });
+    }
+    const err = new UnknownError(error.message);
+    logger.log({ level: 'error', message: `Unknown error: ${error.message}`, error: JSON.stringify(error) });
+    return generateResponse(500, `Unknown error: ${error.message}`, { errorMessage: `Unknown error: ${error.message}`, err });
+  }
+
+  const params = {
+    FunctionName: process.env.USER_LAMBDA_ARN,
+    InvocationType: 'RequestResponse',
+    LogType: 'Tail',
+    Payload: { "method": "update_user", "type": "email" }
+  }
+  try {
+    await lambda.invoke(params).promise();
+    const token = jwt.sign({ userId: updatedUser.userId }, process.env.SECRET_KEY, { expiresIn: '1h' });
+    return generateResponse(200, 'Password reset successfull', { token, userId: updatedUser.userId, accountId: updatedUser?.accounts[0] || '', profile_img: updatedUser.profile_img, user: updatedUser.fname });
+  } catch (error) {
+    logger.log({ level: 'error', message: `${error?.message}`, error: JSON.stringify(error) });
+    return generateResponse(400, `Failed to reset password`, { errorMessage: `${error.message}`, error });
+  }
 }
 
 const authorize = async (authHeader) => {
