@@ -43,8 +43,6 @@ export class UserComponent implements OnInit {
     }
     this.userService.getUser(this.userId).pipe(
       catchError(err => {
-        console.log(err);
-        
         return of(null);
       })
     ).subscribe((response) => {

@@ -83,8 +83,6 @@ export class AuthService {
       { params }
     ).pipe(
       catchError(err => {
-        console.log(err);
-        
         this.toastr.error(err?.error?.message || 'Failed to update password.', 'Unknown Error');
         return of(null);
       })

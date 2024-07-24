@@ -66,8 +66,6 @@ export class DashboardComponent implements OnInit {
     this.accountId = localStorage.getItem('account_id') || '';
     this.userService.getUser(this.userId).pipe(
       switchMap((res) => {
-        console.log({res});
-        
         if (res.user) {
           this.userFullName = `${res.user?.fname} ${res.user?.lname}`;
           this.userService.userEvent.next({ user_fname: res.user.fname, profile_img: res.user.profile_img, userId: res.user.userId })
@@ -80,10 +78,7 @@ export class DashboardComponent implements OnInit {
         return this.accountService.getAccountDetails(this.accountId);
       }),
       catchError(err => {
-        console.log({err});
-        
-        const errorMessage: string = err?.error?.error?.errorMessage;
-        this.toastr.error(errorMessage || 'Failed to fetch data', 'Unknown error');
+        this.toastr.error(err?.error?.error?.message || 'Failed to fetch data', 'Unknown error');
         return of({ error: null });
       })
     ).subscribe((res: any) => {
