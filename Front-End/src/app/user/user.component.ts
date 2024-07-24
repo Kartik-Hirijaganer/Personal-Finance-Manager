@@ -41,14 +41,20 @@ export class UserComponent implements OnInit {
       this.setUserForm(null);
       return;
     }
-    this.userService.getUser(this.userId).subscribe((response) => {
-      const user = response.user;
+    this.userService.getUser(this.userId).pipe(
+      catchError(err => {
+        console.log(err);
+        
+        return of(null);
+      })
+    ).subscribe((response) => {
+      const user = response?.user;
       if (user) {
         this.showEditBtn = true;
         this.userService.userEvent.next({ user_fname: user.fname, profile_img: user.profile_img, userId: user.userId })
+        delete user.password;
+        this.setUserForm(user);
       }
-      delete user.password;
-      this.setUserForm(user);
     });
     // this.setUserForm(null); // uncomment if new register form doesn't open
   }
@@ -142,15 +148,16 @@ export class UserComponent implements OnInit {
     } else {
       this.authService.register(payload)
         .pipe(catchError(err => {
-          const title: string = err.error?.errorMessage;
+          const title: string = err.error?.message;
           let message: string = 'Database error';
-          if (err.error?.error?.errorMessage?.includes('E11000')) {
-            message = 'Duplicate key error. Email, phone must be unique';
+          if (err.error?.response?.error?.errorCode === 'DB-0001') {
+            message = err.error?.response?.error?.errorMessage;
           }
           this.toastr.error(message, title);
           return of(null);
         }))
-        .subscribe((response) => {
+        .subscribe((res) => {
+          const response = res?.response;
           if (response) {
             this.authService.setUser({ token: response.token, userId: response.userId, accountId: response.accountId, user: response.user, profile_img: payload.profile_img });
             this.toastr.success('Registeration successfull', 'Success');

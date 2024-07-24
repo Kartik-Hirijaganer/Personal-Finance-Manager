@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const IncomeSchema = require('./entries/models/income.model');
-const ExpenseSchema = require('./entries/models/expense.model');
-const LiabilitySchema = require('./entries/models/liability.model');
+const IncomeSchema = require('./income.model');
+const ExpenseSchema = require('./expense.model');
+const LiabilitySchema = require('./liability.model');
 
 const AccountSchema = new Schema({
   accountId: {

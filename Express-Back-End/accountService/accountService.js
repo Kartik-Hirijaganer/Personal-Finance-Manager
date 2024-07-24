@@ -1,7 +1,7 @@
 'use strict';
 
 const winston = require('winston');
-const { combine, timestamp, json } = winston.format;
+const { combine, timestamp, json, errors } = winston.format;
 
 const mongoose = require('mongoose');
 require('dotenv').config()

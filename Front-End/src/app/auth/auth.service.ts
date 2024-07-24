@@ -22,19 +22,19 @@ export class AuthService {
 
   login(payload: { email: string, password: string }): void {
     const params = new HttpParams({ fromObject: { method: 'login' }});
-    this.http.post<{ token: string, userId: string, accountId: string, user: string, profile_img: string }>(
+    this.http.post<{ message: string, response: { token: string, userId: string, accountId: string, user: string, profile_img: string } }>(
       `${environment.base_url}/${environment.version}/auth/login`,
       payload,
       { params }
     ).pipe(
         catchError(err => {
-          this.toastr.error(err?.error?.errorMessage || 'Invalid email or password', 'Failed to login');
+          this.toastr.error(err?.error?.message || 'Invalid email or password', 'Failed to login');
           return of(null);
         })
       )
-      .subscribe(response => {
-        if (response) {
-          this.setUser(response);
+      .subscribe(res => {
+        if (res?.response) {
+          this.setUser(res?.response);
           this.toastr.success('Login successfull', 'Success');
           this.router.navigate(['/dashboard']);
         }
@@ -45,11 +45,10 @@ export class AuthService {
     localStorage.clear();
     this.router.navigateByUrl('/login');
   }
-  // { userId, token, accountId: '', user }
 
-  register(payload: User): Observable<{ userId: string, token: string, accountId: string, user: string }> {
+  register(payload: User): Observable<{ message: string, response: { userId: string, token: string, accountId: string, user: string } }> {
     const params = new HttpParams({ fromObject: { method: 'register' }});
-    return this.http.post<{ userId: string, token: string, accountId: string, user: string }>(
+    return this.http.post<{ message: string, response: { userId: string, token: string, accountId: string, user: string } }>(
       `${environment.base_url}/${environment.version}/auth/register`, 
       payload,
       { params }
@@ -78,19 +77,22 @@ export class AuthService {
 
   resetUserPassword(payload: { email: string, pass: string }) {
     const params = new HttpParams({ fromObject: { method: 'reset' } });
-    return this.http.post<{ user: any, token: string }>(
+    return this.http.post<{ message: string, response: { token: string, userId: string, accountId: string, user: string, profile_img: string } }>(
       `${environment.base_url}/${environment.version}/auth/reset`, 
       payload,
       { params }
     ).pipe(
       catchError(err => {
-        this.toastr.error(err?.error?.errorMessage || 'Failed to update password.', 'Unknown Error');
+        console.log(err);
+        
+        this.toastr.error(err?.error?.message || 'Failed to update password.', 'Unknown Error');
         return of(null);
       })
     ).subscribe(res => {
-      if (res?.user?.userId) {
-        this.toastr.success('Password updated, kindly login with new password.', 'Success');
-        this.showLoginPage = true;
+      if (res?.response) {
+        this.setUser(res?.response);
+        this.toastr.success(res?.message, 'Success');
+        this.router.navigate(['/dashboard']);
       }
     })
   }

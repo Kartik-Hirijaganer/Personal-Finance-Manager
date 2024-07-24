@@ -1,29 +1,30 @@
 'use strict';
 
-// const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const { v4 } = require('uuid');
+const bcrypt = require('bcryptjs');
 const { generatePdf, connectDB, logger, generateResponse } = require('./userService');
 
 const User = require('./models/user.model');
 const Account = require('./models/account.model');
 const { DatabaseError, RecordNotFoundError, ValidationError } = require('./errors');
 
-connectDB();
+let isDBConnected = false;
 
 exports.handler = async (event) => {
-  logger.log({level: 'info', message: 'Input event', event: JSON.stringify(event)});
-  let userId = null;
-  const method = event?.method || event?.queryStringParameters?.method;
-  const type = event?.type || event?.queryStringParameters?.type;
-
+  logger.log({level: 'info', message: 'Input event', event});
+  if (!isDBConnected) {
+    await connectDB();
+    isDBConnected = true;
+  }
+  let userId = '';
+  const method = event?.queryStringParameters?.method;
+  const type = event?.queryStringParameters?.type;
   if (event.pathParameters) {
     userId = event.pathParameters?.userId;
   } else {
-    userId = body?.userId || event.name;
+    userId = event?.body?.userId || event?.name;
   }
-  event.pathParameters && (userId = event.pathParameters?.userId);
-  const payload = { userId, type, body: JSON.parse(event.body), headers: event.headers };
-
+  const payload = { userId, type, body: event.body, headers: event.headers };
   switch (method) {
     case 'get_user':
       return getUser(payload);
@@ -36,71 +37,66 @@ exports.handler = async (event) => {
     case 'generate_pdf':
       return generatePdf(payload, generateResponse)
     default: 
-      return generateResponse(200, 'Enter valid method', { method });
+      return generateResponse(400, 'Enter valid method', { method });
   }
 }
 
 const getUser = async (payload) => {
   const { userId, type } = payload;
-  let email, user;
-  if (type === 'email') {
-    email = userId;
-  }
+  let user;
   try {
-    if (userId || email) {
-      if (email) {
-        user = await User.findOne({ email });
-      } else {
-        user = await User.findOne({ userId });
-      }
+    if (type === 'email') {
+      user = await User.findOne({ email: userId });
     } else {
-      throw new ValidationError(`Missing ${email ? 'email' : 'user id'} in path`);
+      user = await User.findOne({ userId });
     }
   } catch (err) {
     if (err instanceof ValidationError) {
-      logger.log({ level: 'erro', message: `ValidationError: ${err.message}`, error: JSON.stringify(err) });
-      return generateResponse(200, 'Failed to get user data', err);
+      logger.log({ level: 'error', message: `ValidationError: ${err.message}`, error: JSON.stringify(err) });
+      return generateResponse(400, 'Failed to get user data', err);
     }
     const error = new DatabaseError(err.message);
-    logger.log({ level: 'erro', message: `DatabaseError: ${err.message}`, error: JSON.stringify(error) });
-    return generateResponse(200, 'Failed to get user data', error);
+    logger.log({ level: 'error', message: `DatabaseError: ${err.message}`, error: JSON.stringify(error) });
+    return generateResponse(400, 'Failed to get user data', error);
   }
   return generateResponse(200, 'Successfully fetched user data', user);
 }
 
 const addNewUser = async (payload) => {
-  const new_user = new User(payload.body);
+  const userId = v4();
+  const new_user = new User({ ...payload.body, userId });
   try {
     await new_user.save();
   } catch (err) {
     const error = new DatabaseError(err.message);
-    logger.log({ level: 'erro', message: `DatabaseError: ${err.message}`, error: JSON.stringify(error) });
-    return generateResponse(200, 'Failed to save user data', error);
+    logger.log({ level: 'error', message: `DatabaseError: ${err.message}`, error: JSON.stringify(error) });
+    return generateResponse(400, 'Failed to save user data', error);
   }
-  return generateResponse(200, 'Added new user', { userId: payload?.userId });
+  return generateResponse(200, 'Added new user', { userId });
 }
 
 const updateUser = async (payload) => {
-  const userId = payload?.userId;
-  const query = { userId };
-  const encryptedPassword = payload.body?.password && bcrypt.hashSync(payload.body.password, 10);
-  const updatedUser = { ...payload.body, ...(encryptedPassword && { password: encryptedPassword }) };
+  let user;
   try {
-    const user = await User.findOne(query);
-    if (!user) {
-      throw new RecordNotFoundError(`User record with id: ${userId} not found`);
+    const encryptedPassword = payload?.body?.password && bcrypt.hashSync(payload.body.password, 10);
+    if (payload.type === 'email') {
+      user = await User.findOne({ email: payload?.body?.email });
+    } else {
+      user = await User.findOne({ userId: payload.userId });
     }
-    await User.findOneAndUpdate(query, updatedUser);
+    if (!user) {
+      throw new RecordNotFoundError(`User record with id: ${payload.userId || payload?.body?.email} not found`);
+    }
+    const updatedUser = { ...user, ...(encryptedPassword && { password: encryptedPassword }) };
+    await User.findOneAndUpdate({ userId: user?.userId }, updatedUser);
   } catch (err) {
     if (err instanceof RecordNotFoundError) {
-      logger.log({ level: 'erro', message: `RecordNotFoundError: ${err.message}`, error: JSON.stringify(err) });
-      return generateResponse(200, 'Failed to update user data', err);
+      return generateResponse(400, 'Not user record found', err);
     }
     const error = new DatabaseError(err.message);
-    logger.log({ level: 'erro', message: `DatabaseError: ${err.message}`, error: JSON.stringify(error) });
-    return generateResponse(200, 'Failed to update user data', error);
+    return generateResponse(400, 'Failed to update user data', error);
   }
-  return generateResponse(200, 'Successfully updated user data', { userId });
+  return generateResponse(200, 'User data updated', { userId: user.userId, accountId: user?.accounts?.[0] || '', profile_img: user.profile_img, user: user.fname });
 }
 
 const deleteUser = async (payload) => {
@@ -111,8 +107,8 @@ const deleteUser = async (payload) => {
     await User.findOneAndDelete(query);
   } catch (err) {
     const error = new DatabaseError(err.message);
-    logger.log({ level: 'erro', message: `DatabaseError: ${err.message}`, error: JSON.stringify(error) });
-    return generateResponse(200, 'Failed to delete user data', error);
+    logger.log({ level: 'error', message: `DatabaseError: ${err.message}`, error: JSON.stringify(error) });
+    return generateResponse(400, 'Failed to delete user data', error);
   }
   return generateResponse(200, 'Successfully deleted user data', { userId });
 }

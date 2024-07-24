@@ -1,6 +1,6 @@
 'use strict';
 const winston = require('winston');
-const { combine, timestamp, json } = winston.format;
+const { combine, timestamp, json, errors } = winston.format;
 
 const logger = winston.createLogger({
   level: 'info',
@@ -9,11 +9,18 @@ const logger = winston.createLogger({
 });
 
 const generateResponse = (statusCode, message, responseBody) => {
-  logger.log({ level: 'info', message, response: JSON.stringify(responseBody) });
-  return {
+  const response = {
     statusCode,
-    body: { message, response: JSON.stringify(responseBody) }
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+      "Access-Control-Allow-Methods": "POST,OPTIONS"
+    },
+    body: JSON.stringify({ message, response: responseBody })
   }
+  const level = statusCode >= 200 && statusCode <= 399 ? 'info' : 'error';
+  logger.log({ level, message, response });
+  return response;
 }
 
 module.exports = {

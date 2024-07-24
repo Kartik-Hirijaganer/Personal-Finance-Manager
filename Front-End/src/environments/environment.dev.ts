@@ -4,5 +4,5 @@ export const environment = {
   auth_port: 3350,
   account_port: 3000,
   version: 'V0',
-  base_url: 'https://6t6mexvr33.execute-api.us-east-1.amazonaws.com'
+  base_url: 'https://fdg65d96n5.execute-api.us-east-1.amazonaws.com'
 }

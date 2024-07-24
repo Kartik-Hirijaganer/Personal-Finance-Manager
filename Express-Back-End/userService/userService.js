@@ -3,23 +3,23 @@
 const Handlebars = require('handlebars');
 const Puppeteer = require('puppeteer');
 const winston = require('winston');
-const { combine, timestamp, json } = winston.format;
-
-const { GeneratePdfError, HandlebarCompileError, BrowserLaunchError } = require('./errors');
-
+const { combine, timestamp, json, errors } = winston.format;
 const mongoose = require('mongoose');
 require('dotenv').config()
 
-const options = Object.freeze()
+const { GeneratePdfError, HandlebarCompileError, BrowserLaunchError } = require('./errors');
+
+
+const mongoURI = process.env.CONNECTION_URL;
+let conn = null;
 
 const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.CONNECTION_URL, options);
-  } catch (error) {
-    console.log(error);
+  if (conn == null) {
+    conn = await mongoose.connect(mongoURI);
+    logger.log({ level: 'info', message: 'Connected to DB' });
   }
-  console.log('connected to DB');
-}
+  return conn;
+};
 
 const hbRegister = () => {
   Handlebars.registerHelper('symbolHelper', (value, symbol) => {
@@ -116,11 +116,18 @@ const logger = winston.createLogger({
 });
 
 const generateResponse = (statusCode, message, responseBody) => {
-  logger.log({ level: 'info', message, response: JSON.stringify(responseBody) });
-  return {
+  const response = {
     statusCode,
-    body: { message, response: JSON.stringify(responseBody) }
+    headers: {
+      "Access-Control-Allow-Origin": "*", // Allow from all origins
+      "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+      "Access-Control-Allow-Methods": "POST,GET,PUT,DELETE,OPTIONS"
+    },
+    body: JSON.stringify({ message, response: responseBody })
   }
+  const level = statusCode >= 200 && statusCode <= 399 ? 'info' : 'error';
+  logger.log({ level, message, response });
+  return response;
 }
 
 module.exports = {
